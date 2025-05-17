@@ -1,6 +1,8 @@
 import { Grid, Stack, Typography } from "@mui/joy";
 import ProductCard from "./ProductCard";
 import { useParams } from "react-router";
+import { useQuery } from "@tanstack/react-query";
+import { getProducts } from "../../../api/products.api";
 
 const templateProduct = {
   name: "Nom de produit très très long",
@@ -13,6 +15,13 @@ const products = new Array(14).fill(templateProduct);
 
 const ProductsList = () => {
   const { section, category } = useParams();
+
+  const { data: exemple } = useQuery({
+    queryKey: ["productsExample"],
+    queryFn: getProducts,
+  });
+
+  console.log(exemple);
 
   return (
     <Stack rowGap={1} sx={{ flex: 1 }}>

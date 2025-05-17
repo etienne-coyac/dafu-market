@@ -6,6 +6,7 @@ import useMediaQuery from "../../../hooks/useMediaQuery";
 
 const Products = () => {
   const isDesktop = useMediaQuery("up", "md");
+  console.log("render", isDesktop);
   return (
     <Stack>
       <ProductsBreadcrumbs />

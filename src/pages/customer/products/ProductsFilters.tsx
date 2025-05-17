@@ -64,7 +64,6 @@ const ProductFilters = () => {
     }
   };
 
-  console.log(media);
   return (
     <ConditionnalWrapper
       wrapper={(children) => (
