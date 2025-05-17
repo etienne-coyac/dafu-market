@@ -1,4 +1,4 @@
-import { extendTheme } from "@mui/joy";
+import { accordionSummaryClasses, extendTheme } from "@mui/joy";
 
 const customTheme = extendTheme({
   components:{
@@ -9,6 +9,25 @@ const customTheme = extendTheme({
         }
       }
     },
+    JoyAccordionGroup: {
+      styleOverrides: {
+        root: {
+          [accordionSummaryClasses.indicator]:{
+            transitionDuration: ".4s",
+          },
+          [`& [aria-expanded="true"] .${accordionSummaryClasses.indicator}`]: {
+            transform: 'rotate(180deg)',
+          },
+        }
+      }
+    },
+   JoyCard: {
+    styleOverrides: {
+      root: {
+        padding: "0.5rem"
+      }
+    }
+   }
   }
 })
 customTheme.typography.h1 = {

@@ -3,18 +3,23 @@ import { Breadcrumbs, Link } from "@mui/joy";
 import { useParams } from "react-router";
 import { Link as RouterLink } from "react-router";
 
-const Category = () => {
+const ProductsBreadcrumbs = () => {
   const { section, category } = useParams();
   return (
     <Breadcrumbs separator={<KeyboardArrowRight />}>
-      <Link component={RouterLink} color="neutral" to="/">
+      <Link component={RouterLink} level="body-xs" color="neutral" to="/">
         Accueil
       </Link>
-      <Link component={RouterLink} color="neutral" to={`/produits/${section}`}>
+      <Link
+        component={RouterLink}
+        level="body-xs"
+        color="neutral"
+        to={`/produits/${section}`}
+      >
         {section}
       </Link>
       {category && (
-        <Link component={RouterLink} color="neutral" to="">
+        <Link component={RouterLink} level="body-xs" color="neutral" to="">
           {category}
         </Link>
       )}
@@ -22,4 +27,4 @@ const Category = () => {
   );
 };
 
-export default Category;
+export default ProductsBreadcrumbs;
