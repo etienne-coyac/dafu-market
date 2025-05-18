@@ -1,28 +1,32 @@
 import { KeyboardArrowRight } from "@mui/icons-material";
 import { Breadcrumbs, Link } from "@mui/joy";
-import { useParams } from "react-router";
 import { Link as RouterLink } from "react-router";
 
-const ProductsBreadcrumbs = () => {
-  const { section, category } = useParams();
+type ProductCardProps = {
+  steps: {
+    name: string;
+    href: string;
+  }[];
+};
+const ProductsBreadcrumbs = (props: ProductCardProps) => {
+  const { steps } = props;
   return (
     <Breadcrumbs separator={<KeyboardArrowRight />}>
       <Link component={RouterLink} level="body-xs" color="neutral" to="/">
         Accueil
       </Link>
-      <Link
-        component={RouterLink}
-        level="body-xs"
-        color="neutral"
-        to={`/produits/${section}`}
-      >
-        {section}
-      </Link>
-      {category && (
-        <Link component={RouterLink} level="body-xs" color="neutral" to="">
-          {category}
+
+      {steps.map((step) => (
+        <Link
+          key={step.name}
+          component={RouterLink}
+          level="body-xs"
+          color="neutral"
+          to={step.href}
+        >
+          {step.name}
         </Link>
-      )}
+      ))}
     </Breadcrumbs>
   );
 };

@@ -298,9 +298,7 @@ export default function Menu() {
                     <ListItem key={cat.name}>
                       <ListItemButton
                         onClick={() =>
-                          handleLinkClick(
-                            `produits/${selectedSection.url}/${cat.url}`
-                          )
+                          handleLinkClick(`r/${selectedSection.url}/${cat.url}`)
                         }
                       >
                         <ListItemContent>{cat.name}</ListItemContent>

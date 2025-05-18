@@ -3,15 +3,19 @@ import ProductCard from "./ProductCard";
 import { useParams } from "react-router";
 import { useQuery } from "@tanstack/react-query";
 import { getProducts } from "../../../api/products.api";
+import type { ProductType } from "../../../types/protucts";
 
-const templateProduct = {
-  name: "Nom de produit très très long",
+const templateProduct: ProductType = {
+  id: 1,
+  name: "Coca-Cola avec un nom très très long",
   imageUrl:
     "https://media.carrefour.fr/medias/544c1d918fa04e82a73f1371c443062a/p_200x200/5449000267436_0.jpg",
   price: 5.99,
+  section: "boissons",
+  category: "sodas",
 };
 
-const products = new Array(14).fill(templateProduct);
+const products: ProductType[] = new Array(14).fill(templateProduct);
 
 const ProductsList = () => {
   const { section, category } = useParams();

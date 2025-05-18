@@ -4,28 +4,38 @@ import {
   Card,
   CardContent,
   IconButton,
+  Link,
   Stack,
   Typography,
 } from "@mui/joy";
+import { useNavigate } from "react-router";
+import { Link as RouterLink } from "react-router";
+import type { ProductType } from "../../../types/protucts";
 
 type ProductCardProps = {
-  product: {
-    name: string;
-    price: number;
-    imageUrl: string;
-  };
+  product: ProductType;
 };
 
 const ProductCard = (props: ProductCardProps) => {
   const { product } = props;
+  const navigate = useNavigate();
+  const handleNavigate = () => {
+    navigate(`/p/${product.id}`);
+  };
 
   return (
     <Card>
       <CardContent>
-        <AspectRatio maxHeight={"150px"} minHeight={"100px"}>
-          <img src={product.imageUrl} />
+        <AspectRatio
+          maxHeight={"150px"}
+          minHeight={"100px"}
+          sx={{ cursor: "pointer" }}
+        >
+          <img src={product.imageUrl} onClick={handleNavigate} />
         </AspectRatio>
-        <Typography level="body-sm">{product.name}</Typography>
+        <Link component={RouterLink} to={`/products/${product.id}`}>
+          <Typography level="body-sm">{product.name}</Typography>
+        </Link>
         <Stack
           direction={"row"}
           justifyContent={"space-between"}
