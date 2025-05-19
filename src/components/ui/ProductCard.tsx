@@ -5,22 +5,24 @@ import {
   CardContent,
   IconButton,
   Link,
+  Skeleton,
   Stack,
   Typography,
 } from "@mui/joy";
 import { useNavigate } from "react-router";
 import { Link as RouterLink } from "react-router";
-import type { ProductType } from "../../../types/protucts";
+import type { ProductType } from "../../types/protucts";
 
 type ProductCardProps = {
-  product: ProductType;
+  product: ProductType | undefined;
 };
 
 const ProductCard = (props: ProductCardProps) => {
   const { product } = props;
   const navigate = useNavigate();
   const handleNavigate = () => {
-    navigate(`/p/${product.id}`);
+    if (!product) return;
+    navigate(`/p/${product.idProduit}`);
   };
 
   return (
@@ -31,22 +33,37 @@ const ProductCard = (props: ProductCardProps) => {
           minHeight={"100px"}
           sx={{ cursor: "pointer" }}
         >
-          <img src={product.imageUrl} onClick={handleNavigate} />
+          <Skeleton loading={!product} variant="overlay">
+            <img src="" onClick={handleNavigate} />
+          </Skeleton>
         </AspectRatio>
-        <Link component={RouterLink} to={`/products/${product.id}`}>
-          <Typography level="body-sm">{product.name}</Typography>
+
+        <Link component={RouterLink} to={`/products/${product?.idProduit}`}>
+          <Typography level="body-sm">
+            <Skeleton loading={!product}>
+              {product?.nom ?? "Nom du produit"}
+            </Skeleton>
+          </Typography>
         </Link>
+
         <Stack
           direction={"row"}
           justifyContent={"space-between"}
           alignItems={"flex-end"}
           gap={1}
         >
-          <IconButton size="sm" color="success" variant="soft">
+          <IconButton
+            size="sm"
+            color="success"
+            variant="soft"
+            disabled={!product}
+          >
             <AddShoppingCart />
           </IconButton>
           <Typography level="body-md" fontWeight={"bold"}>
-            {product.price.toFixed(2)}€
+            <Skeleton loading={!product}>
+              {product?.prixRecommande?.toFixed(2) ?? "0.00"}€
+            </Skeleton>
           </Typography>
         </Stack>
       </CardContent>

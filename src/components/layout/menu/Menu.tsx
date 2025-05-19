@@ -21,176 +21,24 @@ import {
   ListItemContent,
   ListItemDecorator,
 } from "@mui/joy";
-import RestaurantIcon from "@mui/icons-material/Restaurant";
-import LocalCafeIcon from "@mui/icons-material/LocalCafe";
-import BakeryDiningIcon from "@mui/icons-material/BakeryDining";
-import LocalDiningIcon from "@mui/icons-material/LocalDining";
-import CakeIcon from "@mui/icons-material/Cake";
-import LocalBarIcon from "@mui/icons-material/LocalBar";
-import AcUnitIcon from "@mui/icons-material/AcUnit";
-import SpaIcon from "@mui/icons-material/Spa";
-import CleaningServicesIcon from "@mui/icons-material/CleaningServices";
-import ChildFriendlyIcon from "@mui/icons-material/ChildFriendly";
-import PetsIcon from "@mui/icons-material/Pets";
-import GrassIcon from "@mui/icons-material/Grass";
-import { useNavigate } from "react-router";
 
-const sections = [
-  {
-    name: "Fruits et Légumes",
-    url: "fruits-et-legumes",
-    icon: <GrassIcon />,
-    categories: [
-      { name: "Fruits frais", url: "fruits-frais" },
-      { name: "Légumes frais", url: "legumes-frais" },
-      { name: "Fruits exotiques", url: "fruits-exotiques" },
-      { name: "Légumes bio", url: "legumes-bio" },
-      { name: "Herbes aromatiques", url: "herbes-aromatiques" },
-    ],
-  },
-  {
-    name: "Viandes et Poissons",
-    url: "viandes-et-poissons",
-    icon: <RestaurantIcon />,
-    categories: [
-      { name: "Boucherie", url: "boucherie" },
-      { name: "Volaille", url: "volaille" },
-      { name: "Poissonnerie", url: "poissonnerie" },
-      { name: "Traiteur de la mer", url: "traiteur-de-la-mer" },
-      { name: "Charcuterie", url: "charcuterie" },
-    ],
-  },
-  {
-    name: "Produits Laitiers",
-    url: "produits-laitiers",
-    icon: <LocalCafeIcon />,
-    categories: [
-      { name: "Lait", url: "lait" },
-      { name: "Fromages", url: "fromages" },
-      { name: "Yaourts", url: "yaourts" },
-      { name: "Beurres et Crèmes", url: "beurres-et-cremes" },
-      { name: "Desserts lactés", url: "desserts-lactes" },
-    ],
-  },
-  {
-    name: "Boulangerie et Pâtisserie",
-    url: "boulangerie-et-patisserie",
-    icon: <BakeryDiningIcon />,
-    categories: [
-      { name: "Pains", url: "pains" },
-      { name: "Viennoiseries", url: "viennoiseries" },
-      { name: "Gâteaux à partager", url: "gateaux-a-partager" },
-      { name: "Tartes", url: "tartes" },
-      { name: "Pâtisseries individuelles", url: "patisseries-individuelles" },
-    ],
-  },
-  {
-    name: "Épicerie Salée",
-    url: "epicerie-salee",
-    icon: <LocalDiningIcon />,
-    categories: [
-      { name: "Pâtes", url: "pates" },
-      { name: "Riz et céréales", url: "riz-et-cereales" },
-      { name: "Conserves", url: "conserves" },
-      { name: "Sauces", url: "sauces" },
-      { name: "Soupes", url: "soupes" },
-    ],
-  },
-  {
-    name: "Épicerie Sucrée",
-    url: "epicerie-sucree",
-    icon: <CakeIcon />,
-    categories: [
-      { name: "Biscuits et gâteaux", url: "biscuits-et-gateaux" },
-      { name: "Chocolats et confiseries", url: "chocolats-et-confiseries" },
-      { name: "Pâtes à tartiner", url: "pates-a-tartiner" },
-      { name: "Céréales petit-déjeuner", url: "cereales-petit-dejeuner" },
-      { name: "Sucres et édulcorants", url: "sucres-et-edulcorants" },
-    ],
-  },
-  {
-    name: "Boissons",
-    url: "boissons",
-    icon: <LocalBarIcon />,
-    categories: [
-      { name: "Eaux", url: "eaux" },
-      { name: "Jus de fruits", url: "jus-de-fruits" },
-      { name: "Sodas", url: "sodas" },
-      { name: "Bières", url: "bieres" },
-      { name: "Vins et spiritueux", url: "vins-et-spiritueux" },
-    ],
-  },
-  {
-    name: "Surgelés",
-    url: "surgeles",
-    icon: <AcUnitIcon />,
-    categories: [
-      { name: "Légumes surgelés", url: "legumes-surgeles" },
-      { name: "Plats cuisinés", url: "plats-cuisines" },
-      { name: "Pizzas et tartes", url: "pizzas-et-tartes" },
-      { name: "Glaces et desserts", url: "glaces-et-desserts" },
-      { name: "Viandes et poissons", url: "viandes-et-poissons" },
-    ],
-  },
-  {
-    name: "Hygiène et Beauté",
-    url: "hygiene-et-beaute",
-    icon: <SpaIcon />,
-    categories: [
-      { name: "Soins du corps", url: "soins-du-corps" },
-      { name: "Soins du visage", url: "soins-du-visage" },
-      { name: "Hygiène bucco-dentaire", url: "hygiene-bucco-dentaire" },
-      { name: "Produits capillaires", url: "produits-capillaires" },
-      { name: "Parfums", url: "parfums" },
-    ],
-  },
-  {
-    name: "Entretien de la Maison",
-    url: "entretien-de-la-maison",
-    icon: <CleaningServicesIcon />,
-    categories: [
-      { name: "Produits ménagers", url: "produits-menagers" },
-      { name: "Lessive et adoucissants", url: "lessive-et-adoucissants" },
-      { name: "Nettoyants multi-usages", url: "nettoyants-multi-usages" },
-      { name: "Sacs poubelle", url: "sacs-poubelle" },
-      {
-        name: "Papier toilette et essuie-tout",
-        url: "papier-toilette-et-essuie-tout",
-      },
-    ],
-  },
-  {
-    name: "Bébé",
-    url: "bebe",
-    icon: <ChildFriendlyIcon />,
-    categories: [
-      { name: "Couches et culottes", url: "couches-et-culottes" },
-      { name: "Toilette et soins", url: "toilette-et-soins" },
-      { name: "Alimentation bébé", url: "alimentation-bebe" },
-      { name: "Poussettes et sièges auto", url: "poussettes-et-sieges-auto" },
-      { name: "Jouets pour bébé", url: "jouets-pour-bebe" },
-    ],
-  },
-  {
-    name: "Animalerie",
-    url: "animalerie",
-    icon: <PetsIcon />,
-    categories: [
-      { name: "Alimentation pour chats", url: "alimentation-pour-chats" },
-      { name: "Alimentation pour chiens", url: "alimentation-pour-chiens" },
-      { name: "Accessoires pour animaux", url: "accessoires-pour-animaux" },
-      { name: "Produits pour rongeurs", url: "produits-pour-rongeurs" },
-      { name: "Produits pour poissons", url: "produits-pour-poissons" },
-    ],
-  },
-];
+import { useNavigate } from "react-router";
+import { useQuery } from "@tanstack/react-query";
+import { getSections } from "../../../api/sections.api";
+import type { SectionType } from "../../../types/sections";
+import getSectionIcon, { nameToUrl } from "../../../utils/tmp/sectionToIcon";
 
 export default function Menu() {
   const navigate = useNavigate();
   const [open, setOpen] = React.useState(false);
   const [selectedSection, setSelectedSection] = React.useState<
-    (typeof sections)[number] | undefined
+    SectionType | undefined
   >();
+
+  const { data: sections } = useQuery({
+    queryKey: ["sections"],
+    queryFn: getSections,
+  });
 
   const handleLinkClick = (url: string) => {
     navigate(url);
@@ -241,7 +89,7 @@ export default function Menu() {
             justifyContent={"space-between"}
           >
             <DialogTitle sx={{ fontWeight: "bold" }}>
-              {selectedSection?.name || "Toutes les catégories"}
+              {selectedSection?.nomRayon || "Toutes les catégories"}
             </DialogTitle>
             <IconButton onClick={() => setOpen((oldValue) => !oldValue)}>
               <Close />
@@ -261,14 +109,16 @@ export default function Menu() {
                   },
                 }}
               >
-                {sections.map((section) => (
-                  <ListItem key={section.name}>
+                {sections?.map((section) => (
+                  <ListItem key={section.nomRayon}>
                     <ListItemButton
-                      selected={section.name === selectedSection?.name}
+                      selected={section.nomRayon === selectedSection?.nomRayon}
                       onClick={() => setSelectedSection(section)}
                     >
-                      <ListItemDecorator>{section.icon}</ListItemDecorator>
-                      <ListItemContent>{section.name}</ListItemContent>
+                      <ListItemDecorator>
+                        {getSectionIcon(section.nomRayon)}
+                      </ListItemDecorator>
+                      <ListItemContent>{section.nomRayon}</ListItemContent>
                       <KeyboardArrowRight />
                     </ListItemButton>
                   </ListItem>
@@ -295,13 +145,17 @@ export default function Menu() {
                     </ListItemButton>
                   </ListItem>
                   {selectedSection.categories.map((cat) => (
-                    <ListItem key={cat.name}>
+                    <ListItem key={cat.nomCategorie}>
                       <ListItemButton
                         onClick={() =>
-                          handleLinkClick(`r/${selectedSection.url}/${cat.url}`)
+                          handleLinkClick(
+                            `r/${nameToUrl(
+                              selectedSection.nomRayon
+                            )}/${nameToUrl(cat.nomCategorie)}`
+                          )
                         }
                       >
-                        <ListItemContent>{cat.name}</ListItemContent>
+                        <ListItemContent>{cat.nomCategorie}</ListItemContent>
                         <KeyboardArrowRight />
                       </ListItemButton>
                     </ListItem>

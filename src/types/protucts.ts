@@ -1,10 +1,11 @@
 export type ProductType = {
-  id: number;
+  idProduit: number;
   nom: string;
   stock: number;
   marque: string;
   categories: string[];
   rayons: string[];
+  prixPropose: number;
 
   description?: string;
   unite?: string;
@@ -14,7 +15,6 @@ export type ProductType = {
   prixRecommande?: number;
   imageUrl?: string;
   labels?: string[];
-  prixPropose?: number;
   prixAvecPromo?: number;
   tauxPromo?: number;
   dateDebutPromo?: Date;
