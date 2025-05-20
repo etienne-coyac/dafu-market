@@ -7,11 +7,13 @@ import {
   getProductByCategory,
   getProductsBySection,
 } from "../../../api/products.api";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import ProductFilters from "./ProductsFilters";
-import { getSections } from "../../../api/sections.api";
 import { nameToUrl } from "../../../utils/tmp/sectionToIcon";
+import type { SectionType } from "../../../types/sections";
+import type { ProductType } from "../../../types/protucts";
+import { getSections } from "../../../api/sections.api";
 
 export type ProductFiltersType = {
   brand?: string[];
@@ -24,14 +26,13 @@ const Products = () => {
     category?: string;
   }>();
   const isDesktop = useMediaQuery("up", "md");
-
+  const queryClient = useQueryClient();
   const [filters, setFilters] = useState<ProductFiltersType>({});
 
   const { data: sections } = useQuery({
     queryKey: ["sections"],
     queryFn: getSections,
   });
-
   const currentSection = sections?.find(
     (s) => nameToUrl(s.nomRayon) === section
   );
@@ -39,7 +40,17 @@ const Products = () => {
     (c) => nameToUrl(c.nomCategorie) === category
   );
 
-  console.log(currentCategory);
+  const existingProducts = queryClient
+    .getQueryData<ProductType[]>([
+      "products",
+      { idRayon: currentSection?.idRayon },
+    ])
+    ?.filter(
+      (p) =>
+        p.categories.findIndex(
+          (c) => c.idCategorie === currentCategory?.idCategorie
+        ) !== -1
+    );
 
   const getCurrentRequest = () =>
     currentCategory
@@ -48,8 +59,8 @@ const Products = () => {
       ? getProductsBySection(currentSection.idRayon)
       : undefined;
 
-  const { data: products, isFetching } = useQuery({
-    enabled: !!currentSection,
+  const { data: fetchProducts, isFetching } = useQuery({
+    enabled: !!currentSection && !existingProducts?.length,
     queryKey: [
       "products",
       {
@@ -60,25 +71,37 @@ const Products = () => {
     queryFn: getCurrentRequest,
   });
 
+  const products = existingProducts?.length ? existingProducts : fetchProducts;
+
   const filteredProducts = useMemo(
     () =>
-      products?.filter((product) => {
-        return (
-          (filters.brand === undefined ||
-            filters.brand.length === 0 ||
-            filters.brand.includes(product.marque)) &&
-          (filters.nutriscore === undefined ||
-            filters.nutriscore.length === 0 ||
-            (product.nutriscore &&
-              filters.nutriscore.includes(product.nutriscore)))
-        );
-      }),
+      (existingProducts?.length ? existingProducts : products)?.filter(
+        (product) => {
+          return (
+            (filters.brand === undefined ||
+              filters.brand.length === 0 ||
+              filters.brand.includes(product.marque)) &&
+            (filters.nutriscore === undefined ||
+              filters.nutriscore.length === 0 ||
+              (product.nutriscore &&
+                filters.nutriscore.includes(product.nutriscore)))
+          );
+        }
+      ),
     [products, filters]
   );
 
   return (
-    <Stack>
-      <LinearProgress sx={!isFetching ? { display: "none" } : undefined} />
+    <Stack sx={{ position: "relative" }}>
+      <LinearProgress
+        sx={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          width: "100%",
+          display: isFetching ? "block" : "none",
+        }}
+      />
       <ProductsBreadcrumbs
         steps={[
           ...(section ? [{ name: section, href: `/r/${section}` }] : []),
