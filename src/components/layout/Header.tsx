@@ -13,25 +13,24 @@ const Header = () => {
   console.log(searchbarRef.current);
 
   useEffect(() => {
-    if (searchbarRef?.current) {
+    const ref = searchbarRef.current;
+    if (ref) {
       const handleFocus = () => {
         setOpen(true);
         document.body.style.overflow = "hidden";
       };
-      const handleBlur = () => {
-        setOpen(false);
-        document.body.style.overflow = "auto";
-      };
-      searchbarRef.current?.addEventListener("focusin", handleFocus);
-      searchbarRef.current?.addEventListener("focusout", handleBlur);
+      ref?.addEventListener("focusin", handleFocus);
       return () => {
-        searchbarRef.current?.removeEventListener("focusin", handleFocus);
-        searchbarRef.current?.removeEventListener("focusout", handleBlur);
+        ref?.removeEventListener("focusin", handleFocus);
       };
     }
   }, []);
 
-  console.log(open);
+  const handleCloseSearchResults = () => {
+    setOpen(false);
+    document.body.style.overflow = "auto";
+  };
+
   return (
     <Fragment>
       <Stack
@@ -85,7 +84,11 @@ const Header = () => {
         </Box>
         <Avatar />
       </Stack>
-      <SearchResults open={open} headerRef={headerRef} />
+      <SearchResults
+        open={open}
+        onClose={handleCloseSearchResults}
+        headerRef={headerRef}
+      />
     </Fragment>
   );
 };

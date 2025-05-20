@@ -11,7 +11,6 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import ProductFilters from "./ProductsFilters";
 import { nameToUrl } from "../../../utils/tmp/sectionToIcon";
-import type { SectionType } from "../../../types/sections";
 import type { ProductType } from "../../../types/protucts";
 import { getSections } from "../../../api/sections.api";
 
@@ -88,7 +87,7 @@ const Products = () => {
           );
         }
       ),
-    [products, filters]
+    [existingProducts, products, filters.brand, filters.nutriscore]
   );
 
   return (
