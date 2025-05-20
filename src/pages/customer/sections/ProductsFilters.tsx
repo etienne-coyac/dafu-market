@@ -13,22 +13,14 @@ import {
   Stack,
   Typography,
   IconButton,
+  Skeleton,
 } from "@mui/joy";
-import { Fragment, useState } from "react";
+import { Fragment, useState, type Dispatch, type SetStateAction } from "react";
 import useMediaQuery from "../../../hooks/useMediaQuery";
 import ConditionnalWrapper from "../../../components/ui/ConditionnalWrapper";
 import { Close, Tune } from "@mui/icons-material";
-
-const brands = [
-  { name: "Nestle", value: "nestle" },
-  { name: "Pepsi", value: "pepsi" },
-  { name: "Coca-Cola", value: "coca-cola" },
-  { name: "Sprite", value: "sprite" },
-  { name: "Fanta", value: "fanta" },
-  { name: "Oasis", value: "oasis" },
-  { name: "Red Bull", value: "red-bull" },
-  { name: "Lipton", value: "lipton" },
-];
+import type { ProductType } from "../../../types/protucts";
+import type { ProductFiltersType } from "./Section";
 
 const nutriScore = ["A", "B", "C", "D", "E"];
 
@@ -37,30 +29,49 @@ const FilterList = styled(List)({
   overflowX: "hidden",
 });
 
-const ProductFilters = () => {
-  const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
-  const [selectedNutriScore, setSelectedNutriScore] = useState<string[]>([]);
+type ProductFiltersProps = {
+  products: ProductType[] | undefined;
+  loading?: boolean;
+  filters: ProductFiltersType;
+  setFilters: Dispatch<SetStateAction<ProductFiltersType>>;
+};
+
+const ProductFilters = (props: ProductFiltersProps) => {
+  const { products, loading, filters, setFilters } = props;
   const [mobileFilterDrowerOpen, setMobileFilterDrowerOpen] =
     useState<boolean>(false);
   const media = useMediaQuery("down", "md");
 
+  const brands = products
+    ?.map((p) => p.marque)
+    .filter((v, i, a) => a.indexOf(v) === i);
+
+  console.log("fioter", products);
   const handleBrandChange = (brand: string) => {
-    if (selectedBrands.includes(brand)) {
-      setSelectedBrands(selectedBrands.filter((b) => b !== brand));
+    if (filters.brand?.includes(brand)) {
+      setFilters((prev) => ({
+        ...prev,
+        brand: prev.brand?.filter((b) => b !== brand),
+      }));
     } else {
-      setSelectedBrands([...selectedBrands, brand]);
+      setFilters((prev) => ({
+        ...prev,
+        brand: [...(prev.brand ?? []), brand],
+      }));
     }
   };
 
-  /*************  ✨ Windsurf Command ⭐  *************/
-  /**
-   * Handles a change in the selected nutri scores.
-/*******  c27be3f9-35de-4315-9688-26d06211fd8b  *******/
   const handleNutriScoreChange = (score: string) => {
-    if (selectedNutriScore.includes(score)) {
-      setSelectedNutriScore(selectedNutriScore.filter((s) => s !== score));
+    if (filters.nutriscore?.includes(score)) {
+      setFilters((prev) => ({
+        ...prev,
+        nutriscore: prev.nutriscore?.filter((s) => s !== score),
+      }));
     } else {
-      setSelectedNutriScore([...selectedNutriScore, score]);
+      setFilters((prev) => ({
+        ...prev,
+        nutriscore: [...(prev.nutriscore ?? []), score],
+      }));
     }
   };
 
@@ -72,6 +83,7 @@ const ProductFilters = () => {
             startDecorator={<Tune />}
             onClick={() => setMobileFilterDrowerOpen(true)}
             fullWidth
+            disabled={loading}
           >
             Filtrer
           </Button>
@@ -137,16 +149,20 @@ const ProductFilters = () => {
                   overflowX: "hidden",
                 }}
               >
-                {brands.map((brand) => (
-                  <ListItem key={brand.value}>
-                    <Checkbox
-                      value={brand.value}
-                      checked={selectedBrands.includes(brand.value)}
-                      onChange={() => handleBrandChange(brand.value)}
-                      label={brand.name}
-                    />
-                  </ListItem>
-                ))}
+                {brands && !loading ? (
+                  brands.map((brand) => (
+                    <ListItem key={brand}>
+                      <Checkbox
+                        value={brand}
+                        checked={filters.brand?.includes(brand)}
+                        onChange={() => handleBrandChange(brand)}
+                        label={brand}
+                      />
+                    </ListItem>
+                  ))
+                ) : (
+                  <Skeleton variant="text" width={"100%"} height={"1rem"} />
+                )}
               </FilterList>
             </AccordionDetails>
           </Accordion>
@@ -154,16 +170,20 @@ const ProductFilters = () => {
             <AccordionSummary>Nutriscore</AccordionSummary>
             <AccordionDetails>
               <FilterList>
-                {nutriScore.map((score) => (
-                  <ListItem key={score}>
-                    <Checkbox
-                      value={score}
-                      checked={selectedNutriScore.includes(score)}
-                      onChange={() => handleNutriScoreChange(score)}
-                      label={score}
-                    />
-                  </ListItem>
-                ))}
+                {!loading ? (
+                  nutriScore.map((score) => (
+                    <ListItem key={score}>
+                      <Checkbox
+                        value={score}
+                        checked={filters.nutriscore?.includes(score)}
+                        onChange={() => handleNutriScoreChange(score)}
+                        label={score}
+                      />
+                    </ListItem>
+                  ))
+                ) : (
+                  <Skeleton variant="text" width={"100%"} height={"1rem"} />
+                )}
               </FilterList>
             </AccordionDetails>
           </Accordion>
