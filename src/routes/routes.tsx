@@ -6,6 +6,7 @@ import ProductDetail from "../pages/customer/productDetail/ProductDetail";
 import ErrorBoundary from "./ErrorBoundary";
 import AppProviders from "../AppProviders";
 import AppAdmin from "../pages/admin/AppAdmin";
+import ImportPage from "../pages/admin/import/ImportPage";
 
 const router = createBrowserRouter([
   {
@@ -34,7 +35,17 @@ const router = createBrowserRouter([
       {
         path: "/admin",
         element: <AppAdmin />,
-        children: [],
+        children: [
+          {
+            errorElement: <ErrorBoundary />,
+            children: [
+              {
+                path: "import",
+                element: <ImportPage />,
+              },
+            ],
+          },
+        ],
       },
     ],
   },

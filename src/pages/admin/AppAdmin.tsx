@@ -1,12 +1,22 @@
+import { Box } from "@mui/joy";
 import { Outlet } from "react-router";
+import SideBar from "../../components/layout/sideBar/SideBar";
 
 const AppAdmin = () => {
   return (
-    <div>
-      <h1>Admin</h1>
-      <Outlet />
-    </div>
+    <Box
+      sx={{
+        display: "grid",
+        gridTemplateColumns: "auto 1fr",
+        height: "100dvh",
+      }}
+    >
+      <SideBar />
+      <Box component={"main"} sx={{ p: 1 }}>
+        <Outlet />
+      </Box>
+    </Box>
   );
-};
+}
 
 export default AppAdmin;
