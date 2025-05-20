@@ -9,8 +9,10 @@ import Sheet from '@mui/joy/Sheet';
 import HomeRoundedIcon from '@mui/icons-material/HomeRounded';
 import DashboardRoundedIcon from '@mui/icons-material/DashboardRounded';
 import ShoppingCartRoundedIcon from '@mui/icons-material/ShoppingCartRounded';
+import { useParams } from 'react-router';
 
 export default function Sidebar() {
+
   return (
     <Sheet
       className="Sidebar"
@@ -86,7 +88,11 @@ export default function Sidebar() {
           }}
         >
           <ListItem>
-            <ListItemButton>
+            <ListItemButton
+              role="menuitem"
+              component="a"
+              href="./import"
+            >
               <HomeRoundedIcon />
               <ListItemContent>
                 <Typography level="title-sm">Importation</Typography>
@@ -95,7 +101,11 @@ export default function Sidebar() {
           </ListItem>
 
           <ListItem>
-            <ListItemButton>
+            <ListItemButton
+              role="menuitem"
+              component="a"
+              href="./forecast"
+            >
               <DashboardRoundedIcon />
               <ListItemContent>
                 <Typography level="title-sm">Forecast</Typography>
@@ -104,30 +114,53 @@ export default function Sidebar() {
           </ListItem>
 
           <ListItem>
-            <ListItemButton>
-              <ShoppingCartRoundedIcon />
-              <ListItemContent>
-                <Typography level="title-sm">Statistiques</Typography>
-              </ListItemContent>
-            </ListItemButton>
+            <ShoppingCartRoundedIcon />
+            <ListItemContent>
+              <Typography level="title-sm">Statistiques</Typography>
+            </ListItemContent>
           </ListItem>
 
           <ListItem nested>
             <List sx={{ gap: 0.5 }}>
               <ListItem sx={{ mt: 0.5 }}>
-                <ListItemButton>Efficacité des systèmes</ListItemButton>
+                <ListItemButton
+                  role="menuitem"
+                  component="a"
+                  href="./efficaciteSysteme"
+                >
+                  Efficacité des systèmes</ListItemButton>
               </ListItem>
               <ListItem>
-                <ListItemButton>Editer des statistiques</ListItemButton>
+                <ListItemButton
+                  role="menuitem"
+                  component="a"
+                  href="./editerSysteme"
+                >
+                  Editer des statistiques</ListItemButton>
               </ListItem>
               <ListItem>
-                <ListItemButton>Paramétrer l'algorithme de recommandation</ListItemButton>
+                <ListItemButton
+                  role="menuitem"
+                  component="a"
+                  href="./parametrerAlgorithme"
+                >
+                  Paramétrer l'algorithme de recommandation</ListItemButton>
               </ListItem>
               <ListItem>
-                <ListItemButton>Consultation profils</ListItemButton>
+                <ListItemButton
+                  role="menuitem"
+                  component="a"
+                  href="./consulterProfils"
+                >
+                  Consultation profils</ListItemButton>
               </ListItem>
               <ListItem>
-                <ListItemButton>Habitudes des profils</ListItemButton>
+                <ListItemButton
+                  role="menuitem"
+                  component="a"
+                  href="./habitudesProfils"
+                >
+                  Habitudes des profils</ListItemButton>
               </ListItem>
             </List>
           </ListItem>

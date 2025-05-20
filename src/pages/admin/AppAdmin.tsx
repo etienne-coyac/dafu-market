@@ -1,6 +1,6 @@
 import { Box } from "@mui/joy";
 import { Outlet } from "react-router";
-import SideBar from "../../components/layout/sideBar/SideBar";
+import SideBar from "./sideBar/SideBar";
 
 const AppAdmin = () => {
   return (
