@@ -267,7 +267,7 @@ function DashboardPrepa() {
     const [searchFilter, setSearchFilter] = React.useState<string | null>(null);
     const [statusFilter, setStatusFilter] = React.useState<string | null>(null);
     const [customerFilter, setCustomerFilter] = React.useState<string | null>(null);
-    const [categoryFilter, setCategoryFilter] = React.useState<string | null>(null);
+    const filteredRows: typeof rows = rows;
 
     const renderFilters = () => (
         <React.Fragment>
@@ -277,7 +277,7 @@ function DashboardPrepa() {
                     size="sm"
                     placeholder="Filter by status"
                     slotProps={{ button: { sx: { whiteSpace: 'nowrap' } } }}
-                    onChange={(e, newValue) =>
+                    onChange={(_, newValue) =>
                         setStatusFilter(typeof newValue === 'string' ? newValue : null)
                     }
                 >
@@ -288,21 +288,9 @@ function DashboardPrepa() {
                 </Select>
             </FormControl>
             <FormControl size="sm">
-                <FormLabel>Category</FormLabel>
-                <Select size="sm" placeholder="All"
-                    onChange={(e, newValue) =>
-                        setCategoryFilter(typeof newValue === 'string' ? newValue : null)
-                    }>
-                    <Option value="all">All</Option>
-                    <Option value="refund">Refund</Option>
-                    <Option value="purchase">Purchase</Option>
-                    <Option value="debit">Debit</Option>
-                </Select>
-            </FormControl>
-            <FormControl size="sm">
                 <FormLabel>Customer</FormLabel>
                 <Select size="sm" placeholder="All"
-                    onChange={(e, newValue) =>
+                    onChange={(_, newValue) =>
                         setCustomerFilter(typeof newValue === 'string' ? newValue : null)
                     }>
                     <Option value="all">All</Option>
@@ -321,9 +309,17 @@ function DashboardPrepa() {
                 onClick={() => {
                     setOpen(false); // Fermer le modal
                     console.log('Filters applied:', {
-                        status: statusFilter,
-                        customer: customerFilter,
+                        searchFilter,
+                        statusFilter,
+                        customerFilter,
                     });
+                    const filteredRows = rows.filter((row) => {
+                        const searchMatch = searchFilter ? row.id.includes(searchFilter) : true;
+                        const customerMatch = customerFilter ? row.customer.name === customerFilter : true;
+                        const statusMatch = statusFilter ? row.status === statusFilter : true;
+                        return customerMatch && statusMatch && searchMatch;
+                    });
+
                 }}
             >
                 Filtrer
@@ -381,7 +377,13 @@ function DashboardPrepa() {
             >
                 <FormControl sx={{ flex: 1 }} size="sm">
                     <FormLabel>Search for order</FormLabel>
-                    <Input size="sm" placeholder="Search" startDecorator={<SearchIcon />} />
+                    <Input
+                        size="sm"
+                        placeholder="Search"
+                        startDecorator={<SearchIcon />}
+                        value={searchFilter ?? ''}
+                        onChange={(e) => setSearchFilter(e.target.value)}
+                    />
                 </FormControl>
                 {renderFilters()}
             </Box>
@@ -462,7 +464,7 @@ function DashboardPrepa() {
                         </tr>
                     </thead>
                     <tbody>
-                        {[...rows].sort(getComparator(order, 'id')).map((row) => (
+                        {filteredRows.slice().sort(getComparator(order, 'id')).map((row) => (
                             <tr key={row.id}>
                                 <td style={{ textAlign: 'center', width: 120 }}>
                                     <Checkbox
