@@ -3,10 +3,15 @@ import ProductsBreadcrumbs from "../../../components/ui/ProductsBreadcrums";
 import ProductsList from "./ProductsList";
 import useMediaQuery from "../../../hooks/useMediaQuery";
 import { useParams } from "react-router";
-import { getProducts } from "../../../api/products.api";
+import {
+  getProductByCategory,
+  getProductsBySection,
+} from "../../../api/products.api";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import ProductFilters from "./ProductsFilters";
+import { getSections } from "../../../api/sections.api";
+import { nameToUrl } from "../../../utils/tmp/sectionToIcon";
 
 export type ProductFiltersType = {
   brand?: string[];
@@ -14,14 +19,45 @@ export type ProductFiltersType = {
 };
 
 const Products = () => {
-  const { section, category } = useParams();
+  const { section, category } = useParams<{
+    section: string;
+    category?: string;
+  }>();
   const isDesktop = useMediaQuery("up", "md");
 
   const [filters, setFilters] = useState<ProductFiltersType>({});
 
+  const { data: sections } = useQuery({
+    queryKey: ["sections"],
+    queryFn: getSections,
+  });
+
+  const currentSection = sections?.find(
+    (s) => nameToUrl(s.nomRayon) === section
+  );
+  const currentCategory = currentSection?.categories.find(
+    (c) => nameToUrl(c.nomCategorie) === category
+  );
+
+  console.log(currentCategory);
+
+  const getCurrentRequest = () =>
+    currentCategory
+      ? getProductByCategory(currentCategory.idCategorie)
+      : currentSection
+      ? getProductsBySection(currentSection.idRayon)
+      : undefined;
+
   const { data: products, isFetching } = useQuery({
-    queryKey: ["products"],
-    queryFn: getProducts,
+    enabled: !!currentSection,
+    queryKey: [
+      "products",
+      {
+        idRayon: currentSection?.idRayon,
+        idCategorie: currentCategory?.idCategorie,
+      },
+    ],
+    queryFn: getCurrentRequest,
   });
 
   const filteredProducts = useMemo(

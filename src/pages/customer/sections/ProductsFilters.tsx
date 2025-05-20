@@ -46,7 +46,6 @@ const ProductFilters = (props: ProductFiltersProps) => {
     ?.map((p) => p.marque)
     .filter((v, i, a) => a.indexOf(v) === i);
 
-  console.log("fioter", products);
   const handleBrandChange = (brand: string) => {
     if (filters.brand?.includes(brand)) {
       setFilters((prev) => ({
