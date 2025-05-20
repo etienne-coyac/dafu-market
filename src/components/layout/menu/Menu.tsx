@@ -89,7 +89,7 @@ export default function Menu() {
             justifyContent={"space-between"}
           >
             <DialogTitle sx={{ fontWeight: "bold" }}>
-              {selectedSection?.nomRayon || "Toutes les catégories"}
+              {selectedSection?.nomRayon ?? "Toutes les catégories"}
             </DialogTitle>
             <IconButton onClick={() => setOpen((oldValue) => !oldValue)}>
               <Close />
