@@ -9,10 +9,6 @@ const ImportPage = () => {
         const file = event.target.files?.[0];
         if (file) {
             setSelectedFile(file);
-            // Tu peux ici lire le fichier si besoin
-            // Exemple : const reader = new FileReader();
-            // reader.onload = () => { console.log(reader.result); };
-            // reader.readAsText(file);
         }
     };
 
@@ -56,7 +52,7 @@ const ImportPage = () => {
             <Button
                 disabled={!selectedFile}
                 onClick={() => {
-                    // ⚠️ Tu peux envoyer le fichier ici à ton backend via FormData par exemple
+                    // A relier à la BdD
                     alert(`Fichier "${selectedFile?.name}" prêt à être envoyé.`);
                 }}
             >

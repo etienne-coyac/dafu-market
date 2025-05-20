@@ -98,7 +98,7 @@ export default function Sidebar() {
             <ListItemButton>
               <DashboardRoundedIcon />
               <ListItemContent>
-                <Typography level="title-sm">ForeCast</Typography>
+                <Typography level="title-sm">Forecast</Typography>
               </ListItemContent>
             </ListItemButton>
           </ListItem>
@@ -113,23 +113,23 @@ export default function Sidebar() {
           </ListItem>
 
           <ListItem nested>
-              <List sx={{ gap: 0.5 }}>
-                <ListItem sx={{ mt: 0.5 }}>
-                  <ListItemButton>Efficacité des systèmes</ListItemButton>
-                </ListItem>
-                <ListItem>
-                  <ListItemButton>Editer des statistiques</ListItemButton>
-                </ListItem>
-                <ListItem>
-                  <ListItemButton>Paramétrer l'algorithme de recommandation</ListItemButton>
-                </ListItem>
-                <ListItem>
-                  <ListItemButton>Consultation profils</ListItemButton>
-                </ListItem>
-                <ListItem>
-                  <ListItemButton>Habitudes des profils</ListItemButton>
-                </ListItem>
-              </List>
+            <List sx={{ gap: 0.5 }}>
+              <ListItem sx={{ mt: 0.5 }}>
+                <ListItemButton>Efficacité des systèmes</ListItemButton>
+              </ListItem>
+              <ListItem>
+                <ListItemButton>Editer des statistiques</ListItemButton>
+              </ListItem>
+              <ListItem>
+                <ListItemButton>Paramétrer l'algorithme de recommandation</ListItemButton>
+              </ListItem>
+              <ListItem>
+                <ListItemButton>Consultation profils</ListItemButton>
+              </ListItem>
+              <ListItem>
+                <ListItemButton>Habitudes des profils</ListItemButton>
+              </ListItem>
+            </List>
           </ListItem>
         </List>
       </Box>
