@@ -1,4 +1,3 @@
-/* eslint-disable jsx-a11y/anchor-is-valid */
 import * as React from 'react';
 import type { ColorPaletteProp } from '@mui/joy/styles';
 import Avatar from '@mui/joy/Avatar';
@@ -265,6 +264,11 @@ function DashboardPrepa() {
     const [order, setOrder] = React.useState<Order>('desc');
     const [selected, setSelected] = React.useState<readonly string[]>([]);
     const [open, setOpen] = React.useState(false);
+    const [searchFilter, setSearchFilter] = React.useState<string | null>(null);
+    const [statusFilter, setStatusFilter] = React.useState<string | null>(null);
+    const [customerFilter, setCustomerFilter] = React.useState<string | null>(null);
+    const [categoryFilter, setCategoryFilter] = React.useState<string | null>(null);
+
     const renderFilters = () => (
         <React.Fragment>
             <FormControl size="sm">
@@ -273,6 +277,9 @@ function DashboardPrepa() {
                     size="sm"
                     placeholder="Filter by status"
                     slotProps={{ button: { sx: { whiteSpace: 'nowrap' } } }}
+                    onChange={(e, newValue) =>
+                        setStatusFilter(typeof newValue === 'string' ? newValue : null)
+                    }
                 >
                     <Option value="paid">Paid</Option>
                     <Option value="pending">Pending</Option>
@@ -282,7 +289,10 @@ function DashboardPrepa() {
             </FormControl>
             <FormControl size="sm">
                 <FormLabel>Category</FormLabel>
-                <Select size="sm" placeholder="All">
+                <Select size="sm" placeholder="All"
+                    onChange={(e, newValue) =>
+                        setCategoryFilter(typeof newValue === 'string' ? newValue : null)
+                    }>
                     <Option value="all">All</Option>
                     <Option value="refund">Refund</Option>
                     <Option value="purchase">Purchase</Option>
@@ -291,7 +301,10 @@ function DashboardPrepa() {
             </FormControl>
             <FormControl size="sm">
                 <FormLabel>Customer</FormLabel>
-                <Select size="sm" placeholder="All">
+                <Select size="sm" placeholder="All"
+                    onChange={(e, newValue) =>
+                        setCustomerFilter(typeof newValue === 'string' ? newValue : null)
+                    }>
                     <Option value="all">All</Option>
                     <Option value="olivia">Olivia Rhye</Option>
                     <Option value="steve">Steve Hampton</Option>
@@ -301,6 +314,20 @@ function DashboardPrepa() {
                     <Option value="jay">Jay Hoper</Option>
                 </Select>
             </FormControl>
+            <Button
+                component="button"
+                color="neutral"
+                sx={{ fontSize: 'sm', textDecoration: 'underline' }}
+                onClick={() => {
+                    setOpen(false); // Fermer le modal
+                    console.log('Filters applied:', {
+                        status: statusFilter,
+                        customer: customerFilter,
+                    });
+                }}
+            >
+                Filtrer
+            </Button>
         </React.Fragment>
     );
     return (
@@ -550,3 +577,4 @@ function DashboardPrepa() {
 }
 
 export default DashboardPrepa;
+
