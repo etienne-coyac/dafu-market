@@ -13,6 +13,8 @@ import EditSysteme from "../pages/admin/statistiques/EditSystemePage";
 import EffSysteme from "../pages/admin/statistiques/EffSystemePage";
 import HabitProfils from "../pages/admin/statistiques/HabitProfils";
 import ConsultProfils from "../pages/admin/statistiques/ConsultProfilsPage";
+import AppPreparateur from "../pages/preparateur/AppPreparateur";
+import DashboardPrepa from "../pages/preparateur/dashboard/DashboardPrepaPage";
 
 const router = createBrowserRouter([
   {
@@ -72,6 +74,21 @@ const router = createBrowserRouter([
               {
                 path: "habitudesProfils",
                 element: <HabitProfils />,
+              },
+            ],
+          },
+        ],
+      },
+      {
+        path: "/preparateur",
+        element: <AppPreparateur />,
+        children: [
+          {
+            errorElement: <ErrorBoundary />,
+            children: [
+              {
+                path: "dashboard",
+                element: <DashboardPrepa />,
               },
             ],
           },
