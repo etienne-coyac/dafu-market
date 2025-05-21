@@ -1,6 +1,5 @@
 import * as React from 'react';
 import type { ColorPaletteProp } from '@mui/joy/styles';
-import Avatar from '@mui/joy/Avatar';
 import Box from '@mui/joy/Box';
 import Button from '@mui/joy/Button';
 import Chip from '@mui/joy/Chip';
@@ -17,7 +16,7 @@ import Option from '@mui/joy/Option';
 import Table from '@mui/joy/Table';
 import Sheet from '@mui/joy/Sheet';
 import Checkbox from '@mui/joy/Checkbox';
-import IconButton, { iconButtonClasses } from '@mui/joy/IconButton';
+import IconButton from '@mui/joy/IconButton';
 import Typography from '@mui/joy/Typography';
 import Menu from '@mui/joy/Menu';
 import MenuButton from '@mui/joy/MenuButton';
@@ -30,189 +29,28 @@ import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import CheckRoundedIcon from '@mui/icons-material/CheckRounded';
 import BlockIcon from '@mui/icons-material/Block';
 import AutorenewRoundedIcon from '@mui/icons-material/AutorenewRounded';
-import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
-import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
 import MoreHorizRoundedIcon from '@mui/icons-material/MoreHorizRounded';
+import { useQuery } from '@tanstack/react-query';
+//import { getCommandes } from "../../../api/commandes.api";
+import { getProducts } from "../../../api/products.api";
+import { useNavigate, Outlet } from 'react-router-dom';
 
 const rows = [
     {
-        id: 'INV-1234',
-        date: 'Feb 3, 2023',
-        status: 'Refunded',
+        idCommande: 'INV-1234',
+        jourRetrait: 'Feb 3, 2023',
+        heureDebRetrait: '10:00 AM',
+        status: 'PAYE',
+        produits: [
+            { id: 1, name: 'Product 1', quantity: 2 },
+            { id: 2, name: 'Product 2', quantity: 1 },
+        ],
+        montantTotal: 100,
         customer: {
-            initial: 'O',
-            name: 'Olivia Ryhe',
-            email: 'olivia@email.com',
-        },
-    },
-    {
-        id: 'INV-1233',
-        date: 'Feb 3, 2023',
-        status: 'Paid',
-        customer: {
-            initial: 'S',
-            name: 'Steve Hampton',
-            email: 'steve.hamp@email.com',
-        },
-    },
-    {
-        id: 'INV-1232',
-        date: 'Feb 3, 2023',
-        status: 'Refunded',
-        customer: {
-            initial: 'C',
-            name: 'Ciaran Murray',
-            email: 'ciaran.murray@email.com',
-        },
-    },
-    {
-        id: 'INV-1231',
-        date: 'Feb 3, 2023',
-        status: 'Refunded',
-        customer: {
-            initial: 'M',
-            name: 'Maria Macdonald',
-            email: 'maria.mc@email.com',
-        },
-    },
-    {
-        id: 'INV-1230',
-        date: 'Feb 3, 2023',
-        status: 'Cancelled',
-        customer: {
-            initial: 'C',
-            name: 'Charles Fulton',
-            email: 'fulton@email.com',
-        },
-    },
-    {
-        id: 'INV-1229',
-        date: 'Feb 3, 2023',
-        status: 'Cancelled',
-        customer: {
-            initial: 'J',
-            name: 'Jay Hooper',
-            email: 'hooper@email.com',
-        },
-    },
-    {
-        id: 'INV-1228',
-        date: 'Feb 3, 2023',
-        status: 'Refunded',
-        customer: {
-            initial: 'K',
-            name: 'Krystal Stevens',
-            email: 'k.stevens@email.com',
-        },
-    },
-    {
-        id: 'INV-1227',
-        date: 'Feb 3, 2023',
-        status: 'Paid',
-        customer: {
-            initial: 'S',
-            name: 'Sachin Flynn',
-            email: 's.flyn@email.com',
-        },
-    },
-    {
-        id: 'INV-1226',
-        date: 'Feb 3, 2023',
-        status: 'Cancelled',
-        customer: {
-            initial: 'B',
-            name: 'Bradley Rosales',
-            email: 'brad123@email.com',
-        },
-    },
-    {
-        id: 'INV-1225',
-        date: 'Feb 3, 2023',
-        status: 'Paid',
-        customer: {
-            initial: 'O',
-            name: 'Olivia Ryhe',
-            email: 'olivia@email.com',
-        },
-    },
-    {
-        id: 'INV-1224',
-        date: 'Feb 3, 2023',
-        status: 'Cancelled',
-        customer: {
-            initial: 'S',
-            name: 'Steve Hampton',
-            email: 'steve.hamp@email.com',
-        },
-    },
-    {
-        id: 'INV-1223',
-        date: 'Feb 3, 2023',
-        status: 'Paid',
-        customer: {
-            initial: 'C',
-            name: 'Ciaran Murray',
-            email: 'ciaran.murray@email.com',
-        },
-    },
-    {
-        id: 'INV-1221',
-        date: 'Feb 3, 2023',
-        status: 'Refunded',
-        customer: {
-            initial: 'M',
-            name: 'Maria Macdonald',
-            email: 'maria.mc@email.com',
-        },
-    },
-    {
-        id: 'INV-1220',
-        date: 'Feb 3, 2023',
-        status: 'Paid',
-        customer: {
-            initial: 'C',
-            name: 'Charles Fulton',
-            email: 'fulton@email.com',
-        },
-    },
-    {
-        id: 'INV-1219',
-        date: 'Feb 3, 2023',
-        status: 'Cancelled',
-        customer: {
-            initial: 'J',
-            name: 'Jay Hooper',
-            email: 'hooper@email.com',
-        },
-    },
-    {
-        id: 'INV-1218',
-        date: 'Feb 3, 2023',
-        status: 'Cancelled',
-        customer: {
-            initial: 'K',
-            name: 'Krystal Stevens',
-            email: 'k.stevens@email.com',
-        },
-    },
-    {
-        id: 'INV-1217',
-        date: 'Feb 3, 2023',
-        status: 'Paid',
-        customer: {
-            initial: 'S',
-            name: 'Sachin Flynn',
-            email: 's.flyn@email.com',
-        },
-    },
-    {
-        id: 'INV-1216',
-        date: 'Feb 3, 2023',
-        status: 'Cancelled',
-        customer: {
-            initial: 'B',
-            name: 'Bradley Rosales',
-            email: 'brad123@email.com',
+            nomClient: 'Ryhe',
+            prenomClient: 'Olivia',
+            emailClient: 'olivia@email.com',
+            adrLivrClient: '123 Main St, City, Country',
         },
     },
 ];
@@ -251,16 +89,26 @@ function RowMenu() {
                 <MoreHorizRoundedIcon />
             </MenuButton>
             <Menu size="sm" sx={{ minWidth: 140 }}>
-                <MenuItem>Edit</MenuItem>
-                <MenuItem>Rename</MenuItem>
-                <MenuItem>Move</MenuItem>
+                <MenuItem>Mettre en préparation</MenuItem>
+                <MenuItem>Finaliser la commande</MenuItem>
                 <Divider />
-                <MenuItem color="danger">Delete</MenuItem>
+                <MenuItem color="danger">Supprimer</MenuItem>
             </Menu>
         </Dropdown>
     );
 }
 function DashboardPrepa() {
+    const navigate = useNavigate();
+    const { data: products, isFetching } = useQuery({
+        queryKey: ["products"],
+        queryFn: getProducts,
+    });
+
+    //const { data: commandes, isFetching } = useQuery({
+    //    queryKey: ["commandes"],
+    //    queryFn: getCommandes,
+    //});
+
     const [order, setOrder] = React.useState<Order>('desc');
     const [selected, setSelected] = React.useState<readonly string[]>([]);
     const [open, setOpen] = React.useState(false);
@@ -276,32 +124,40 @@ function DashboardPrepa() {
                 <Select
                     size="sm"
                     placeholder="Filter by status"
+                    value={statusFilter ?? ""}
                     slotProps={{ button: { sx: { whiteSpace: 'nowrap' } } }}
-                    onChange={(_, newValue) =>
-                        setStatusFilter(typeof newValue === 'string' ? newValue : null)
-                    }
+                    onChange={(_, newValue) => {
+                        setStatusFilter(typeof newValue === "string" && newValue !== "" ? newValue : null);
+                    }}
                 >
-                    <Option value="paid">Paid</Option>
-                    <Option value="pending">Pending</Option>
-                    <Option value="refunded">Refunded</Option>
-                    <Option value="cancelled">Cancelled</Option>
+                    <Option value="">All</Option>
+                    <Option value="pending">Commander</Option>
+                    <Option value="refunded">A préparer</Option>
+                    <Option value="cancelled">A retirer</Option>
                 </Select>
             </FormControl>
             <FormControl size="sm">
                 <FormLabel>Customer</FormLabel>
-                <Select size="sm" placeholder="All"
-                    onChange={(_, newValue) =>
-                        setCustomerFilter(typeof newValue === 'string' ? newValue : null)
-                    }>
-                    <Option value="all">All</Option>
-                    <Option value="olivia">Olivia Rhye</Option>
-                    <Option value="steve">Steve Hampton</Option>
-                    <Option value="ciaran">Ciaran Murray</Option>
-                    <Option value="marina">Marina Macdonald</Option>
-                    <Option value="charles">Charles Fulton</Option>
-                    <Option value="jay">Jay Hoper</Option>
+                <Select
+                    size="sm"
+                    placeholder="All"
+                    value={customerFilter ?? ""}
+                    onChange={(_, newValue) => {
+                        setCustomerFilter(typeof newValue === "string" && newValue !== "" ? newValue : null);
+                    }}
+                >
+                    <Option value="">All</Option>
+                    {(filteredRows ?? rows)
+                        .slice()
+                        .sort(getComparator(order, "idCommande"))
+                        .map((row, index) => (
+                            <Option key={index} value={row.customer.nomClient}>
+                                {row.customer.nomClient} {row.customer.prenomClient}
+                            </Option>
+                        ))}
                 </Select>
             </FormControl>
+
             <Button
                 component="button"
                 color="neutral"
@@ -309,8 +165,8 @@ function DashboardPrepa() {
                 onClick={() => {
                     setOpen(false); // Fermer le modal
                     const filteredRows = rows.filter((row) => {
-                        const searchMatch = searchFilter ? row.id.toLowerCase().includes(searchFilter.toLowerCase()) : true;
-                        const customerMatch = customerFilter ? row.customer.name.toLowerCase() === customerFilter.toLowerCase() : true;
+                        const searchMatch = searchFilter ? row.idCommande.toLowerCase().includes(searchFilter.toLowerCase()) : true;
+                        const customerMatch = customerFilter ? row.customer.nomClient.toLowerCase() === customerFilter.toLowerCase() : true;
                         const statusMatch = statusFilter ? row.status.toLowerCase() === statusFilter.toLowerCase() : true;
                         return customerMatch && statusMatch && searchMatch;
                     });
@@ -319,7 +175,20 @@ function DashboardPrepa() {
             >
                 Filtrer
             </Button>
-        </React.Fragment>
+            <Button
+                component="button"
+                color="neutral"
+                sx={{ fontSize: 'sm', textDecoration: 'underline' }}
+                onClick={() => {
+                    setSearchFilter(null);
+                    setStatusFilter(null);
+                    setCustomerFilter(null);
+                    setFilteredRows(null);
+                }}
+            >
+                Réinitialiser
+            </Button>
+        </React.Fragment >
     );
     return (
         <React.Fragment>
@@ -350,9 +219,6 @@ function DashboardPrepa() {
                         <Divider sx={{ my: 2 }} />
                         <Sheet sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                             {renderFilters()}
-                            <Button color="primary" onClick={() => setOpen(false)}>
-                                Submit
-                            </Button>
                         </Sheet>
                     </ModalDialog>
                 </Modal>
@@ -417,7 +283,7 @@ function DashboardPrepa() {
                                     checked={selected.length === rows.length}
                                     onChange={(event) => {
                                         setSelected(
-                                            event.target.checked ? rows.map((row) => row.id) : [],
+                                            event.target.checked ? rows.map((row) => row.idCommande) : [],
                                         );
                                     }}
                                     color={
@@ -449,28 +315,28 @@ function DashboardPrepa() {
                                             : { '& svg': { transform: 'rotate(180deg)' } },
                                     ]}
                                 >
-                                    Invoice
+                                    Numéro
                                 </Link>
                             </th>
-                            <th style={{ width: 140, padding: '12px 6px' }}>Date</th>
-                            <th style={{ width: 140, padding: '12px 6px' }}>Status</th>
-                            <th style={{ width: 240, padding: '12px 6px' }}>Customer</th>
+                            <th style={{ width: 140, padding: '12px 6px' }}>Retrait</th>
+                            <th style={{ width: 140, padding: '12px 6px' }}>Statut</th>
+                            <th style={{ width: 240, padding: '12px 6px' }}>Client</th>
                             <th style={{ width: 140, padding: '12px 6px' }}> </th>
                         </tr>
                     </thead>
                     <tbody>
-                        {(filteredRows ?? rows).slice().sort(getComparator(order, 'id')).map((row) => (
-                            <tr key={row.id}>
+                        {(filteredRows ?? rows).slice().sort(getComparator(order, 'idCommande')).map((row) => (
+                            <tr key={row.idCommande}>
                                 <td style={{ textAlign: 'center', width: 120 }}>
                                     <Checkbox
                                         size="sm"
-                                        checked={selected.includes(row.id)}
-                                        color={selected.includes(row.id) ? 'primary' : undefined}
+                                        checked={selected.includes(row.idCommande)}
+                                        color={selected.includes(row.idCommande) ? 'primary' : undefined}
                                         onChange={(event) => {
                                             setSelected((ids) =>
                                                 event.target.checked
-                                                    ? ids.concat(row.id)
-                                                    : ids.filter((itemId) => itemId !== row.id),
+                                                    ? ids.concat(row.idCommande)
+                                                    : ids.filter((itemId) => itemId !== row.idCommande),
                                             );
                                         }}
                                         slotProps={{ checkbox: { sx: { textAlign: 'left' } } }}
@@ -478,10 +344,15 @@ function DashboardPrepa() {
                                     />
                                 </td>
                                 <td>
-                                    <Typography level="body-xs">{row.id}</Typography>
+                                    <Typography level="body-xs">{row.idCommande}</Typography>
                                 </td>
                                 <td>
-                                    <Typography level="body-xs">{row.date}</Typography>
+                                    <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
+                                        <div>
+                                            <Typography level="body-xs">{row.jourRetrait}</Typography>
+                                            <Typography level="body-xs">{row.heureDebRetrait}</Typography>
+                                        </div>
+                                    </Box>
                                 </td>
                                 <td>
                                     <Chip
@@ -507,71 +378,28 @@ function DashboardPrepa() {
                                 </td>
                                 <td>
                                     <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
-                                        <Avatar size="sm">{row.customer.initial}</Avatar>
                                         <div>
-                                            <Typography level="body-xs">{row.customer.name}</Typography>
-                                            <Typography level="body-xs">{row.customer.email}</Typography>
+                                            <Typography level="body-xs">{row.customer.nomClient} {row.customer.prenomClient}</Typography>
+                                            <Typography level="body-xs">{row.customer.emailClient}</Typography>
+                                            <Typography level="body-xs">{row.customer.adrLivrClient}</Typography>
                                         </div>
                                     </Box>
                                 </td>
                                 <td>
-                                    <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
-                                        <Link level="body-xs" component="button">
-                                            Download
-                                        </Link>
-                                        <RowMenu />
-                                    </Box>
+                                    <Link
+                                        component="button"
+                                        color="primary"
+                                        onClick={() => navigate(row.idCommande)}>
+                                        Voir les détails
+                                    </Link>
                                 </td>
                             </tr>
                         ))}
                     </tbody>
                 </Table>
             </Sheet>
-            <Box
-                className="Pagination-laptopUp"
-                sx={{
-                    pt: 2,
-                    gap: 1,
-                    [`& .${iconButtonClasses.root}`]: { borderRadius: '50%' },
-                    display: {
-                        xs: 'none',
-                        md: 'flex',
-                    },
-                }}
-            >
-                <Button
-                    size="sm"
-                    variant="outlined"
-                    color="neutral"
-                    startDecorator={<KeyboardArrowLeftIcon />}
-                >
-                    Previous
-                </Button>
-
-                <Box sx={{ flex: 1 }} />
-                {['1', '2', '3', '…', '8', '9', '10'].map((page) => (
-                    <IconButton
-                        key={page}
-                        size="sm"
-                        variant={Number(page) ? 'outlined' : 'plain'}
-                        color="neutral"
-                    >
-                        {page}
-                    </IconButton>
-                ))}
-                <Box sx={{ flex: 1 }} />
-                <Button
-                    size="sm"
-                    variant="outlined"
-                    color="neutral"
-                    endDecorator={<KeyboardArrowRightIcon />}
-                >
-                    Next
-                </Button>
-            </Box>
         </React.Fragment>
     );
 }
 
 export default DashboardPrepa;
-

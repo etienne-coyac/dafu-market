@@ -15,6 +15,7 @@ import HabitProfils from "../pages/admin/statistiques/HabitProfils";
 import ConsultProfils from "../pages/admin/statistiques/ConsultProfilsPage";
 import AppPreparateur from "../pages/preparateur/AppPreparateur";
 import DashboardPrepa from "../pages/preparateur/dashboard/DashboardPrepaPage";
+import DetailsPage from "../pages/preparateur/details/DetailsPage";
 
 const router = createBrowserRouter([
   {
@@ -90,7 +91,11 @@ const router = createBrowserRouter([
                 path: "dashboard",
                 element: <DashboardPrepa />,
               },
-            ],
+              {
+                path: "dashboard/:idCommande",
+                element: <DetailsPage />,
+              },
+            ]
           },
         ],
       },
