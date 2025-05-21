@@ -1,9 +1,11 @@
+import type { CategoryType } from "./sections";
+
 export type ProductType = {
   idProduit: number;
   nom: string;
   stock: number;
   marque: string;
-  categories: string[];
+  categories: CategoryType[];
   rayons: string[];
   prixPropose: number;
 
