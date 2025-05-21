@@ -29,7 +29,7 @@ const SearchResults = (props: SearchResultsProps) => {
         background: "lightgrey",
       }}
     >
-      <IconButton sx={{ width: "100%" }} onClick={onClose}>
+      <IconButton sx={{ width: "100%", height: "2rem" }} onClick={onClose}>
         <KeyboardArrowUp />
       </IconButton>
       <Stack
@@ -37,7 +37,7 @@ const SearchResults = (props: SearchResultsProps) => {
         alignItems={"center"}
         justifyContent={"space-around"}
         width={"100%"}
-        height={"100%"}
+        height={"calc(100% - 2rem)"}
       >
         <List
           sx={{
@@ -65,7 +65,7 @@ const SearchResults = (props: SearchResultsProps) => {
             alignItems: "flex-start",
           }}
         >
-          {Array.from({ length: 3 }).map((_, index) => (
+          {Array.from({ length: 7 }).map((_, index) => (
             <Grid key={index} xs={12} sm={12} md={6}>
               <ProductCard orientation="horizontal" product={undefined} />
             </Grid>
