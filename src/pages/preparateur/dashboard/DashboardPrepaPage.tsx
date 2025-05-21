@@ -30,16 +30,14 @@ import CheckRoundedIcon from '@mui/icons-material/CheckRounded';
 import BlockIcon from '@mui/icons-material/Block';
 import AutorenewRoundedIcon from '@mui/icons-material/AutorenewRounded';
 import MoreHorizRoundedIcon from '@mui/icons-material/MoreHorizRounded';
-import { useQuery } from '@tanstack/react-query';
 //import { getCommandes } from "../../../api/commandes.api";
-import { getProducts } from "../../../api/products.api";
-import { useNavigate, Outlet } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 const rows = [
     {
         idCommande: 'INV-1234',
         jourRetrait: 'Feb 3, 2023',
-        heureDebRetrait: '10:00 AM',
+        heureDebRetrait: '10:00',
         status: 'PAYE',
         produits: [
             { id: 1, name: 'Product 1', quantity: 2 },
@@ -53,28 +51,54 @@ const rows = [
             adrLivrClient: '123 Main St, City, Country',
         },
     },
+    {
+        idCommande: 'INV-5678',
+        jourRetrait: 'Feb 3, 2023',
+        heureDebRetrait: '23:00',
+        status: 'REMBOURSE',
+        produits: [
+            { id: 3, name: 'Product 3', quantity: 1 },
+            { id: 4, name: 'Product 4', quantity: 2 },
+        ],
+        montantTotal: 150,
+        customer: {
+            nomClient: 'Smith',
+            prenomClient: 'John',
+            emailClient: '',
+            adrLivrClient: '456 Elm St, City, Country',
+        },
+    },
 ];
 
-function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
-    if (b[orderBy] < a[orderBy]) {
-        return -1;
+function descendingComparator<T>(a: T, b: T, orderBy: keyof T): number {
+    if (orderBy === "jourRetrait") {
+        const parseDateTime = (row: any) =>
+            new Date(`${row.jourRetrait} ${row.heureDebRetrait ?? "00:00"}`);
+
+        const aDate = parseDateTime(a);
+        const bDate = parseDateTime(b);
+
+        return bDate.getTime() - aDate.getTime(); // Descendant
     }
-    if (b[orderBy] > a[orderBy]) {
-        return 1;
-    }
+
+    const aValue = a[orderBy];
+    const bValue = b[orderBy];
+
+    if (bValue < aValue) return -1;
+    if (bValue > aValue) return 1;
     return 0;
 }
 
-type Order = 'asc' | 'desc';
+type Order = "asc" | "desc";
 
 function getComparator<Key extends keyof any>(
     order: Order,
-    orderBy: Key,
+    orderBy: Key
 ): (
-    a: { [key in Key]: number | string },
-    b: { [key in Key]: number | string },
+    a: { [key in Key]: number | string | Date },
+    b: { [key in Key]: number | string | Date }
 ) => number {
-    return order === 'desc'
+    return order === "desc"
         ? (a, b) => descendingComparator(a, b, orderBy)
         : (a, b) => -descendingComparator(a, b, orderBy);
 }
@@ -99,17 +123,13 @@ function RowMenu() {
 }
 function DashboardPrepa() {
     const navigate = useNavigate();
-    const { data: products, isFetching } = useQuery({
-        queryKey: ["products"],
-        queryFn: getProducts,
-    });
 
     //const { data: commandes, isFetching } = useQuery({
     //    queryKey: ["commandes"],
     //    queryFn: getCommandes,
     //});
 
-    const [order, setOrder] = React.useState<Order>('desc');
+    const [order, setOrder] = React.useState<Order>('asc');
     const [selected, setSelected] = React.useState<readonly string[]>([]);
     const [open, setOpen] = React.useState(false);
     const [searchFilter, setSearchFilter] = React.useState<string | null>(null);
@@ -150,8 +170,8 @@ function DashboardPrepa() {
                     {(filteredRows ?? rows)
                         .slice()
                         .sort(getComparator(order, "idCommande"))
-                        .map((row, index) => (
-                            <Option key={index} value={row.customer.nomClient}>
+                        .map((row) => (
+                            <Option key={row.idCommande} value={row.customer.nomClient}>
                                 {row.customer.nomClient} {row.customer.prenomClient}
                             </Option>
                         ))}
@@ -274,26 +294,7 @@ function DashboardPrepa() {
                 >
                     <thead>
                         <tr>
-                            <th style={{ width: 48, textAlign: 'center', padding: '12px 6px' }}>
-                                <Checkbox
-                                    size="sm"
-                                    indeterminate={
-                                        selected.length > 0 && selected.length !== rows.length
-                                    }
-                                    checked={selected.length === rows.length}
-                                    onChange={(event) => {
-                                        setSelected(
-                                            event.target.checked ? rows.map((row) => row.idCommande) : [],
-                                        );
-                                    }}
-                                    color={
-                                        selected.length > 0 || selected.length === rows.length
-                                            ? 'primary'
-                                            : undefined
-                                    }
-                                    sx={{ verticalAlign: 'text-bottom' }}
-                                />
-                            </th>
+                            <th style={{ width: 140, padding: '12px 6px' }}>Numéro</th>
                             <th style={{ width: 120, padding: '12px 6px' }}>
                                 <Link
                                     underline="none"
@@ -315,34 +316,17 @@ function DashboardPrepa() {
                                             : { '& svg': { transform: 'rotate(180deg)' } },
                                     ]}
                                 >
-                                    Numéro
+                                    Retrait
                                 </Link>
                             </th>
-                            <th style={{ width: 140, padding: '12px 6px' }}>Retrait</th>
                             <th style={{ width: 140, padding: '12px 6px' }}>Statut</th>
                             <th style={{ width: 240, padding: '12px 6px' }}>Client</th>
                             <th style={{ width: 140, padding: '12px 6px' }}> </th>
                         </tr>
                     </thead>
                     <tbody>
-                        {(filteredRows ?? rows).slice().sort(getComparator(order, 'idCommande')).map((row) => (
-                            <tr key={row.idCommande}>
-                                <td style={{ textAlign: 'center', width: 120 }}>
-                                    <Checkbox
-                                        size="sm"
-                                        checked={selected.includes(row.idCommande)}
-                                        color={selected.includes(row.idCommande) ? 'primary' : undefined}
-                                        onChange={(event) => {
-                                            setSelected((ids) =>
-                                                event.target.checked
-                                                    ? ids.concat(row.idCommande)
-                                                    : ids.filter((itemId) => itemId !== row.idCommande),
-                                            );
-                                        }}
-                                        slotProps={{ checkbox: { sx: { textAlign: 'left' } } }}
-                                        sx={{ verticalAlign: 'text-bottom' }}
-                                    />
-                                </td>
+                        {(filteredRows ?? rows).slice().sort(getComparator(order, 'jourRetrait')).map((row) => (
+                            <tr key={`${row.idCommande}`}>
                                 <td>
                                     <Typography level="body-xs">{row.idCommande}</Typography>
                                 </td>
@@ -386,12 +370,15 @@ function DashboardPrepa() {
                                     </Box>
                                 </td>
                                 <td>
-                                    <Link
-                                        component="button"
-                                        color="primary"
-                                        onClick={() => navigate(row.idCommande)}>
-                                        Voir les détails
-                                    </Link>
+                                    <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
+                                        <Link
+                                            component="button"
+                                            color="primary"
+                                            onClick={() => navigate(row.idCommande)}>
+                                            Voir les détails
+                                        </Link>
+                                        <RowMenu />
+                                    </Box>
                                 </td>
                             </tr>
                         ))}
