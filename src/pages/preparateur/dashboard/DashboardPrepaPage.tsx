@@ -267,7 +267,7 @@ function DashboardPrepa() {
     const [searchFilter, setSearchFilter] = React.useState<string | null>(null);
     const [statusFilter, setStatusFilter] = React.useState<string | null>(null);
     const [customerFilter, setCustomerFilter] = React.useState<string | null>(null);
-    const filteredRows: typeof rows = rows;
+    const [filteredRows, setFilteredRows] = React.useState<typeof rows | null>(null);
 
     const renderFilters = () => (
         <React.Fragment>
@@ -308,18 +308,13 @@ function DashboardPrepa() {
                 sx={{ fontSize: 'sm', textDecoration: 'underline' }}
                 onClick={() => {
                     setOpen(false); // Fermer le modal
-                    console.log('Filters applied:', {
-                        searchFilter,
-                        statusFilter,
-                        customerFilter,
-                    });
                     const filteredRows = rows.filter((row) => {
-                        const searchMatch = searchFilter ? row.id.includes(searchFilter) : true;
-                        const customerMatch = customerFilter ? row.customer.name === customerFilter : true;
-                        const statusMatch = statusFilter ? row.status === statusFilter : true;
+                        const searchMatch = searchFilter ? row.id.toLowerCase().includes(searchFilter.toLowerCase()) : true;
+                        const customerMatch = customerFilter ? row.customer.name.toLowerCase() === customerFilter.toLowerCase() : true;
+                        const statusMatch = statusFilter ? row.status.toLowerCase() === statusFilter.toLowerCase() : true;
                         return customerMatch && statusMatch && searchMatch;
                     });
-
+                    setFilteredRows(filteredRows);
                 }}
             >
                 Filtrer
@@ -464,7 +459,7 @@ function DashboardPrepa() {
                         </tr>
                     </thead>
                     <tbody>
-                        {filteredRows.slice().sort(getComparator(order, 'id')).map((row) => (
+                        {(filteredRows ?? rows).slice().sort(getComparator(order, 'id')).map((row) => (
                             <tr key={row.id}>
                                 <td style={{ textAlign: 'center', width: 120 }}>
                                     <Checkbox
