@@ -123,7 +123,6 @@ function DashboardPrepa() {
         queryKey: ["commandesNow"],
         queryFn: getCommandesNow,
     });
-    console.log("commandesNow", commandesNow);
 
     const uniqueClientIds = Array.isArray(commandes)
         ? Array.from(new Set(commandes.map((row) => row.panier.idClient)))
@@ -150,6 +149,7 @@ function DashboardPrepa() {
     const [statusFilter, setStatusFilter] = React.useState<string | null>(null);
     const [customerFilter, setCustomerFilter] = React.useState<string | null>(null);
     const [filteredRows, setFilteredRows] = React.useState<Array<any> | null>(null);
+    const [prioriteEtat, setPrioriteEtat] = React.useState(false);
 
     const renderFilters = () => (
         <React.Fragment>
@@ -192,32 +192,63 @@ function DashboardPrepa() {
 
             <Button
                 component="button"
-                color="neutral"
+                color="danger"
                 sx={{ fontSize: 'sm', textDecoration: 'underline' }}
                 onClick={() => {
                     setOpen(false); // Fermer le modal
-                    const filteredRows = Array.isArray(commandes)
-                        ? commandes.filter((row) => {
-                            const searchMatch = searchFilter ? String(row.idCommande).toLowerCase().includes(searchFilter.toLowerCase()) : true;
-                            const customerMatch = customerFilter ? String(row.panier.idClient).toLowerCase() === customerFilter.toLowerCase() : true;
-                            const statusMatch = statusFilter ? row.statut.toLowerCase() === statusFilter.toLowerCase() : true;
-                            return customerMatch && statusMatch && searchMatch;
-                        })
-                        : [];
-                    setFilteredRows(filteredRows);
+                    const newPrioriteEtat = !prioriteEtat;
+                    setPrioriteEtat(newPrioriteEtat);
+                    if (newPrioriteEtat) {
+                        setFilteredRows(Array.isArray(commandesNow) ? commandesNow : []);
+                    } else {
+                        setFilteredRows(Array.isArray(commandes) ? commandes : []);
+                    }
+                }}
+            >
+                Afficher les priorités
+            </Button>
+
+            <Button
+                component="button"
+                color="success"
+                sx={{ fontSize: 'sm', textDecoration: 'underline' }}
+                onClick={() => {
+                    setOpen(false); // Fermer le modal
+                    const newPrioriteEtat = prioriteEtat;
+                    setPrioriteEtat(newPrioriteEtat);
+                    if (!newPrioriteEtat) {
+                        setFilteredRows(Array.isArray(commandes)
+                            ? commandes.filter((row) => {
+                                const searchMatch = searchFilter ? String(row.idCommande).toLowerCase().includes(searchFilter.toLowerCase()) : true;
+                                const customerMatch = customerFilter ? String(row.panier.idClient).toLowerCase() === customerFilter.toLowerCase() : true;
+                                const statusMatch = statusFilter ? row.statut.toLowerCase() === statusFilter.toLowerCase() : true;
+                                return customerMatch && statusMatch && searchMatch;
+                            })
+                            : []);
+                    } else {
+                        setFilteredRows(Array.isArray(commandesNow)
+                            ? commandesNow.filter((row) => {
+                                const searchMatch = searchFilter ? String(row.idCommande).toLowerCase().includes(searchFilter.toLowerCase()) : true;
+                                const customerMatch = customerFilter ? String(row.panier.idClient).toLowerCase() === customerFilter.toLowerCase() : true;
+                                const statusMatch = statusFilter ? row.statut.toLowerCase() === statusFilter.toLowerCase() : true;
+                                return customerMatch && statusMatch && searchMatch;
+                            })
+                            : []);
+                    }
                 }}
             >
                 Filtrer
             </Button>
             <Button
                 component="button"
-                color="neutral"
+                color="warning"
                 sx={{ fontSize: 'sm', textDecoration: 'underline' }}
                 onClick={() => {
                     setSearchFilter(null);
                     setStatusFilter(null);
                     setCustomerFilter(null);
                     setFilteredRows(null);
+                    setPrioriteEtat(false);
                 }}
             >
                 Réinitialiser
@@ -379,7 +410,6 @@ function DashboardPrepa() {
                                         <div>
                                             {(Array.isArray(commandes) ? commandes : []).map((row) => {
                                                 const client = clientMap.get(row.panier.idClient);
-                                                console.log("client", client);
                                                 return (
                                                     <tr key={row.idCommande}>
                                                         <td>
