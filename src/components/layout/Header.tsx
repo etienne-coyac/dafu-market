@@ -84,11 +84,11 @@ const Header = () => {
         </Box>
         <Avatar />
       </Stack>
-      <SearchResults
+      {/* <SearchResults
         open={open}
         onClose={handleCloseSearchResults}
         headerRef={headerRef}
-      />
+      /> */}
     </Fragment>
   );
 };

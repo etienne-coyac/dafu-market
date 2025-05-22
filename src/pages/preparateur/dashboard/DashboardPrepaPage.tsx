@@ -31,7 +31,8 @@ import AutorenewRoundedIcon from '@mui/icons-material/AutorenewRounded';
 import MoreHorizRoundedIcon from '@mui/icons-material/MoreHorizRounded';
 import { getCommandes, getCommandesNow } from "../../../api/commandes.api";
 import { useNavigate } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueries } from '@tanstack/react-query';
+import { getClientById } from '../../../api/clients.api';
 
 function descendingComparator<T>(a: T, b: T, orderBy: keyof T): number {
     if (orderBy === "jourRetrait") {
@@ -109,19 +110,39 @@ function RowMenu({ idCommande }: Readonly<{ idCommande: string }>) {
         </Dropdown>
     );
 }
+
 function DashboardPrepa() {
     const navigate = useNavigate();
 
-    const { data: commandes, isFetching } = useQuery({
+    const { data: commandes } = useQuery({
         queryKey: ["commandes"],
         queryFn: getCommandes,
     });
 
-    const { data: commandesNow, isFetchingNow } = useQuery({
+    const { data: commandesNow } = useQuery({
         queryKey: ["commandesNow"],
         queryFn: getCommandesNow,
     });
     console.log("commandesNow", commandesNow);
+
+    const uniqueClientIds = Array.isArray(commandes)
+        ? Array.from(new Set(commandes.map((row) => row.panier.idClient)))
+        : [];
+
+    const clientsQueries = useQueries({
+        queries: uniqueClientIds.map((id) => ({
+            queryKey: ["client", id],
+            queryFn: () => getClientById(id),
+        })),
+    });
+
+    const clientMap = new Map<number, { nom: string; prenom: string; email: string; adresse: string; cp: string; ville: string }>();
+    clientsQueries.forEach((query) => {
+        if (query.data) {
+            const { nom, prenom, idClient, email, adresse, cp, ville } = query.data;
+            clientMap.set(idClient, { nom, prenom, email, adresse, cp, ville });
+        }
+    });
 
     const [order, setOrder] = React.useState<Order>('asc');
     const [open, setOpen] = React.useState(false);
@@ -356,7 +377,20 @@ function DashboardPrepa() {
                                 <td>
                                     <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
                                         <div>
-                                            <Typography level="body-xs">{row.panier.idClient}</Typography>
+                                            {(Array.isArray(commandes) ? commandes : []).map((row) => {
+                                                const client = clientMap.get(row.panier.idClient);
+                                                console.log("client", client);
+                                                return (
+                                                    <tr key={row.idCommande}>
+                                                        <td>
+                                                            <Typography level="body-xs">{client ? `${client.prenom} ${client.nom}` : "Chargement..."}</Typography>
+                                                            <Typography level="body-xs">{client ? `${client.email}` : "Chargement..."}</Typography>
+                                                            <Typography level="body-xs">{client ? `${client.adresse}, ${client.ville} (${client.cp}) ` : "Chargement..."}</Typography>
+                                                        </td>
+                                                    </tr>
+                                                );
+                                            })}
+
                                         </div>
                                     </Box>
                                 </td>

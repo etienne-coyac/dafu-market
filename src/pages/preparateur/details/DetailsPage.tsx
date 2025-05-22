@@ -2,12 +2,21 @@ import { Box } from "@mui/joy";
 import { useNavigate, useLocation } from "react-router-dom";
 import Table from "@mui/material/Table";
 import Link from "@mui/material/Link";
+import { getProductById } from "../../../api/products.api";
+import { useQueries } from "@tanstack/react-query";
 
 function DetailsPage() {
     const navigate = useNavigate();
     const location = useLocation();
 
     const lignes = location.state?.commande.panier.lignes;
+
+    const productQueries = useQueries({
+        queries: lignes.map((row) => ({
+            queryKey: ["produit", row.idProduit],
+            queryFn: () => getProductById(row.idProduit),
+        })),
+    });
 
     return (
         <Box
@@ -34,25 +43,41 @@ function DetailsPage() {
                         </tr>
                     </thead>
                     <tbody>
-                        {Array.isArray(lignes) &&
-                            lignes
-                                .map((row, idx, arr) => (
-                                    <tr
-                                        key={row.nom}
-                                        style={idx === arr.length - 1 ? { border: 0 } : undefined}
-                                    >
-                                        <td scope="row">
-                                            {row.nomProduit} ({row.marque})
-                                        </td>
-                                        <td align="right">{row.quantite}</td>
-                                        <td align="right">
-                                            <img src={row.imageUrl} alt={row.nomProduit} style={{ width: "80px", height: "auto" }} />
-                                        </td>
+                        {productQueries.map((query, idx) => {
+                            const produit = query.data as {
+                                nom: string;
+                                marque: string;
+                                imageUrl: string;
+                            } | undefined;
+                            const isLoading = query.isLoading;
 
-                                    </tr>
-                                ))
-                        }
+                            return (
+                                <tr
+                                    key={lignes[idx].nom}
+                                    style={idx === lignes.length - 1 ? { border: 0 } : undefined}
+                                >
+                                    <td scope="row">
+                                        {isLoading || !produit
+                                            ? "Chargement..."
+                                            : `${produit.nom} (${produit.marque})`}
+                                    </td>
+                                    <td align="right">{lignes[idx].quantite}</td>
+                                    <td align="right">
+                                        {isLoading || !produit ? (
+                                            "Chargement image..."
+                                        ) : (
+                                            <img
+                                                src={produit.imageUrl}
+                                                alt={produit.nom}
+                                                style={{ width: "80px", height: "auto" }}
+                                            />
+                                        )}
+                                    </td>
+                                </tr>
+                            );
+                        })}
                     </tbody>
+
                 </Table>
             </Box>
         </Box >

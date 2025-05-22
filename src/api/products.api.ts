@@ -13,3 +13,9 @@ export const getProductByCategory = async (idCategorie: number) => {
     .get<ProductType[]>(`/produits/categorie/${idCategorie}`)
     .then((res) => res.data);
 };
+
+export const getProductById = async (id: number) => {
+  return api
+    .get<ProductType>(`/produits/${id}`)
+    .then((res) => res.data);
+};
