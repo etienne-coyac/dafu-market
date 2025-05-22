@@ -1,5 +1,18 @@
-import { Search, Storefront } from "@mui/icons-material";
-import { Stack, IconButton, Typography, Avatar, Input, Box } from "@mui/joy";
+import { Search, ShoppingBasket, Storefront } from "@mui/icons-material";
+import {
+  Stack,
+  IconButton,
+  Typography,
+  Avatar,
+  Input,
+  Box,
+  Badge,
+  Dropdown,
+  MenuButton,
+  MenuItem,
+  Menu as MuiMenu,
+  Divider,
+} from "@mui/joy";
 import Menu from "./menu/Menu";
 import { Fragment } from "react/jsx-runtime";
 import { useEffect, useRef, useState } from "react";
@@ -51,16 +64,6 @@ const Header = () => {
         }}
       >
         <Stack direction={"row"} gap={1} alignItems={"center"}>
-          <IconButton
-            size="md"
-            variant="outlined"
-            color="neutral"
-            sx={{
-              borderRadius: "50%",
-            }}
-          >
-            <Storefront />
-          </IconButton>
           <Menu />
           <Typography
             level={"h1"}
@@ -82,7 +85,37 @@ const Header = () => {
             placeholder="Rechercher un produit"
           />
         </Box>
-        <Avatar />
+        <Stack direction={"row"} spacing={1} alignItems={"center"}>
+          <IconButton
+            size="md"
+            variant="outlined"
+            color="neutral"
+            sx={{
+              borderRadius: "50%",
+            }}
+          >
+            <Badge badgeContent={"0"} color="primary" size="sm">
+              <ShoppingBasket />
+            </Badge>
+          </IconButton>
+          <Dropdown>
+            <MenuButton
+              slots={{ root: IconButton }}
+              slotProps={{ root: { variant: "plain", color: "neutral" } }}
+            >
+              <Avatar />
+            </MenuButton>
+            <MuiMenu placement="bottom-end">
+              <MenuItem>
+                <Typography>Mes commandes</Typography>
+              </MenuItem>
+              <Divider />
+              <MenuItem>
+                <Typography>Déconnexion</Typography>
+              </MenuItem>
+            </MuiMenu>
+          </Dropdown>
+        </Stack>
       </Stack>
       <SearchResults
         open={open}

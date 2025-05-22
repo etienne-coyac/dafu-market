@@ -6,11 +6,22 @@ import ProductDetail from "../pages/customer/productDetail/ProductDetail";
 import ErrorBoundary from "./ErrorBoundary";
 import AppProviders from "../AppProviders";
 import AppAdmin from "../pages/admin/AppAdmin";
+import ProtectedRoute from "../middlewares/ProtectedRoute";
+import LoginPage from "../pages/customer/login/LoginPage";
+import { AuthProvider } from "../context/auth.context";
 
 const router = createBrowserRouter([
   {
     element: <AppProviders />,
     children: [
+      {
+        path: "/login",
+        element: (
+          <AuthProvider>
+            <LoginPage />
+          </AuthProvider>
+        ),
+      },
       {
         path: "/",
         element: <App />,
@@ -26,6 +37,17 @@ const router = createBrowserRouter([
               {
                 path: "p/:productId",
                 element: <ProductDetail />,
+              },
+
+              // protected routes
+              {
+                element: <ProtectedRoute />,
+                children: [
+                  {
+                    path: "test",
+                    element: <>protected</>,
+                  },
+                ],
               },
             ],
           },

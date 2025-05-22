@@ -3,7 +3,7 @@ import axios from "axios";
 
 export const login = async (email: string, password: string) => {
   const response = await axios.post<{ token: string }>(
-    `${import.meta.env.VITE_BASE_API_URL}/login`,
+    `${import.meta.env.VITE_BASE_API_URL}/auth/login`,
     {
       email,
       password,
