@@ -130,17 +130,18 @@ function DashboardPrepa() {
                 <FormLabel>Status</FormLabel>
                 <Select
                     size="sm"
-                    placeholder="Filter by status"
+                    placeholder="All"
                     value={statusFilter ?? ""}
-                    slotProps={{ button: { sx: { whiteSpace: 'nowrap' } } }}
                     onChange={(_, newValue) => {
                         setStatusFilter(typeof newValue === "string" && newValue !== "" ? newValue : null);
                     }}
                 >
                     <Option value="">All</Option>
-                    <Option value="pending">Commander</Option>
-                    <Option value="refunded">A préparer</Option>
-                    <Option value="cancelled">A retirer</Option>
+                    {(Array.isArray(commandes) ? commandes : []).slice().sort(getComparator(order, 'jourRetrait')).map((row) => (
+                        <Option key={row.idCommande} value={row.statut}>
+                            {row.statut}
+                        </Option>
+                    ))}
                 </Select>
             </FormControl>
             <FormControl size="sm">
@@ -154,8 +155,8 @@ function DashboardPrepa() {
                     }}
                 >
                     <Option value="">All</Option>
-                    {((filteredRows ?? commandes) as Array<any> ?? []).slice().sort(getComparator(order, 'jourRetrait')).map((row) => (
-                        <Option key={row.idCommande} value={row.panier.idClient}>
+                    {(Array.isArray(commandes) ? commandes : []).slice().sort(getComparator(order, 'jourRetrait')).map((row) => (
+                        <Option key={row.idCommande} value={String(row.panier.idClient)}>
                             {row.panier.idClient}
                         </Option>
                     ))}
@@ -170,9 +171,9 @@ function DashboardPrepa() {
                     setOpen(false); // Fermer le modal
                     const filteredRows = Array.isArray(commandes)
                         ? commandes.filter((row) => {
-                            const searchMatch = searchFilter ? row.idCommande.toLowerCase().includes(searchFilter.toLowerCase()) : true;
-                            const customerMatch = customerFilter ? row.panier.idClient.toLowerCase() === customerFilter.toLowerCase() : true;
-                            const statusMatch = statusFilter ? row.status.toLowerCase() === statusFilter.toLowerCase() : true;
+                            const searchMatch = searchFilter ? String(row.idCommande).toLowerCase().includes(searchFilter.toLowerCase()) : true;
+                            const customerMatch = customerFilter ? String(row.panier.idClient).toLowerCase() === customerFilter.toLowerCase() : true;
+                            const statusMatch = statusFilter ? row.statut.toLowerCase() === statusFilter.toLowerCase() : true;
                             return customerMatch && statusMatch && searchMatch;
                         })
                         : [];
