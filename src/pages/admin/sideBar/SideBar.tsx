@@ -9,6 +9,7 @@ import Sheet from '@mui/joy/Sheet';
 import HomeRoundedIcon from '@mui/icons-material/HomeRounded';
 import DashboardRoundedIcon from '@mui/icons-material/DashboardRounded';
 import ShoppingCartRoundedIcon from '@mui/icons-material/ShoppingCartRounded';
+import { Link } from "react-router-dom";
 
 export default function Sidebar() {
 
@@ -89,8 +90,8 @@ export default function Sidebar() {
           <ListItem>
             <ListItemButton
               role="menuitem"
-              component="a"
-              href="./import"
+              component={Link}
+              to="/admin/import"
             >
               <HomeRoundedIcon />
               <ListItemContent>
@@ -102,8 +103,8 @@ export default function Sidebar() {
           <ListItem>
             <ListItemButton
               role="menuitem"
-              component="a"
-              href="./forecast"
+              component={Link}
+              to="/admin/forecast"
             >
               <DashboardRoundedIcon />
               <ListItemContent>
@@ -112,8 +113,9 @@ export default function Sidebar() {
             </ListItemButton>
           </ListItem>
 
+
           <ListItem>
-            <ShoppingCartRoundedIcon />
+            <DashboardRoundedIcon />
             <ListItemContent>
               <Typography level="title-sm">Statistiques</Typography>
             </ListItemContent>
@@ -121,45 +123,65 @@ export default function Sidebar() {
 
           <ListItem nested>
             <List sx={{ gap: 0.5 }}>
-              <ListItem sx={{ mt: 0.5 }}>
+              <ListItem>
                 <ListItemButton
                   role="menuitem"
-                  component="a"
-                  href="./efficaciteSysteme"
+                  component={Link}
+                  to="/admin/efficaciteSysteme"
                 >
-                  Efficacité des systèmes</ListItemButton>
+                  <DashboardRoundedIcon />
+                  <ListItemContent>
+                    <Typography level="title-sm">Efficacité des sytèmes</Typography>
+                  </ListItemContent>
+                </ListItemButton>
               </ListItem>
               <ListItem>
                 <ListItemButton
                   role="menuitem"
-                  component="a"
-                  href="./editerSysteme"
+                  component={Link}
+                  to="/admin/editerSysteme"
                 >
-                  Editer des statistiques</ListItemButton>
+                  <DashboardRoundedIcon />
+                  <ListItemContent>
+                    <Typography level="title-sm">Editer des statistiques</Typography>
+                  </ListItemContent>
+                </ListItemButton>
               </ListItem>
               <ListItem>
                 <ListItemButton
                   role="menuitem"
-                  component="a"
-                  href="./parametrerAlgorithme"
+                  component={Link}
+                  to="/admin/parametrerAlgorithme"
                 >
-                  Paramétrer l'algorithme de recommandation</ListItemButton>
+                  <DashboardRoundedIcon />
+                  <ListItemContent>
+                    <Typography level="title-sm">Paramétrer l'algorithme de recommandation</Typography>
+                  </ListItemContent>
+                </ListItemButton>
               </ListItem>
               <ListItem>
                 <ListItemButton
                   role="menuitem"
-                  component="a"
-                  href="./consulterProfils"
+                  component={Link}
+                  to="/admin/consulterProfils"
                 >
-                  Consultation profils</ListItemButton>
+                  <DashboardRoundedIcon />
+                  <ListItemContent>
+                    <Typography level="title-sm">Consultation des profils</Typography>
+                  </ListItemContent>
+                </ListItemButton>
               </ListItem>
               <ListItem>
                 <ListItemButton
                   role="menuitem"
-                  component="a"
-                  href="./habitudesProfils"
+                  component={Link}
+                  to="/admin/habitudesProfils"
                 >
-                  Habitudes des profils</ListItemButton>
+                  <DashboardRoundedIcon />
+                  <ListItemContent>
+                    <Typography level="title-sm">Habitudes des profils</Typography>
+                  </ListItemContent>
+                </ListItemButton>
               </ListItem>
             </List>
           </ListItem>
