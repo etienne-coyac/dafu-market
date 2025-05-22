@@ -7,12 +7,13 @@ function App() {
     <Box
       sx={{
         display: "grid",
-        gridTemplateRows: "auto 1fr",
+        gridTemplateRows: "auto 1fr 1fr",
         height: "100dvh",
       }}
     >
       <Header />
       <Box component={"main"} sx={{ p: 1 }}>
+        <Box sx={{ height: "1000px" }}></Box>
         <Outlet />
       </Box>
     </Box>

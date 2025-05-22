@@ -42,11 +42,10 @@ const ProductFilters = (props: ProductFiltersProps) => {
     useState<boolean>(false);
   const media = useMediaQuery("down", "md");
 
-  const brands = products
-    ?.map((p) => p.marque)
-    .filter((v, i, a) => a.indexOf(v) === i);
+  const brands =
+    products?.map((p) => p.marque).filter((v, i, a) => a.indexOf(v) === i) ??
+    [];
 
-  console.log("fioter", products);
   const handleBrandChange = (brand: string) => {
     if (filters.brand?.includes(brand)) {
       setFilters((prev) => ({
@@ -154,7 +153,7 @@ const ProductFilters = (props: ProductFiltersProps) => {
                     <ListItem key={brand}>
                       <Checkbox
                         value={brand}
-                        checked={filters.brand?.includes(brand)}
+                        checked={filters.brand?.includes(brand) ?? false}
                         onChange={() => handleBrandChange(brand)}
                         label={brand}
                       />
@@ -175,7 +174,7 @@ const ProductFilters = (props: ProductFiltersProps) => {
                     <ListItem key={score}>
                       <Checkbox
                         value={score}
-                        checked={filters.nutriscore?.includes(score)}
+                        checked={filters.nutriscore?.includes(score) ?? false}
                         onChange={() => handleNutriScoreChange(score)}
                         label={score}
                       />
