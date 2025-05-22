@@ -1,14 +1,19 @@
-import { Navigate, Outlet } from "react-router";
-import useAuth from "../hooks/useAuth";
+import { Navigate, Outlet, useLocation } from "react-router";
+import useAuth from "../context/auth.context";
 
 type ProtectedRouteProps = {
   redirectPath?: string;
 };
 
-const ProtectedRoute = ({ redirectPath = "/" }: ProtectedRouteProps) => {
-  const { isAuthenticated } = useAuth();
-  if (!isAuthenticated) {
-    return <Navigate to={redirectPath} replace />;
+const ProtectedRoute = ({ redirectPath = "/login" }: ProtectedRouteProps) => {
+  const { user, loading } = useAuth();
+  const location = useLocation();
+  console.log(location);
+  if (loading) return null;
+  if (!user) {
+    return (
+      <Navigate to={redirectPath} replace state={{ from: location.pathname }} />
+    );
   }
 
   return <Outlet />;

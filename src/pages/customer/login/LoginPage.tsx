@@ -9,13 +9,8 @@ import {
 } from "@mui/joy";
 import LoginForm from "../../../components/ui/login/LoginForm";
 import RegisterForm from "../../../components/ui/login/RegisterForm";
-import useAuth from "../../../context/auth.context";
-import { Navigate } from "react-router";
 
 const LoginPage = () => {
-  const auth = useAuth();
-
-  if (auth.user) return <Navigate to="/" />;
   return (
     <Stack
       sx={{ minHeight: "100dvh", width: "100%" }}

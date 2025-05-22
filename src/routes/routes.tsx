@@ -8,7 +8,8 @@ import AppProviders from "../AppProviders";
 import AppAdmin from "../pages/admin/AppAdmin";
 import ProtectedRoute from "../middlewares/ProtectedRoute";
 import LoginPage from "../pages/customer/login/LoginPage";
-import { AuthProvider } from "../context/auth.context";
+import CartPage from "../pages/customer/cart/CartPage";
+import OrdersPage from "../pages/customer/orders/OrdersPage";
 
 const router = createBrowserRouter([
   {
@@ -16,11 +17,7 @@ const router = createBrowserRouter([
     children: [
       {
         path: "/login",
-        element: (
-          <AuthProvider>
-            <LoginPage />
-          </AuthProvider>
-        ),
+        element: <LoginPage />,
       },
       {
         path: "/",
@@ -44,8 +41,12 @@ const router = createBrowserRouter([
                 element: <ProtectedRoute />,
                 children: [
                   {
-                    path: "test",
-                    element: <>protected</>,
+                    path: "panier",
+                    element: <CartPage />,
+                  },
+                  {
+                    path: "commandes",
+                    element: <OrdersPage />,
                   },
                 ],
               },

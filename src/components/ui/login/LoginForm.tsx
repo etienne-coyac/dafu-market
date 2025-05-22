@@ -6,8 +6,11 @@ import type { LoginType } from "../../../types/user";
 import { loginSchema } from "../../../schemas/user.schemas";
 import { useState } from "react";
 import useAuth from "../../../context/auth.context";
+import { useLocation, useNavigate } from "react-router";
 const LoginForm = () => {
   const auth = useAuth();
+  const navigate = useNavigate();
+  const { state } = useLocation();
 
   const [open, setOpen] = useState<boolean>(false);
 
@@ -21,14 +24,13 @@ const LoginForm = () => {
 
   const onSubmit = async (data: LoginType) => {
     console.log(data);
-    await auth.login(data);
+    await auth.login(data).then(() => navigate(state?.from || "/"));
   };
 
   const onError = () => {
     setOpen(true);
   };
 
-  console.log("render form");
   return (
     <Stack gap={2}>
       <Input placeholder="Email" {...register("email")} />
@@ -37,7 +39,19 @@ const LoginForm = () => {
         placeholder="Mot de passe"
         {...register("password")}
       />
-      <Button onClick={handleSubmit(onSubmit, onError)}>Se connecter</Button>
+      <Stack direction={"row"} gap={1}>
+        <Button fullWidth onClick={handleSubmit(onSubmit, onError)}>
+          Se connecter
+        </Button>
+        <Button
+          fullWidth
+          // onClick={() => navigate("/")}
+          color="neutral"
+          variant="soft"
+        >
+          Retour
+        </Button>
+      </Stack>
       <Snackbar
         autoHideDuration={4000}
         open={open}

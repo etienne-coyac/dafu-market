@@ -1,35 +1,43 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import type { LoginType, UserType } from "../types/user";
 import { login as apiLogin } from "../api/services/auth";
 import { getCurrentClient } from "../api/client";
+import { useNavigate } from "react-router";
 
 type AuthContextType = {
   user: UserType | null;
+  loading: boolean;
   login: (payload: LoginType) => Promise<void>;
   logout: () => void;
+  canAccess: (route: string) => boolean;
 };
 
 const authContextDefaultValues: AuthContextType = {
   user: null,
+  loading: false,
   login: async () => {},
   logout: () => {},
+  canAccess: () => true,
 };
 
 export const AuthContext = createContext<AuthContextType>(
   authContextDefaultValues
 );
 
+const protectedRoutes = ["/panier"];
+
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
+  const navigate = useNavigate();
   const [user, setUser] = useState<UserType | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
 
   const login = async (payload: LoginType) => {
-    console.log("oui");
+    setLoading(true);
     const token = await apiLogin(payload.email, payload.password);
-    console.log("non", token);
     localStorage.setItem("authToken", token);
     const user = await getCurrentClient();
-    console.log("yes", user);
     setUser(user);
+    setLoading(false);
   };
 
   const logout = () => {
@@ -37,8 +45,24 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     setUser(null);
   };
 
+  const canAccess = (route: string) =>
+    !user && !protectedRoutes.includes(route);
+
+  useEffect(() => {
+    const token = localStorage.getItem("authToken");
+    if (token) {
+      getCurrentClient()
+        .then((user) => setUser(user))
+        .catch(() => {
+          logout();
+          navigate("/login");
+        })
+        .finally(() => setLoading(false));
+    }
+  }, []);
+
   return (
-    <AuthContext.Provider value={{ user, login, logout }}>
+    <AuthContext.Provider value={{ user, login, logout, canAccess, loading }}>
       {children}
     </AuthContext.Provider>
   );

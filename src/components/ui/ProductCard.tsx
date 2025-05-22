@@ -12,14 +12,23 @@ import {
 import { useNavigate } from "react-router";
 import { Link as RouterLink } from "react-router";
 import type { ProductType } from "../../types/protucts";
+import { useState } from "react";
+import Quantity from "./Quantity";
 
 type ProductCardProps = {
   product: ProductType | undefined;
   orientation?: "horizontal" | "vertical";
+  quantityInCart?: boolean;
 };
 
 const ProductCard = (props: ProductCardProps) => {
-  const { product, orientation = "vertical" } = props;
+  const {
+    product,
+    orientation = "vertical",
+    quantityInCart: isInCart = false,
+  } = props;
+  const [quantityMode, setQuantityMode] = useState<boolean>(isInCart);
+
   const navigate = useNavigate();
   const handleNavigate = () => {
     if (!product) return;
@@ -59,14 +68,22 @@ const ProductCard = (props: ProductCardProps) => {
             alignItems={"flex-end"}
             gap={1}
           >
-            <IconButton
-              size="sm"
-              color="success"
-              variant="soft"
-              disabled={!product}
-            >
-              <AddShoppingCart />
-            </IconButton>
+            {quantityMode ? (
+              <Quantity value={1} onChange={() => null} />
+            ) : (
+              <IconButton
+                size="sm"
+                color="success"
+                variant="soft"
+                disabled={!product}
+                onClick={() => {
+                  setQuantityMode(true);
+                }}
+              >
+                <AddShoppingCart />
+              </IconButton>
+            )}
+
             <Typography level="body-md" fontWeight={"bold"}>
               <Skeleton loading={!product}>
                 {product?.prixRecommande?.toFixed(2) ?? "0.00"}€

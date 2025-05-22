@@ -1,29 +1,17 @@
-import { Search, ShoppingBasket, Storefront } from "@mui/icons-material";
-import {
-  Stack,
-  IconButton,
-  Typography,
-  Avatar,
-  Input,
-  Box,
-  Badge,
-  Dropdown,
-  MenuButton,
-  MenuItem,
-  Menu as MuiMenu,
-  Divider,
-} from "@mui/joy";
+import { Search, ShoppingBasket } from "@mui/icons-material";
+import { Stack, IconButton, Typography, Input, Box, Badge } from "@mui/joy";
 import Menu from "./menu/Menu";
 import { Fragment } from "react/jsx-runtime";
 import { useEffect, useRef, useState } from "react";
 import SearchResults from "./SearchResults";
+import Profile from "./menu/Profile";
+import { useNavigate } from "react-router";
 
 const Header = () => {
+  const navigate = useNavigate();
   const searchbarRef = useRef<HTMLInputElement>(null);
   const headerRef = useRef<HTMLDivElement>(null);
   const [open, setOpen] = useState<boolean>(false);
-
-  console.log(searchbarRef.current);
 
   useEffect(() => {
     const ref = searchbarRef.current;
@@ -47,6 +35,7 @@ const Header = () => {
   return (
     <Fragment>
       <Stack
+        component={"header"}
         ref={headerRef}
         direction={"row"}
         sx={{
@@ -93,28 +82,13 @@ const Header = () => {
             sx={{
               borderRadius: "50%",
             }}
+            onClick={() => navigate("/panier")}
           >
             <Badge badgeContent={"0"} color="primary" size="sm">
               <ShoppingBasket />
             </Badge>
           </IconButton>
-          <Dropdown>
-            <MenuButton
-              slots={{ root: IconButton }}
-              slotProps={{ root: { variant: "plain", color: "neutral" } }}
-            >
-              <Avatar />
-            </MenuButton>
-            <MuiMenu placement="bottom-end">
-              <MenuItem>
-                <Typography>Mes commandes</Typography>
-              </MenuItem>
-              <Divider />
-              <MenuItem>
-                <Typography>Déconnexion</Typography>
-              </MenuItem>
-            </MuiMenu>
-          </Dropdown>
+          <Profile />
         </Stack>
       </Stack>
       <SearchResults
