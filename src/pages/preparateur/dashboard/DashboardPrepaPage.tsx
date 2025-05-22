@@ -15,7 +15,6 @@ import Select from '@mui/joy/Select';
 import Option from '@mui/joy/Option';
 import Table from '@mui/joy/Table';
 import Sheet from '@mui/joy/Sheet';
-import Checkbox from '@mui/joy/Checkbox';
 import IconButton from '@mui/joy/IconButton';
 import Typography from '@mui/joy/Typography';
 import Menu from '@mui/joy/Menu';
@@ -30,45 +29,9 @@ import CheckRoundedIcon from '@mui/icons-material/CheckRounded';
 import BlockIcon from '@mui/icons-material/Block';
 import AutorenewRoundedIcon from '@mui/icons-material/AutorenewRounded';
 import MoreHorizRoundedIcon from '@mui/icons-material/MoreHorizRounded';
-//import { getCommandes } from "../../../api/commandes.api";
+import { getCommandes } from "../../../api/commandes.api";
 import { useNavigate } from 'react-router-dom';
-
-const rows = [
-    {
-        idCommande: 'INV-1234',
-        jourRetrait: 'Feb 3, 2023',
-        heureDebRetrait: '10:00',
-        status: 'PAYE',
-        produits: [
-            { id: 1, name: 'Product 1', quantity: 2 },
-            { id: 2, name: 'Product 2', quantity: 1 },
-        ],
-        montantTotal: 100,
-        customer: {
-            nomClient: 'Ryhe',
-            prenomClient: 'Olivia',
-            emailClient: 'olivia@email.com',
-            adrLivrClient: '123 Main St, City, Country',
-        },
-    },
-    {
-        idCommande: 'INV-5678',
-        jourRetrait: 'Feb 3, 2023',
-        heureDebRetrait: '23:00',
-        status: 'REMBOURSE',
-        produits: [
-            { id: 3, name: 'Product 3', quantity: 1 },
-            { id: 4, name: 'Product 4', quantity: 2 },
-        ],
-        montantTotal: 150,
-        customer: {
-            nomClient: 'Smith',
-            prenomClient: 'John',
-            emailClient: '',
-            adrLivrClient: '456 Elm St, City, Country',
-        },
-    },
-];
+import { useQuery } from '@tanstack/react-query';
 
 function descendingComparator<T>(a: T, b: T, orderBy: keyof T): number {
     if (orderBy === "jourRetrait") {
@@ -103,7 +66,23 @@ function getComparator<Key extends keyof any>(
         : (a, b) => -descendingComparator(a, b, orderBy);
 }
 
-function RowMenu() {
+function changeStatusCommande(idCommande: string, newStatus: string) {
+    // This is a placeholder for updating the status of a commande.
+    // In a real app, you would call an API or update state here.
+    // For now, just log the action.
+    console.log(`Changing status of commande ${idCommande} to ${newStatus}`);
+    // Optionally, show a notification or update local state if needed.
+}
+
+function supprimerCommande(idCommande: string) {
+    // This is a placeholder for deleting a commande.
+    // In a real app, you would call an API or update state here.
+    // For now, just log the action.
+    console.log(`Deleting commande ${idCommande}`);
+    // Optionally, show a notification or update local state if needed.
+}
+
+function RowMenu({ idCommande }: Readonly<{ idCommande: string }>) {
     return (
         <Dropdown>
             <MenuButton
@@ -113,10 +92,19 @@ function RowMenu() {
                 <MoreHorizRoundedIcon />
             </MenuButton>
             <Menu size="sm" sx={{ minWidth: 140 }}>
-                <MenuItem>Mettre en préparation</MenuItem>
-                <MenuItem>Finaliser la commande</MenuItem>
+                <MenuItem
+                    component="button"
+                    onClick={() => { changeStatusCommande(idCommande, "preparation"); }}
+                >Mettre en préparation</MenuItem>
+                <MenuItem
+                    component="button"
+                    onClick={() => { changeStatusCommande(idCommande, "finaliser"); }}
+                >Finaliser la commande</MenuItem>
                 <Divider />
-                <MenuItem color="danger">Supprimer</MenuItem>
+                <MenuItem color="danger"
+                    component="button"
+                    onClick={() => { supprimerCommande(idCommande); }}
+                >Supprimer</MenuItem>
             </Menu>
         </Dropdown>
     );
@@ -124,18 +112,17 @@ function RowMenu() {
 function DashboardPrepa() {
     const navigate = useNavigate();
 
-    //const { data: commandes, isFetching } = useQuery({
-    //    queryKey: ["commandes"],
-    //    queryFn: getCommandes,
-    //});
+    const { data: commandes, isFetching } = useQuery({
+        queryKey: ["commandes"],
+        queryFn: getCommandes,
+    });
 
     const [order, setOrder] = React.useState<Order>('asc');
-    const [selected, setSelected] = React.useState<readonly string[]>([]);
     const [open, setOpen] = React.useState(false);
     const [searchFilter, setSearchFilter] = React.useState<string | null>(null);
     const [statusFilter, setStatusFilter] = React.useState<string | null>(null);
     const [customerFilter, setCustomerFilter] = React.useState<string | null>(null);
-    const [filteredRows, setFilteredRows] = React.useState<typeof rows | null>(null);
+    const [filteredRows, setFilteredRows] = React.useState<Array<any> | null>(null);
 
     const renderFilters = () => (
         <React.Fragment>
@@ -167,14 +154,11 @@ function DashboardPrepa() {
                     }}
                 >
                     <Option value="">All</Option>
-                    {(filteredRows ?? rows)
-                        .slice()
-                        .sort(getComparator(order, "idCommande"))
-                        .map((row) => (
-                            <Option key={row.idCommande} value={row.customer.nomClient}>
-                                {row.customer.nomClient} {row.customer.prenomClient}
-                            </Option>
-                        ))}
+                    {((filteredRows ?? commandes) as Array<any> ?? []).slice().sort(getComparator(order, 'jourRetrait')).map((row) => (
+                        <Option key={row.idCommande} value={row.panier.idClient}>
+                            {row.panier.idClient}
+                        </Option>
+                    ))}
                 </Select>
             </FormControl>
 
@@ -184,12 +168,14 @@ function DashboardPrepa() {
                 sx={{ fontSize: 'sm', textDecoration: 'underline' }}
                 onClick={() => {
                     setOpen(false); // Fermer le modal
-                    const filteredRows = rows.filter((row) => {
-                        const searchMatch = searchFilter ? row.idCommande.toLowerCase().includes(searchFilter.toLowerCase()) : true;
-                        const customerMatch = customerFilter ? row.customer.nomClient.toLowerCase() === customerFilter.toLowerCase() : true;
-                        const statusMatch = statusFilter ? row.status.toLowerCase() === statusFilter.toLowerCase() : true;
-                        return customerMatch && statusMatch && searchMatch;
-                    });
+                    const filteredRows = Array.isArray(commandes)
+                        ? commandes.filter((row) => {
+                            const searchMatch = searchFilter ? row.idCommande.toLowerCase().includes(searchFilter.toLowerCase()) : true;
+                            const customerMatch = customerFilter ? row.panier.idClient.toLowerCase() === customerFilter.toLowerCase() : true;
+                            const statusMatch = statusFilter ? row.status.toLowerCase() === statusFilter.toLowerCase() : true;
+                            return customerMatch && statusMatch && searchMatch;
+                        })
+                        : [];
                     setFilteredRows(filteredRows);
                 }}
             >
@@ -325,7 +311,7 @@ function DashboardPrepa() {
                         </tr>
                     </thead>
                     <tbody>
-                        {(filteredRows ?? rows).slice().sort(getComparator(order, 'jourRetrait')).map((row) => (
+                        {((filteredRows ?? commandes) as Array<any> ?? []).slice().sort(getComparator(order, 'jourRetrait')).map((row) => (
                             <tr key={`${row.idCommande}`}>
                                 <td>
                                     <Typography level="body-xs">{row.idCommande}</Typography>
@@ -333,8 +319,8 @@ function DashboardPrepa() {
                                 <td>
                                     <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
                                         <div>
-                                            <Typography level="body-xs">{row.jourRetrait}</Typography>
-                                            <Typography level="body-xs">{row.heureDebRetrait}</Typography>
+                                            <Typography level="body-xs">{new Date(row.dateHeureRetrait).toISOString().split("T")[0]}</Typography>
+                                            <Typography level="body-xs">{new Date(row.dateHeureRetrait).getHours().toString().padStart(2, "0")}:{new Date(row.dateHeureRetrait).getMinutes().toString().padStart(2, "0")}</Typography>
                                         </div>
                                     </Box>
                                 </td>
@@ -343,29 +329,27 @@ function DashboardPrepa() {
                                         variant="soft"
                                         size="sm"
                                         startDecorator={
-                                            {
+                                            ({
                                                 Paid: <CheckRoundedIcon />,
                                                 Refunded: <AutorenewRoundedIcon />,
                                                 Cancelled: <BlockIcon />,
-                                            }[row.status]
+                                            } as Record<string, React.ReactNode>)[row.statut] ?? undefined
                                         }
                                         color={
-                                            {
+                                            ({
                                                 Paid: 'success',
                                                 Refunded: 'neutral',
                                                 Cancelled: 'danger',
-                                            }[row.status] as ColorPaletteProp
+                                            } as Record<string, ColorPaletteProp>)[row.statut] ?? 'neutral'
                                         }
                                     >
-                                        {row.status}
+                                        {row.statut}
                                     </Chip>
                                 </td>
                                 <td>
                                     <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
                                         <div>
-                                            <Typography level="body-xs">{row.customer.nomClient} {row.customer.prenomClient}</Typography>
-                                            <Typography level="body-xs">{row.customer.emailClient}</Typography>
-                                            <Typography level="body-xs">{row.customer.adrLivrClient}</Typography>
+                                            <Typography level="body-xs">{row.panier.idClient}</Typography>
                                         </div>
                                     </Box>
                                 </td>
@@ -374,10 +358,15 @@ function DashboardPrepa() {
                                         <Link
                                             component="button"
                                             color="primary"
-                                            onClick={() => navigate(row.idCommande)}>
+                                            onClick={() =>
+                                                navigate(`/preparateur/dashboard/${row.idCommande}`, {
+                                                    state: { commande: row }
+                                                })
+                                            }
+                                        >
                                             Voir les détails
                                         </Link>
-                                        <RowMenu />
+                                        <RowMenu idCommande={row.idCommande} />
                                     </Box>
                                 </td>
                             </tr>

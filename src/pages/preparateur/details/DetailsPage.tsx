@@ -1,56 +1,14 @@
 import { Box } from "@mui/joy";
-import { useParams, useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import Table from "@mui/material/Table";
 import Link from "@mui/material/Link";
-//import { getCommandes } from "../../../api/commandes.api";
-import { getProducts } from "../../../api/products.api";
-import { useQuery } from '@tanstack/react-query';
-
-
-const rows = [
-    {
-        nom: "Frozen yoghurt",
-        qte: 2,
-        marque: "Dafu",
-        prixPropose: 4.99,
-        prixAvecPromo: 3.99,
-        prixRecommande: 4.99,
-        imageUrl: "https://example.com/image1.jpg"
-    },
-    {
-        nom: "Ice cream sandwich",
-        qte: 1,
-        marque: "Dafu",
-        prixPropose: 4.99,
-        prixAvecPromo: 3.99,
-        prixRecommande: 4.99,
-        imageUrl: "https://example.com/image2.jpg"
-    },
-    {
-        nom: "Eclair",
-        qte: 3,
-        marque: "Dafu",
-        prixPropose: 4.99,
-        prixAvecPromo: 3.99,
-        prixRecommande: 4.99,
-        imageUrl: "https://example.com/image3.jpg"
-    },
-];
 
 function DetailsPage() {
-    const { idCommande } = useParams();
     const navigate = useNavigate();
-    console.log("ID de la commande:", idCommande);
+    const location = useLocation();
 
-    const { data: products, isFetching } = useQuery({
-        queryKey: ["products"],
-        queryFn: getProducts,
-    });
+    const lignes = location.state?.commande.panier.lignes;
 
-    //const { data: commandes, isFetching } = useQuery({
-    //    queryKey: ["commandes"],
-    //    queryFn: getCommandes,
-    //});
     return (
         <Box
             sx={{
@@ -72,26 +30,28 @@ function DetailsPage() {
                         <tr>
                             <th>Nom</th>
                             <th align="right">Quantité</th>
-                            <th align="right">Marque</th>
-                            <th align="right">Prix</th>
                             <th align="right">Image</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {rows.map((row) => (
-                            <tr
-                                key={row.nom}
-                                style={row === rows[rows.length - 1] ? { border: 0 } : undefined}
-                            >
-                                <td scope="row">
-                                    {row.nom}
-                                </td>
-                                <td align="right">{row.qte}</td>
-                                <td align="right">{row.marque}</td>
-                                <td align="right">{row.prixPropose}</td>
-                                <td align="right">{row.imageUrl}</td>
-                            </tr>
-                        ))}
+                        {Array.isArray(lignes) &&
+                            lignes
+                                .map((row, idx, arr) => (
+                                    <tr
+                                        key={row.nom}
+                                        style={idx === arr.length - 1 ? { border: 0 } : undefined}
+                                    >
+                                        <td scope="row">
+                                            {row.nomProduit} ({row.marque})
+                                        </td>
+                                        <td align="right">{row.quantite}</td>
+                                        <td align="right">
+                                            <img src={row.imageUrl} alt={row.nomProduit} style={{ width: "80px", height: "auto" }} />
+                                        </td>
+
+                                    </tr>
+                                ))
+                        }
                     </tbody>
                 </Table>
             </Box>
