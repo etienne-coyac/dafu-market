@@ -29,7 +29,7 @@ import CheckRoundedIcon from '@mui/icons-material/CheckRounded';
 import BlockIcon from '@mui/icons-material/Block';
 import AutorenewRoundedIcon from '@mui/icons-material/AutorenewRounded';
 import MoreHorizRoundedIcon from '@mui/icons-material/MoreHorizRounded';
-import { getCommandes } from "../../../api/commandes.api";
+import { getCommandes, getCommandesNow } from "../../../api/commandes.api";
 import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 
@@ -116,6 +116,12 @@ function DashboardPrepa() {
         queryKey: ["commandes"],
         queryFn: getCommandes,
     });
+
+    const { data: commandesNow, isFetchingNow } = useQuery({
+        queryKey: ["commandesNow"],
+        queryFn: getCommandesNow,
+    });
+    console.log("commandesNow", commandesNow);
 
     const [order, setOrder] = React.useState<Order>('asc');
     const [open, setOpen] = React.useState(false);
