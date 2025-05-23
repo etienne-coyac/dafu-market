@@ -22,17 +22,12 @@ import MenuButton from '@mui/joy/MenuButton';
 import MenuItem from '@mui/joy/MenuItem';
 import Dropdown from '@mui/joy/Dropdown';
 
-import FilterAltIcon from '@mui/icons-material/FilterAlt';
-import SearchIcon from '@mui/icons-material/Search';
-import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
-import CheckRoundedIcon from '@mui/icons-material/CheckRounded';
-import BlockIcon from '@mui/icons-material/Block';
-import AutorenewRoundedIcon from '@mui/icons-material/AutorenewRounded';
-import MoreHorizRoundedIcon from '@mui/icons-material/MoreHorizRounded';
 import { getCommandes, getCommandesNow, patchCommandeStart, patchCommandeEnd } from "../../../api/commandes.api";
 import { useNavigate } from 'react-router-dom';
-import { useQuery, useQueries, useQueryClient, useMutation } from '@tanstack/react-query';
+import { useQuery, useQueries, useMutation } from '@tanstack/react-query';
 import { getClientById } from '../../../api/clients.api';
+import type { CommandeType } from '../../../types/commandes';
+import { getProductById } from '../../../api/products.api';
 
 function descendingComparator<T>(a: T, b: T, orderBy: keyof T): number {
     if (orderBy === "jourRetrait") {
@@ -95,7 +90,6 @@ function RowMenu({ idCommande }: Readonly<{ idCommande: string }>) {
                 slots={{ root: IconButton }}
                 slotProps={{ root: { variant: 'plain', color: 'neutral', size: 'sm' } }}
             >
-                <MoreHorizRoundedIcon />
             </MenuButton>
             <Menu size="sm" sx={{ minWidth: 140 }}>
                 <MenuItem
@@ -120,6 +114,102 @@ function RowMenu({ idCommande }: Readonly<{ idCommande: string }>) {
         </Dropdown>
     );
 }
+
+function Row(props: Readonly<{ row: CommandeType, clientMap: Map<number, { nom: string; prenom: string; email: string; adresse: string; cp: string; ville: string }> }>) {
+    const { row, clientMap } = props;
+    const [openDetails, setOpenDetails] = React.useState(false);
+
+    // Fetch product data for each product in the order
+    const productQueries = useQueries({
+        queries: row.panier.lignes.map((ligne: any) => ({
+            queryKey: ["produit", ligne.idProduit],
+            queryFn: () => getProductById(ligne.idProduit),
+        })),
+    });
+
+    return (
+        <>
+            <tr>
+                <td>
+                    <IconButton
+                        aria-label="expand row"
+                        size="sm"
+                        onClick={() => setOpenDetails(!openDetails)}
+                    >
+                    </IconButton>
+                </td>
+                <td scope='row'>{row.idCommande}</td>
+                <td>
+                    {(() => {
+                        const client = clientMap.get(row.panier.idClient);
+                        return (
+                            <div>
+                                <Typography level="body-xs">{client ? `${client.prenom} ${client.nom}` : "Chargement..."}</Typography>
+                            </div>
+                        );
+                    })()}
+                </td>
+                <td>{new Date(row.dateHeureRetrait).toISOString().split("T")[0]} [{new Date(row.dateHeureRetrait).getHours().toString().padStart(2, "0")}:{new Date(row.dateHeureRetrait).getMinutes().toString().padStart(2, "0")}]
+                </td>
+                <td>{row.statut}</td>
+            </tr>
+            {openDetails && (
+                <tr>
+                    <td style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
+                        <Box sx={{ margin: 1 }}>
+                            <Typography gutterBottom component="div">
+                                Détails de la commande
+                            </Typography>
+                            <Table size="sm">
+                                <thead>
+                                    <tr>
+                                        <th>Produit</th>
+                                        <th>Quantité</th>
+                                        <th>Image</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {row.panier.lignes.map((ligne: any, idx: number) => {
+                                        const query = productQueries[idx];
+                                        const produit = query?.data as {
+                                            nom: string;
+                                            marque: string;
+                                            imageUrl: string;
+                                        } | undefined;
+                                        const isLoading = query?.isLoading;
+
+                                        return (
+                                            <tr key={ligne.idProduit ?? idx}>
+                                                <td>
+                                                    {isLoading || !produit
+                                                        ? "Chargement..."
+                                                        : `${produit.nom} (${produit.marque})`}
+                                                </td>
+                                                <td>{ligne.quantite}</td>
+                                                <td>
+                                                    {isLoading || !produit ? (
+                                                        "Chargement image..."
+                                                    ) : (
+                                                        <img
+                                                            src={produit.imageUrl}
+                                                            alt={produit.nom}
+                                                            style={{ width: "80px", height: "auto" }}
+                                                        />
+                                                    )}
+                                                </td>
+                                            </tr>
+                                        );
+                                    })}
+                                </tbody>
+                            </Table>
+                        </Box>
+                    </td>
+                </tr>
+            )}
+        </>
+    );
+}
+
 
 function DashboardPrepa() {
     const navigate = useNavigate();
@@ -151,6 +241,18 @@ function DashboardPrepa() {
             const { nom, prenom, idClient, email, adresse, cp, ville } = query.data;
             clientMap.set(idClient, { nom, prenom, email, adresse, cp, ville });
         }
+    });
+
+    const productQueries = useQueries({
+        queries: (Array.isArray(commandes)
+            ? commandes.flatMap((commande) =>
+                commande.panier.lignes.map((ligne: any) => ({
+                    queryKey: ["produit", ligne.idProduit],
+                    queryFn: () => getProductById(ligne.idProduit),
+                }))
+            )
+            : []
+        ),
     });
 
     const [order, setOrder] = React.useState<Order>('asc');
@@ -265,6 +367,7 @@ function DashboardPrepa() {
             </Button>
         </React.Fragment >
     );
+
     return (
         <React.Fragment>
             <Sheet
@@ -274,7 +377,6 @@ function DashboardPrepa() {
                 <Input
                     size="sm"
                     placeholder="Search"
-                    startDecorator={<SearchIcon />}
                     sx={{ flexGrow: 1 }}
                 />
                 <IconButton
@@ -283,7 +385,6 @@ function DashboardPrepa() {
                     color="neutral"
                     onClick={() => setOpen(true)}
                 >
-                    <FilterAltIcon />
                 </IconButton>
                 <Modal open={open} onClose={() => setOpen(false)}>
                     <ModalDialog aria-labelledby="filter-modal" layout="fullscreen">
@@ -297,6 +398,27 @@ function DashboardPrepa() {
                         </Sheet>
                     </ModalDialog>
                 </Modal>
+            </Sheet>
+            {/* ✅ Ton tableau s'affiche juste en dessous */}
+            <Sheet variant="outlined" sx={{ mt: 2, borderRadius: 'md', overflow: 'auto' }}>
+                <Box>
+                    <Table>
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th>N°</th>
+                                <th>Client</th>
+                                <th>Retrait</th>
+                                <th>Statut</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {(Array.isArray(commandes) ? commandes : []).map((row) => (
+                                <Row key={row.idCommande} row={row} clientMap={clientMap} />
+                            ))}
+                        </tbody>
+                    </Table>
+                </Box>
             </Sheet>
             <Box
                 className="SearchAndFilters-tabletUp"
@@ -316,7 +438,6 @@ function DashboardPrepa() {
                     <Input
                         size="sm"
                         placeholder="Search"
-                        startDecorator={<SearchIcon />}
                         value={searchFilter ?? ''}
                         onChange={(e) => setSearchFilter(e.target.value)}
                     />
@@ -356,7 +477,6 @@ function DashboardPrepa() {
                                     color="primary"
                                     component="button"
                                     onClick={() => setOrder(order === 'asc' ? 'desc' : 'asc')}
-                                    endDecorator={<ArrowDropDownIcon />}
                                     sx={[
                                         {
                                             fontWeight: 'lg',
@@ -397,13 +517,6 @@ function DashboardPrepa() {
                                     <Chip
                                         variant="soft"
                                         size="sm"
-                                        startDecorator={
-                                            ({
-                                                Paid: <CheckRoundedIcon />,
-                                                Refunded: <AutorenewRoundedIcon />,
-                                                Cancelled: <BlockIcon />,
-                                            } as Record<string, React.ReactNode>)[row.statut] ?? undefined
-                                        }
                                         color={
                                             ({
                                                 Paid: 'success',
@@ -455,7 +568,7 @@ function DashboardPrepa() {
                     </tbody>
                 </Table>
             </Sheet>
-        </React.Fragment>
+        </React.Fragment >
     );
 }
 
