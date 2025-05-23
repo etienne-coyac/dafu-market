@@ -1,43 +1,35 @@
 import * as React from 'react';
 import type { ColorPaletteProp } from '@mui/joy/styles';
 import Box from '@mui/joy/Box';
-import Button from '@mui/joy/Button';
 import Chip from '@mui/joy/Chip';
-import Divider from '@mui/joy/Divider';
-import FormControl from '@mui/joy/FormControl';
-import FormLabel from '@mui/joy/FormLabel';
 import Link from '@mui/joy/Link';
 import Input from '@mui/joy/Input';
-import Modal from '@mui/joy/Modal';
-import ModalDialog from '@mui/joy/ModalDialog';
-import ModalClose from '@mui/joy/ModalClose';
-import Select from '@mui/joy/Select';
-import Option from '@mui/joy/Option';
 import Table from '@mui/joy/Table';
 import Sheet from '@mui/joy/Sheet';
 import IconButton from '@mui/joy/IconButton';
 import Typography from '@mui/joy/Typography';
-import Menu from '@mui/joy/Menu';
-import MenuButton from '@mui/joy/MenuButton';
-import MenuItem from '@mui/joy/MenuItem';
-import Dropdown from '@mui/joy/Dropdown';
 
-import { getCommandes, getCommandesNow, patchCommandeStart, patchCommandeEnd } from "../../../api/commandes.api";
+import { getCommandes, getCommandesNow } from "../../../api/commandes.api";
 import { useNavigate } from 'react-router-dom';
-import { useQuery, useQueries, useMutation } from '@tanstack/react-query';
+import { useQuery, useQueries } from '@tanstack/react-query';
 import { getClientById } from '../../../api/clients.api';
-import type { CommandeType } from '../../../types/commandes';
-import { getProductById } from '../../../api/products.api';
+import useIsSmallScreen from '../../../hooks/useSmallScreen';
+import Row from '../../../components/dashboard/Row';
+import RowMenu from '../../../components/dashboard/RowMenu';
+import type { OrderType } from '../../../types/order';
 
 function descendingComparator<T>(a: T, b: T, orderBy: keyof T): number {
     if (orderBy === "jourRetrait") {
-        const parseDateTime = (row: any) =>
-            new Date(`${row.jourRetrait} ${row.heureDebRetrait ?? "00:00"}`);
+        const parseDateTime = (row: any) => {
+            const datePart = row.jourRetrait ?? "1970-01-01";
+            const timePart = row.heureDebRetrait ?? "00:00:00";
+            return new Date(`${datePart}T${timePart}`); // format ISO correct
+        };
 
         const aDate = parseDateTime(a);
         const bDate = parseDateTime(b);
 
-        return bDate.getTime() - aDate.getTime(); // Descendant
+        return bDate.getTime() - aDate.getTime(); // Descending
     }
 
     const aValue = a[orderBy];
@@ -48,10 +40,8 @@ function descendingComparator<T>(a: T, b: T, orderBy: keyof T): number {
     return 0;
 }
 
-type Order = "asc" | "desc";
-
 function getComparator<Key extends keyof any>(
-    order: Order,
+    order: OrderType,
     orderBy: Key
 ): (
     a: { [key in Key]: number | string | Date },
@@ -61,155 +51,6 @@ function getComparator<Key extends keyof any>(
         ? (a, b) => descendingComparator(a, b, orderBy)
         : (a, b) => -descendingComparator(a, b, orderBy);
 }
-
-function supprimerCommande(idCommande: string) {
-    // This is a placeholder for deleting a commande.
-    // In a real app, you would call an API or update state here.
-    // For now, just log the action.
-    console.log(`Deleting commande ${idCommande}`);
-    // Optionally, show a notification or update local state if needed.
-}
-
-function RowMenu({ idCommande }: Readonly<{ idCommande: string }>) {
-    const mutationStart = useMutation({
-        mutationFn: (id: string) => patchCommandeStart(id),
-        onSuccess: (data) => {
-            console.log("Commande mise en préparation :", data);
-        },
-    });
-
-    const mutationEnd = useMutation({
-        mutationFn: (id: string) => patchCommandeEnd(id),
-        onSuccess: (data) => {
-            console.log("Commande finalisée :", data);
-        },
-    });
-    return (
-        <Dropdown>
-            <MenuButton
-                slots={{ root: IconButton }}
-                slotProps={{ root: { variant: 'plain', color: 'neutral', size: 'sm' } }}
-            >
-            </MenuButton>
-            <Menu size="sm" sx={{ minWidth: 140 }}>
-                <MenuItem
-                    component="button"
-                    onClick={() => mutationStart.mutate(idCommande)}
-                >
-                    Mettre en préparation
-                </MenuItem>
-
-                <MenuItem
-                    component="button"
-                    onClick={() => mutationEnd.mutate(idCommande)}
-                >
-                    Finaliser la commande
-                </MenuItem>
-                <Divider />
-                <MenuItem color="danger"
-                    component="button"
-                    onClick={() => { supprimerCommande(idCommande); }}
-                >Supprimer</MenuItem>
-            </Menu>
-        </Dropdown>
-    );
-}
-
-function Row(props: Readonly<{ row: CommandeType, clientMap: Map<number, { nom: string; prenom: string; email: string; adresse: string; cp: string; ville: string }> }>) {
-    const { row, clientMap } = props;
-    const [openDetails, setOpenDetails] = React.useState(false);
-
-    // Fetch product data for each product in the order
-    const productQueries = useQueries({
-        queries: row.panier.lignes.map((ligne: any) => ({
-            queryKey: ["produit", ligne.idProduit],
-            queryFn: () => getProductById(ligne.idProduit),
-        })),
-    });
-
-    return (
-        <>
-            <tr>
-                <td>
-                    <IconButton
-                        aria-label="expand row"
-                        size="sm"
-                        onClick={() => setOpenDetails(!openDetails)}
-                    >
-                    </IconButton>
-                </td>
-                <td scope='row'>{row.idCommande}</td>
-                <td>
-                    {(() => {
-                        const client = clientMap.get(row.panier.idClient);
-                        return (
-                            <div>
-                                <Typography level="body-xs">{client ? `${client.prenom} ${client.nom}` : "Chargement..."}</Typography>
-                            </div>
-                        );
-                    })()}
-                </td>
-                <td>{new Date(row.dateHeureRetrait).toISOString().split("T")[0]} [{new Date(row.dateHeureRetrait).getHours().toString().padStart(2, "0")}:{new Date(row.dateHeureRetrait).getMinutes().toString().padStart(2, "0")}]
-                </td>
-                <td>{row.statut}</td>
-            </tr>
-            {openDetails && (
-                <tr>
-                    <td style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
-                        <Box sx={{ margin: 1 }}>
-                            <Typography gutterBottom component="div">
-                                Détails de la commande
-                            </Typography>
-                            <Table size="sm">
-                                <thead>
-                                    <tr>
-                                        <th>Produit</th>
-                                        <th>Quantité</th>
-                                        <th>Image</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {row.panier.lignes.map((ligne: any, idx: number) => {
-                                        const query = productQueries[idx];
-                                        const produit = query?.data as {
-                                            nom: string;
-                                            marque: string;
-                                            imageUrl: string;
-                                        } | undefined;
-                                        const isLoading = query?.isLoading;
-
-                                        return (
-                                            <tr key={ligne.idProduit ?? idx}>
-                                                <td>
-                                                    {isLoading || !produit
-                                                        ? "Chargement..."
-                                                        : `${produit.nom} (${produit.marque})`}
-                                                </td>
-                                                <td>{ligne.quantite}</td>
-                                                <td>
-                                                    {isLoading || !produit ? (
-                                                        "Chargement image..."
-                                                    ) : (
-                                                        <img
-                                                            src={produit.imageUrl}
-                                                            alt={produit.nom}
-                                                            style={{ width: "80px", height: "auto" }}
-                                                        />
-                                                    )}
-                                                </td>
-                                            </tr>
-                                        );
-                                    })}
-                                </tbody>
-                            </Table>
-                        </Box>
-                    </td>
-                </tr>
-            )}
-        </>
-    );
-}
-
 
 function DashboardPrepa() {
     const navigate = useNavigate();
@@ -243,130 +84,14 @@ function DashboardPrepa() {
         }
     });
 
-    const productQueries = useQueries({
-        queries: (Array.isArray(commandes)
-            ? commandes.flatMap((commande) =>
-                commande.panier.lignes.map((ligne: any) => ({
-                    queryKey: ["produit", ligne.idProduit],
-                    queryFn: () => getProductById(ligne.idProduit),
-                }))
-            )
-            : []
-        ),
-    });
-
-    const [order, setOrder] = React.useState<Order>('asc');
-    const [open, setOpen] = React.useState(false);
-    const [searchFilter, setSearchFilter] = React.useState<string | null>(null);
-    const [statusFilter, setStatusFilter] = React.useState<string | null>(null);
-    const [customerFilter, setCustomerFilter] = React.useState<string | null>(null);
+    const [order, setOrder] = React.useState<OrderType>('asc');
     const [filteredRows, setFilteredRows] = React.useState<Array<any> | null>(null);
     const [prioriteEtat, setPrioriteEtat] = React.useState(false);
+    const isSmallScreen = useIsSmallScreen(); // Par défaut : max-width: 640px (taille "sm")
 
-    const renderFilters = () => (
-        <React.Fragment>
-            <FormControl size="sm">
-                <FormLabel>Status</FormLabel>
-                <Select
-                    size="sm"
-                    placeholder="All"
-                    value={statusFilter ?? ""}
-                    onChange={(_, newValue) => {
-                        setStatusFilter(typeof newValue === "string" && newValue !== "" ? newValue : null);
-                    }}
-                >
-                    <Option value="">All</Option>
-                    {(Array.isArray(commandes) ? commandes : []).slice().sort(getComparator(order, 'jourRetrait')).map((row) => (
-                        <Option key={row.idCommande} value={row.statut}>
-                            {row.statut}
-                        </Option>
-                    ))}
-                </Select>
-            </FormControl>
-            <FormControl size="sm">
-                <FormLabel>Customer</FormLabel>
-                <Select
-                    size="sm"
-                    placeholder="All"
-                    value={customerFilter ?? ""}
-                    onChange={(_, newValue) => {
-                        setCustomerFilter(typeof newValue === "string" && newValue !== "" ? newValue : null);
-                    }}
-                >
-                    <Option value="">All</Option>
-                    {(Array.isArray(commandes) ? commandes : []).slice().sort(getComparator(order, 'jourRetrait')).map((row) => (
-                        <Option key={row.idCommande} value={String(row.panier.idClient)}>
-                            {row.panier.idClient}
-                        </Option>
-                    ))}
-                </Select>
-            </FormControl>
-
-            <Button
-                component="button"
-                color="danger"
-                sx={{ fontSize: 'sm', textDecoration: 'underline' }}
-                onClick={() => {
-                    setOpen(false); // Fermer le modal
-                    const newPrioriteEtat = !prioriteEtat;
-                    setPrioriteEtat(newPrioriteEtat);
-                    if (newPrioriteEtat) {
-                        setFilteredRows(Array.isArray(commandesNow) ? commandesNow : []);
-                    } else {
-                        setFilteredRows(Array.isArray(commandes) ? commandes : []);
-                    }
-                }}
-            >
-                Afficher les priorités
-            </Button>
-
-            <Button
-                component="button"
-                color="success"
-                sx={{ fontSize: 'sm', textDecoration: 'underline' }}
-                onClick={() => {
-                    setOpen(false); // Fermer le modal
-                    const newPrioriteEtat = prioriteEtat;
-                    setPrioriteEtat(newPrioriteEtat);
-                    if (!newPrioriteEtat) {
-                        setFilteredRows(Array.isArray(commandes)
-                            ? commandes.filter((row) => {
-                                const searchMatch = searchFilter ? String(row.idCommande).toLowerCase().includes(searchFilter.toLowerCase()) : true;
-                                const customerMatch = customerFilter ? String(row.panier.idClient).toLowerCase() === customerFilter.toLowerCase() : true;
-                                const statusMatch = statusFilter ? row.statut.toLowerCase() === statusFilter.toLowerCase() : true;
-                                return customerMatch && statusMatch && searchMatch;
-                            })
-                            : []);
-                    } else {
-                        setFilteredRows(Array.isArray(commandesNow)
-                            ? commandesNow.filter((row) => {
-                                const searchMatch = searchFilter ? String(row.idCommande).toLowerCase().includes(searchFilter.toLowerCase()) : true;
-                                const customerMatch = customerFilter ? String(row.panier.idClient).toLowerCase() === customerFilter.toLowerCase() : true;
-                                const statusMatch = statusFilter ? row.statut.toLowerCase() === statusFilter.toLowerCase() : true;
-                                return customerMatch && statusMatch && searchMatch;
-                            })
-                            : []);
-                    }
-                }}
-            >
-                Filtrer
-            </Button>
-            <Button
-                component="button"
-                color="warning"
-                sx={{ fontSize: 'sm', textDecoration: 'underline' }}
-                onClick={() => {
-                    setSearchFilter(null);
-                    setStatusFilter(null);
-                    setCustomerFilter(null);
-                    setFilteredRows(null);
-                    setPrioriteEtat(false);
-                }}
-            >
-                Réinitialiser
-            </Button>
-        </React.Fragment >
-    );
+    React.useEffect(() => {
+        setFilteredRows(Array.isArray(commandes) ? commandes : []);
+    }, [commandes]);
 
     return (
         <React.Fragment>
@@ -381,45 +106,122 @@ function DashboardPrepa() {
                 />
                 <IconButton
                     size="sm"
-                    variant="outlined"
-                    color="neutral"
-                    onClick={() => setOpen(true)}
+                    onClick={() => {
+                        const newEtat = !prioriteEtat;
+                        setPrioriteEtat(newEtat);
+                        if (newEtat) {
+                            setFilteredRows(Array.isArray(commandesNow) ? commandesNow : []);
+                        } else {
+                            setFilteredRows(Array.isArray(commandes) ? commandes : []);
+                        }
+                    }}
+                    style={{
+                        border: '1px solid #ccc',
+                        backgroundColor: prioriteEtat ? '#ff4d4f' : 'white', // rouge si actif
+                        padding: '4px',
+                        borderRadius: '6px',
+                    }}
                 >
+                    <svg
+                        width="20"
+                        height="20"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                    >
+                        {/* Triangle */}
+                        <path
+                            d="M1 21H23L12 2L1 21Z"
+                            fill={prioriteEtat ? 'white' : '#ff4d4f'}
+                            stroke={prioriteEtat ? 'white' : '#ff4d4f'}
+                            strokeWidth="1.5"
+                        />
+                        {/* Point d'exclamation - barre */}
+                        <line
+                            x1="12"
+                            y1="8"
+                            x2="12"
+                            y2="13"
+                            stroke={prioriteEtat ? '#ff4d4f' : 'white'}
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                        />
+                        {/* Point d'exclamation - point */}
+                        <circle
+                            cx="12"
+                            cy="17"
+                            r="1"
+                            fill={prioriteEtat ? '#ff4d4f' : 'white'}
+                        />
+                    </svg>
                 </IconButton>
-                <Modal open={open} onClose={() => setOpen(false)}>
-                    <ModalDialog aria-labelledby="filter-modal" layout="fullscreen">
-                        <ModalClose />
-                        <Typography id="filter-modal" level="h2">
-                            Filters
-                        </Typography>
-                        <Divider sx={{ my: 2 }} />
-                        <Sheet sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                            {renderFilters()}
-                        </Sheet>
-                    </ModalDialog>
-                </Modal>
+
+
             </Sheet>
-            {/* ✅ Ton tableau s'affiche juste en dessous */}
-            <Sheet variant="outlined" sx={{ mt: 2, borderRadius: 'md', overflow: 'auto' }}>
-                <Box>
-                    <Table>
+            {isSmallScreen && (
+                <Sheet>
+                    <Table
+                        aria-label="collapsible table"
+                        sx={{
+                            '& > thead > tr > th:nth-child(n + 3), & > tbody > tr > td:nth-child(n + 3)':
+                                { textAlign: 'right' },
+                            '& > tbody > tr:nth-child(odd) > td, & > tbody > tr:nth-child(odd) > th[scope="row"]':
+                            {
+                                borderBottom: 0,
+                            },
+                        }}
+                    >
                         <thead>
                             <tr>
-                                <th></th>
-                                <th>N°</th>
+                                <th style={{ width: 40 }} aria-label="empty" />
+                                <th style={{ width: 20 }}>N°</th>
                                 <th>Client</th>
-                                <th>Retrait</th>
+                                <th>
+                                    <Link
+                                        underline="none"
+                                        color="primary"
+                                        component="button"
+                                        onClick={() => { console.log(order); setOrder(order === 'asc' ? 'desc' : 'asc') }}
+                                        sx={{
+                                            fontWeight: 'lg',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            gap: 0.5,
+                                            '& svg': {
+                                                transition: 'transform 0.3s ease',
+                                                transform: order === 'desc' ? 'rotate(0deg)' : 'rotate(180deg)',
+                                            },
+                                        }}
+                                    >
+                                        Retrait
+                                        <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            width="12"
+                                            height="12"
+                                            viewBox="0 0 24 24"
+                                            fill="none"
+                                            stroke="currentColor"
+                                            strokeWidth="2"
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                        >
+                                            <polyline points="6 9 12 15 18 9" />
+                                        </svg>
+                                    </Link>
+                                </th>
+
                                 <th>Statut</th>
+                                <th>Action</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {(Array.isArray(commandes) ? commandes : []).map((row) => (
-                                <Row key={row.idCommande} row={row} clientMap={clientMap} />
+                            {(Array.isArray(filteredRows) ? filteredRows : []).map((row) => (
+                                <Row key={row.name} row={row} clientMap={clientMap} />
                             ))}
                         </tbody>
                     </Table>
-                </Box>
-            </Sheet>
+                </Sheet>
+            )}
             <Box
                 className="SearchAndFilters-tabletUp"
                 sx={{
@@ -433,16 +235,6 @@ function DashboardPrepa() {
                     },
                 }}
             >
-                <FormControl sx={{ flex: 1 }} size="sm">
-                    <FormLabel>Search for order</FormLabel>
-                    <Input
-                        size="sm"
-                        placeholder="Search"
-                        value={searchFilter ?? ''}
-                        onChange={(e) => setSearchFilter(e.target.value)}
-                    />
-                </FormControl>
-                {renderFilters()}
             </Box>
             <Sheet
                 className="OrderTableContainer"
@@ -568,7 +360,7 @@ function DashboardPrepa() {
                     </tbody>
                 </Table>
             </Sheet>
-        </React.Fragment >
+        </React.Fragment>
     );
 }
 

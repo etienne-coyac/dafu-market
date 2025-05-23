@@ -1,7 +1,6 @@
-import { Box } from "@mui/joy";
+import { Box, Link, Table } from "@mui/joy";
 import { useNavigate, useLocation } from "react-router-dom";
-import Table from "@mui/material/Table";
-import Link from "@mui/material/Link";
+
 import { getProductById } from "../../../api/products.api";
 import { useQueries } from "@tanstack/react-query";
 
@@ -38,8 +37,8 @@ function DetailsPage() {
                     <thead>
                         <tr>
                             <th>Nom</th>
-                            <th align="right">Quantité</th>
-                            <th align="right">Image</th>
+                            <th>Quantité</th>
+                            <th>Image</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -61,8 +60,8 @@ function DetailsPage() {
                                             ? "Chargement..."
                                             : `${produit.nom} (${produit.marque})`}
                                     </td>
-                                    <td align="right">{lignes[idx].quantite}</td>
-                                    <td align="right">
+                                    <td>{lignes[idx].quantite}</td>
+                                    <td>
                                         {isLoading || !produit ? (
                                             "Chargement image..."
                                         ) : (
