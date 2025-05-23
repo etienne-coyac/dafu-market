@@ -1,4 +1,4 @@
-import { Box, Stack } from "@mui/joy";
+import { Box, Stack, Typography } from "@mui/joy";
 
 import CartStepper, {
   type CartStepperSteps,
@@ -10,14 +10,14 @@ import CartContent from "../../../components/ui/cart/CartContent";
 const CartPage = () => {
   const [activeStep, setActiveStep] = useState<CartStepperSteps>(0);
   useMediaQuery("down", "sm");
-  console.log(document.querySelector("header")?.offsetHeight);
   return (
     <Box
       sx={{
         display: "flex",
         justifyContent: "center",
-        mt: 2,
         width: "100%",
+        p: 2,
+        boxSizing: "border-box",
       }}
     >
       <Stack
@@ -28,6 +28,8 @@ const CartPage = () => {
         {activeStep === 0 && (
           <CartContent onNextStep={() => setActiveStep(1)} />
         )}
+        {activeStep === 1 && <Typography>Choix du magasin</Typography>}
+        {activeStep === 2 && <Typography>Confirmation</Typography>}
       </Stack>
     </Box>
   );

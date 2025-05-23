@@ -106,7 +106,7 @@ const CartStepper = (props: CartStepperProps) => {
       >
         <div>
           <Typography level="title-sm">Étape 2</Typography>
-          Choix du magasin
+          Confirmation du magasin
         </div>
       </Step>
       <Step

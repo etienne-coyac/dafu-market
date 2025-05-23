@@ -23,8 +23,7 @@ const LoginForm = () => {
   });
 
   const onSubmit = async (data: LoginType) => {
-    console.log(data);
-    await auth.login(data).then(() => navigate(state?.from || "/"));
+    await auth.login(data).then(() => navigate(state?.from ?? "/"));
   };
 
   const onError = () => {
@@ -45,7 +44,7 @@ const LoginForm = () => {
         </Button>
         <Button
           fullWidth
-          // onClick={() => navigate("/")}
+          onClick={() => navigate("/")}
           color="neutral"
           variant="soft"
         >

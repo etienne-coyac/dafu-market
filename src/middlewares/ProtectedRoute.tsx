@@ -8,7 +8,6 @@ type ProtectedRouteProps = {
 const ProtectedRoute = ({ redirectPath = "/login" }: ProtectedRouteProps) => {
   const { user, loading } = useAuth();
   const location = useLocation();
-  console.log(location);
   if (loading) return null;
   if (!user) {
     return (

@@ -17,6 +17,7 @@ import { getSections } from "../../../api/sections.api";
 export type ProductFiltersType = {
   brand?: string[];
   nutriscore?: string[];
+  promo?: boolean;
 };
 
 const Products = () => {

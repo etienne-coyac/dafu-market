@@ -2,7 +2,7 @@ import { createContext, useContext, useEffect, useState } from "react";
 import type { LoginType, UserType } from "../types/user";
 import { login as apiLogin } from "../api/services/auth";
 import { getCurrentClient } from "../api/client";
-import { useNavigate } from "react-router";
+import { useLocation, useNavigate } from "react-router";
 
 type AuthContextType = {
   user: UserType | null;
@@ -28,6 +28,7 @@ const protectedRoutes = ["/panier"];
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [user, setUser] = useState<UserType | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
 
@@ -51,6 +52,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   useEffect(() => {
     const token = localStorage.getItem("authToken");
     if (token) {
+      setLoading(true);
       getCurrentClient()
         .then((user) => setUser(user))
         .catch(() => {
@@ -58,8 +60,13 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           navigate("/login");
         })
         .finally(() => setLoading(false));
+    } else if (
+      location.pathname !== "/" &&
+      protectedRoutes.some((route) => route.includes(location.pathname))
+    ) {
+      navigate("/login", { state: { from: location.pathname } });
     }
-  }, []);
+  }, [location.pathname]);
 
   return (
     <AuthContext.Provider value={{ user, login, logout, canAccess, loading }}>

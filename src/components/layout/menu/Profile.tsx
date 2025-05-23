@@ -13,7 +13,6 @@ import { useNavigate } from "react-router";
 
 const Profile = () => {
   const auth = useAuth();
-  console.log(auth.user);
   const navigate = useNavigate();
   return (
     <Dropdown>

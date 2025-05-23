@@ -3,14 +3,14 @@ import {
   AspectRatio,
   Card,
   CardContent,
+  Chip,
   IconButton,
   Link,
   Skeleton,
   Stack,
   Typography,
 } from "@mui/joy";
-import { useNavigate } from "react-router";
-import { Link as RouterLink } from "react-router";
+import { useNavigate, Link as RouterLink } from "react-router";
 import type { ProductType } from "../../types/protucts";
 import { useState } from "react";
 import Quantity from "./Quantity";
@@ -36,7 +36,16 @@ const ProductCard = (props: ProductCardProps) => {
   };
 
   return (
-    <Card>
+    <Card
+      sx={(theme) =>
+        product?.prixAvecPromo === undefined
+          ? {
+              borderColor: theme.vars.palette.danger[500],
+              borderWidth: 2,
+            }
+          : {}
+      }
+    >
       <CardContent
         sx={{
           display: "flex",
@@ -46,11 +55,23 @@ const ProductCard = (props: ProductCardProps) => {
         <AspectRatio
           maxHeight={"150px"}
           minHeight={"100px"}
-          sx={{ cursor: "pointer", flex: 1 }}
+          sx={{ cursor: "pointer", flex: 1, position: "relative" }}
         >
           <Skeleton loading={!product} variant="overlay">
-            <img src="" onClick={handleNavigate} />
+            <img src={product?.imageUrl} onClick={handleNavigate} />
           </Skeleton>
+          <Chip
+            color="danger"
+            variant="solid"
+            sx={{
+              position: "absolute",
+              top: "0.5rem",
+              left: "0.5rem",
+              zIndex: 10,
+            }}
+          >
+            -40%
+          </Chip>
         </AspectRatio>
 
         <Stack flex={1} justifyContent={"space-between"}>
