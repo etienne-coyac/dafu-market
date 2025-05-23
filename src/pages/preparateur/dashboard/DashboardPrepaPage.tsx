@@ -29,9 +29,9 @@ import CheckRoundedIcon from '@mui/icons-material/CheckRounded';
 import BlockIcon from '@mui/icons-material/Block';
 import AutorenewRoundedIcon from '@mui/icons-material/AutorenewRounded';
 import MoreHorizRoundedIcon from '@mui/icons-material/MoreHorizRounded';
-import { getCommandes, getCommandesNow } from "../../../api/commandes.api";
+import { getCommandes, getCommandesNow, patchCommandeStart, patchCommandeEnd } from "../../../api/commandes.api";
 import { useNavigate } from 'react-router-dom';
-import { useQuery, useQueries } from '@tanstack/react-query';
+import { useQuery, useQueries, useQueryClient, useMutation } from '@tanstack/react-query';
 import { getClientById } from '../../../api/clients.api';
 
 function descendingComparator<T>(a: T, b: T, orderBy: keyof T): number {
@@ -67,14 +67,6 @@ function getComparator<Key extends keyof any>(
         : (a, b) => -descendingComparator(a, b, orderBy);
 }
 
-function changeStatusCommande(idCommande: string, newStatus: string) {
-    // This is a placeholder for updating the status of a commande.
-    // In a real app, you would call an API or update state here.
-    // For now, just log the action.
-    console.log(`Changing status of commande ${idCommande} to ${newStatus}`);
-    // Optionally, show a notification or update local state if needed.
-}
-
 function supprimerCommande(idCommande: string) {
     // This is a placeholder for deleting a commande.
     // In a real app, you would call an API or update state here.
@@ -84,6 +76,19 @@ function supprimerCommande(idCommande: string) {
 }
 
 function RowMenu({ idCommande }: Readonly<{ idCommande: string }>) {
+    const mutationStart = useMutation({
+        mutationFn: (id: string) => patchCommandeStart(id),
+        onSuccess: (data) => {
+            console.log("Commande mise en préparation :", data);
+        },
+    });
+
+    const mutationEnd = useMutation({
+        mutationFn: (id: string) => patchCommandeEnd(id),
+        onSuccess: (data) => {
+            console.log("Commande finalisée :", data);
+        },
+    });
     return (
         <Dropdown>
             <MenuButton
@@ -95,12 +100,17 @@ function RowMenu({ idCommande }: Readonly<{ idCommande: string }>) {
             <Menu size="sm" sx={{ minWidth: 140 }}>
                 <MenuItem
                     component="button"
-                    onClick={() => { changeStatusCommande(idCommande, "preparation"); }}
-                >Mettre en préparation</MenuItem>
+                    onClick={() => mutationStart.mutate(idCommande)}
+                >
+                    Mettre en préparation
+                </MenuItem>
+
                 <MenuItem
                     component="button"
-                    onClick={() => { changeStatusCommande(idCommande, "finaliser"); }}
-                >Finaliser la commande</MenuItem>
+                    onClick={() => mutationEnd.mutate(idCommande)}
+                >
+                    Finaliser la commande
+                </MenuItem>
                 <Divider />
                 <MenuItem color="danger"
                     component="button"
