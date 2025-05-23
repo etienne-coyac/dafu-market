@@ -13,7 +13,6 @@ function App() {
     >
       <Header />
       <Box component={"main"} sx={{ p: 1 }}>
-        <Box sx={{ height: "1000px" }}></Box>
         <Outlet />
       </Box>
     </Box>
