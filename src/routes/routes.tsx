@@ -10,6 +10,16 @@ import ProtectedRoute from "../middlewares/ProtectedRoute";
 import LoginPage from "../pages/customer/login/LoginPage";
 import CartPage from "../pages/customer/cart/CartPage";
 import OrdersPage from "../pages/customer/orders/OrdersPage";
+import ImportPage from "../pages/admin/import/ImportPage";
+import Forecast from "../pages/admin/forecast/ForecastPage";
+import ParamAlgo from "../pages/admin/statistiques/ParamAlgoPage";
+import EditSysteme from "../pages/admin/statistiques/EditSystemePage";
+import EffSysteme from "../pages/admin/statistiques/EffSystemePage";
+import HabitProfils from "../pages/admin/statistiques/HabitProfils";
+import ConsultProfils from "../pages/admin/statistiques/ConsultProfilsPage";
+import AppPreparateur from "../pages/preparateur/AppPreparateur";
+import DashboardPrepa from "../pages/preparateur/dashboard/DashboardPrepaPage";
+import DetailsPage from "../pages/preparateur/details/DetailsPage";
 
 const router = createBrowserRouter([
   {
@@ -57,7 +67,60 @@ const router = createBrowserRouter([
       {
         path: "/admin",
         element: <AppAdmin />,
-        children: [],
+        children: [
+          {
+            errorElement: <ErrorBoundary />,
+            children: [
+              {
+                path: "import",
+                element: <ImportPage />,
+              },
+              {
+                path: "forecast",
+                element: <Forecast />,
+              },
+              {
+                path: "efficaciteSysteme",
+                element: <EffSysteme />,
+              },
+              {
+                path: "editerSysteme",
+                element: <EditSysteme />,
+              },
+              {
+                path: "parametrerAlgorithme",
+                element: <ParamAlgo />,
+              },
+              {
+                path: "consulterProfils",
+                element: <ConsultProfils />,
+              },
+              {
+                path: "habitudesProfils",
+                element: <HabitProfils />,
+              },
+            ],
+          },
+        ],
+      },
+      {
+        path: "/preparateur",
+        element: <AppPreparateur />,
+        children: [
+          {
+            errorElement: <ErrorBoundary />,
+            children: [
+              {
+                path: "dashboard",
+                element: <DashboardPrepa />,
+              },
+              {
+                path: "dashboard/:idCommande",
+                element: <DetailsPage />,
+              },
+            ],
+          },
+        ],
       },
     ],
   },

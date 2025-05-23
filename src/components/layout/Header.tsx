@@ -91,11 +91,11 @@ const Header = () => {
           <Profile />
         </Stack>
       </Stack>
-      <SearchResults
+      {/* <SearchResults
         open={open}
         onClose={handleCloseSearchResults}
         headerRef={headerRef}
-      />
+      /> */}
     </Fragment>
   );
 };
