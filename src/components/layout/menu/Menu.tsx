@@ -38,6 +38,8 @@ export default function Menu() {
   const { data: sections } = useQuery({
     queryKey: ["sections"],
     queryFn: getSections,
+    gcTime: 1000 * 60 * 60,
+    staleTime: 1000 * 60 * 60,
   });
 
   const handleLinkClick = (url: string) => {

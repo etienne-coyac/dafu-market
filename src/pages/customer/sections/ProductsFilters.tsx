@@ -140,6 +140,26 @@ const ProductFilters = (props: ProductFiltersProps) => {
           sx={{ border: "1px solid lightgrey", borderRadius: "0.5rem" }}
         >
           <Accordion defaultExpanded>
+            <AccordionSummary>Promotions</AccordionSummary>
+            <AccordionDetails sx={{ boxSizing: "border-box" }}>
+              <FilterList>
+                {!loading ? (
+                  <ListItem>
+                    <Checkbox
+                      label={"Promotions"}
+                      checked={filters.promo}
+                      onChange={() =>
+                        setFilters((prev) => ({ ...prev, promo: !prev.promo }))
+                      }
+                    />
+                  </ListItem>
+                ) : (
+                  <Skeleton variant="text" width={"100%"} height={"1rem"} />
+                )}
+              </FilterList>
+            </AccordionDetails>
+          </Accordion>
+          <Accordion defaultExpanded>
             <AccordionSummary>Marque</AccordionSummary>
             <AccordionDetails sx={{ boxSizing: "border-box" }}>
               <FilterList

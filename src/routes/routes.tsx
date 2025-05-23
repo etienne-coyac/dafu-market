@@ -6,6 +6,10 @@ import ProductDetail from "../pages/customer/productDetail/ProductDetail";
 import ErrorBoundary from "./ErrorBoundary";
 import AppProviders from "../AppProviders";
 import AppAdmin from "../pages/admin/AppAdmin";
+import ProtectedRoute from "../middlewares/ProtectedRoute";
+import LoginPage from "../pages/customer/login/LoginPage";
+import CartPage from "../pages/customer/cart/CartPage";
+import OrdersPage from "../pages/customer/orders/OrdersPage";
 import ImportPage from "../pages/admin/import/ImportPage";
 import Forecast from "../pages/admin/forecast/ForecastPage";
 import ParamAlgo from "../pages/admin/statistiques/ParamAlgoPage";
@@ -22,6 +26,10 @@ const router = createBrowserRouter([
     element: <AppProviders />,
     children: [
       {
+        path: "/login",
+        element: <LoginPage />,
+      },
+      {
         path: "/",
         element: <App />,
         children: [
@@ -36,6 +44,21 @@ const router = createBrowserRouter([
               {
                 path: "p/:productId",
                 element: <ProductDetail />,
+              },
+
+              // protected routes
+              {
+                element: <ProtectedRoute />,
+                children: [
+                  {
+                    path: "panier",
+                    element: <CartPage />,
+                  },
+                  {
+                    path: "commandes",
+                    element: <OrdersPage />,
+                  },
+                ],
               },
             ],
           },
@@ -95,7 +118,7 @@ const router = createBrowserRouter([
                 path: "dashboard/:idCommande",
                 element: <DetailsPage />,
               },
-            ]
+            ],
           },
         ],
       },
