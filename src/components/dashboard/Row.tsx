@@ -3,13 +3,10 @@ import IconButton from "@mui/joy/IconButton";
 import Typography from "@mui/joy/Typography";
 import Box from "@mui/joy/Box";
 import Table from "@mui/joy/Table";
-import RowMenu from "./RowMenu";
 import { useQueries } from "@tanstack/react-query";
-// Update the import path to match the actual file name and location, e.g. 'produit.ts' or 'produit.js'
+
+import RowMenu from "./RowMenu";
 import { getProductById } from "../../api/products.api";
-// If the file is named 'produit.js', use:
-// import { getProductById } from "../../api/produit.js";
-// Or correct the path if the file is in a different folder.
 import type { CommandeType } from "../../types/commandes";
 
 function Row(props: Readonly<{ row: CommandeType, clientMap: Map<number, { nom: string; prenom: string; email: string; adresse: string; cp: string; ville: string }> }>) {
@@ -91,8 +88,8 @@ function Row(props: Readonly<{ row: CommandeType, clientMap: Map<number, { nom: 
                                 title={row.statut}
                                 style={{
                                     display: 'inline-block',
-                                    width: '28px',
-                                    height: '28px',
+                                    width: '25px',
+                                    height: '25px',
                                     borderRadius: '50%',
                                     backgroundColor,
                                     margin: '0 auto',
@@ -144,10 +141,19 @@ function Row(props: Readonly<{ row: CommandeType, clientMap: Map<number, { nom: 
                                                         <img
                                                             src={produit.imageUrl}
                                                             alt={produit.nom}
-                                                            style={{ width: "80px", height: "auto" }}
+                                                            style={{
+                                                                maxWidth: "50px",
+                                                                maxHeight: "50px",
+                                                                width: "100%",
+                                                                height: "auto",
+                                                                objectFit: "contain",
+                                                                borderRadius: "6px",
+                                                                display: "block",
+                                                            }}
                                                         />
                                                     )}
                                                 </td>
+
                                             </tr>
                                         );
                                     })}
