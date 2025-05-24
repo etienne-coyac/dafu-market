@@ -3,7 +3,6 @@ import Menu from '@mui/joy/Menu';
 import MenuButton from '@mui/joy/MenuButton';
 import MenuItem from '@mui/joy/MenuItem';
 import IconButton from '@mui/joy/IconButton';
-import Divider from '@mui/joy/Divider';
 import { useMutation } from '@tanstack/react-query';
 import { patchCommandeStart, patchCommandeEnd } from '../../api/commandes.api';
 import type { RowMenuProps } from '../../types/rowMenuProps';
@@ -30,27 +29,40 @@ function RowMenu({ idCommande, status }: Readonly<RowMenuProps>) {
             <MenuButton
                 slots={{ root: IconButton }}
                 slotProps={{ root: { variant: 'plain', color: 'neutral', size: 'sm' } }}
-            >...
+            >
+                ⋮
             </MenuButton>
-            <Menu size="sm" sx={{ minWidth: 140 }}>
-                <MenuItem
-                    component="button"
-                    onClick={() => mutationStart.mutate(idCommande)}
-                >
-                    Mettre en préparation
-                </MenuItem>
 
-                <MenuItem
-                    component="button"
-                    onClick={() => mutationEnd.mutate(idCommande)}
-                >
-                    Finaliser la commande
-                </MenuItem>
-                <Divider />
-                <MenuItem color="danger"
-                    component="button"
-                    onClick={() => { }}
-                >Supprimer</MenuItem>
+            <Menu size="sm" sx={{ minWidth: 140 }}>
+                {status === 'PAYE' && (
+                    <MenuItem
+                        component="button"
+                        onClick={() => mutationStart.mutate(idCommande)}
+                    >
+                        Mettre en préparation
+                    </MenuItem>
+                )}
+
+                {status === 'EN_PREPARATION' && (
+                    <MenuItem
+                        component="button"
+                        onClick={() => mutationEnd.mutate(idCommande)}
+                    >
+                        Finaliser la commande
+                    </MenuItem>
+                )}
+
+                {status === 'PRET' && (
+                    <MenuItem
+                        color="danger"
+                        component="button"
+                        onClick={() => {
+                            // logique de suppression ici
+                        }}
+                    >
+                        Supprimer
+                    </MenuItem>
+                )}
             </Menu>
         </Dropdown>
     );

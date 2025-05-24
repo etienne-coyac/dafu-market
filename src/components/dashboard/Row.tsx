@@ -63,8 +63,32 @@ function Row(props: Readonly<{ row: CommandeType, clientMap: Map<number, { nom: 
                 </td>
                 <td>{new Date(row.dateHeureRetrait).toISOString().split("T")[0]} [{new Date(row.dateHeureRetrait).getHours().toString().padStart(2, "0")}:{new Date(row.dateHeureRetrait).getMinutes().toString().padStart(2, "0")}]
                 </td>
-                <td>{row.statut}</td>
-                <td><RowMenu idCommande={String(row.idCommande)} /></td>
+                <td>
+                    {(() => {
+                        let backgroundColor = '#bdc3c7'; // Gris par défaut
+                        if (row.statut === 'PAYE') {
+                            backgroundColor = '#3498db'; // Bleu
+                        } else if (row.statut === 'EN_PREPARATION') {
+                            backgroundColor = '#f39c12'; // Orange
+                        } else if (row.statut === 'PRET') {
+                            backgroundColor = '#27ae60'; // Vert
+                        }
+                        return (
+                            <span
+                                style={{
+                                    padding: '4px 8px',
+                                    borderRadius: '6px',
+                                    fontWeight: 500,
+                                    color: 'white',
+                                    backgroundColor,
+                                }}
+                            >
+                                {row.statut}
+                            </span>
+                        );
+                    })()}
+                </td>
+                <td><RowMenu idCommande={String(row.idCommande)} status={row.statut} /></td>
             </tr>
             {openDetails && (
                 <tr>

@@ -17,19 +17,21 @@ import useIsSmallScreen from '../../../hooks/useSmallScreen';
 import Row from '../../../components/dashboard/Row';
 import RowMenu from '../../../components/dashboard/RowMenu';
 import type { OrderType } from '../../../types/order';
+import { useState } from 'react';
 
 function descendingComparator<T>(a: T, b: T, orderBy: keyof T): number {
-    if (orderBy === "jourRetrait") {
-        const parseDateTime = (row: any) => {
-            const datePart = row.jourRetrait ?? "1970-01-01";
-            const timePart = row.heureDebRetrait ?? "00:00:00";
-            return new Date(`${datePart}T${timePart}`); // format ISO correct
+    if (orderBy === "dateHeureRetrait") {
+        const parseDateTime = (row: any): number => {
+            const raw = row.dateHeureRetrait ?? "1970-01-01 00:00:00";
+            const isoString = raw.replace(" ", "T");
+            const parsedDate = new Date(isoString);
+            return parsedDate.getTime();
         };
 
         const aDate = parseDateTime(a);
         const bDate = parseDateTime(b);
 
-        return bDate.getTime() - aDate.getTime(); // Descending
+        return bDate - aDate; // Descending
     }
 
     const aValue = a[orderBy];
@@ -84,7 +86,7 @@ function DashboardPrepa() {
         }
     });
 
-    const [order, setOrder] = React.useState<OrderType>('asc');
+    const [order, setOrder] = useState<'asc' | 'desc'>('asc');
     const [filteredRows, setFilteredRows] = React.useState<Array<any> | null>(null);
     const [prioriteEtat, setPrioriteEtat] = React.useState(false);
     const isSmallScreen = useIsSmallScreen(); // Par défaut : max-width: 640px (taille "sm")
@@ -95,69 +97,6 @@ function DashboardPrepa() {
 
     return (
         <React.Fragment>
-            <Sheet
-                className="SearchAndFilters-mobile"
-                sx={{ display: { xs: 'flex', sm: 'none' }, my: 1, gap: 1 }}
-            >
-                <Input
-                    size="sm"
-                    placeholder="Search"
-                    sx={{ flexGrow: 1 }}
-                />
-                <IconButton
-                    size="sm"
-                    onClick={() => {
-                        const newEtat = !prioriteEtat;
-                        setPrioriteEtat(newEtat);
-                        if (newEtat) {
-                            setFilteredRows(Array.isArray(commandesNow) ? commandesNow : []);
-                        } else {
-                            setFilteredRows(Array.isArray(commandes) ? commandes : []);
-                        }
-                    }}
-                    style={{
-                        border: '1px solid #ccc',
-                        backgroundColor: prioriteEtat ? '#ff4d4f' : 'white', // rouge si actif
-                        padding: '4px',
-                        borderRadius: '6px',
-                    }}
-                >
-                    <svg
-                        width="20"
-                        height="20"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                    >
-                        {/* Triangle */}
-                        <path
-                            d="M1 21H23L12 2L1 21Z"
-                            fill={prioriteEtat ? 'white' : '#ff4d4f'}
-                            stroke={prioriteEtat ? 'white' : '#ff4d4f'}
-                            strokeWidth="1.5"
-                        />
-                        {/* Point d'exclamation - barre */}
-                        <line
-                            x1="12"
-                            y1="8"
-                            x2="12"
-                            y2="13"
-                            stroke={prioriteEtat ? '#ff4d4f' : 'white'}
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                        />
-                        {/* Point d'exclamation - point */}
-                        <circle
-                            cx="12"
-                            cy="17"
-                            r="1"
-                            fill={prioriteEtat ? '#ff4d4f' : 'white'}
-                        />
-                    </svg>
-                </IconButton>
-
-
-            </Sheet>
             {isSmallScreen && (
                 <Sheet>
                     <Table
@@ -173,7 +112,59 @@ function DashboardPrepa() {
                     >
                         <thead>
                             <tr>
-                                <th style={{ width: 40 }} aria-label="empty" />
+                                <th style={{ width: 40 }}>
+                                    <IconButton
+                                        size="sm"
+                                        onClick={() => {
+                                            const newEtat = !prioriteEtat;
+                                            setPrioriteEtat(newEtat);
+                                            if (newEtat) {
+                                                setFilteredRows(Array.isArray(commandesNow) ? commandesNow : []);
+                                            } else {
+                                                setFilteredRows(Array.isArray(commandes) ? commandes : []);
+                                            }
+                                        }}
+                                        style={{
+                                            border: '1px solid #ccc',
+                                            backgroundColor: prioriteEtat ? '#ff4d4f' : 'white', // rouge si actif
+                                            padding: '4px',
+                                            borderRadius: '6px',
+                                        }}
+                                    >
+                                        <svg
+                                            width="20"
+                                            height="20"
+                                            viewBox="0 0 24 24"
+                                            fill="none"
+                                            xmlns="http://www.w3.org/2000/svg"
+                                        >
+                                            {/* Triangle */}
+                                            <path
+                                                d="M1 21H23L12 2L1 21Z"
+                                                fill={prioriteEtat ? 'white' : '#ff4d4f'}
+                                                stroke={prioriteEtat ? 'white' : '#ff4d4f'}
+                                                strokeWidth="1.5"
+                                            />
+                                            {/* Point d'exclamation - barre */}
+                                            <line
+                                                x1="12"
+                                                y1="8"
+                                                x2="12"
+                                                y2="13"
+                                                stroke={prioriteEtat ? '#ff4d4f' : 'white'}
+                                                strokeWidth="2"
+                                                strokeLinecap="round"
+                                            />
+                                            {/* Point d'exclamation - point */}
+                                            <circle
+                                                cx="12"
+                                                cy="17"
+                                                r="1"
+                                                fill={prioriteEtat ? '#ff4d4f' : 'white'}
+                                            />
+                                        </svg>
+                                    </IconButton>
+                                </th>
                                 <th style={{ width: 20 }}>N°</th>
                                 <th>Client</th>
                                 <th>
@@ -181,7 +172,9 @@ function DashboardPrepa() {
                                         underline="none"
                                         color="primary"
                                         component="button"
-                                        onClick={() => { console.log(order); setOrder(order === 'asc' ? 'desc' : 'asc') }}
+                                        onClick={() => {
+                                            setOrder(order === 'asc' ? 'desc' : 'asc');
+                                        }}
                                         sx={{
                                             fontWeight: 'lg',
                                             display: 'flex',
@@ -209,13 +202,12 @@ function DashboardPrepa() {
                                         </svg>
                                     </Link>
                                 </th>
-
                                 <th>Statut</th>
                                 <th>Action</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {(Array.isArray(filteredRows) ? filteredRows : []).map((row) => (
+                            {((filteredRows) as Array<any> ?? []).slice().sort(getComparator(order, 'dateHeureRetrait')).map((row) => (
                                 <Row key={row.name} row={row} clientMap={clientMap} />
                             ))}
                         </tbody>
@@ -292,7 +284,7 @@ function DashboardPrepa() {
                         </tr>
                     </thead>
                     <tbody>
-                        {((filteredRows ?? commandes) as Array<any> ?? []).slice().sort(getComparator(order, 'jourRetrait')).map((row) => (
+                        {((filteredRows) as Array<any> ?? []).slice().sort(getComparator(order, 'dateHeureRetrait')).map((row) => (
                             <tr key={`${row.idCommande}`}>
                                 <td>
                                     <Typography level="body-xs">{row.idCommande}</Typography>
@@ -365,3 +357,4 @@ function DashboardPrepa() {
 }
 
 export default DashboardPrepa;
+
