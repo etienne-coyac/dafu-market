@@ -61,7 +61,19 @@ function Row(props: Readonly<{ row: CommandeType, clientMap: Map<number, { nom: 
                         );
                     })()}
                 </td>
-                <td>{new Date(row.dateHeureRetrait).toISOString().split("T")[0]} [{new Date(row.dateHeureRetrait).getHours().toString().padStart(2, "0")}:{new Date(row.dateHeureRetrait).getMinutes().toString().padStart(2, "0")}]
+                <td>
+                    <div>
+                        {(() => {
+                            const date = new Date(row.dateHeureRetrait);
+                            const day = String(date.getDate()).padStart(2, '0');
+                            const month = String(date.getMonth() + 1).padStart(2, '0');
+                            const year = String(date.getFullYear()).slice(-2);
+                            return `${day}/${month}/${year}`;
+                        })()}
+                    </div>
+                    <div>
+                        [{new Date(row.dateHeureRetrait).getHours().toString().padStart(2, "0")}:{new Date(row.dateHeureRetrait).getMinutes().toString().padStart(2, "0")}]
+                    </div>
                 </td>
                 <td>
                     {(() => {

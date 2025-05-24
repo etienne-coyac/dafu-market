@@ -8,9 +8,6 @@ import { patchCommandeStart, patchCommandeEnd } from '../../api/commandes.api';
 import type { RowMenuProps } from '../../types/rowMenuProps';
 
 function RowMenu({ idCommande, status }: Readonly<RowMenuProps>) {
-    if (status !== undefined) {
-        console.log(status);
-    }
     const mutationStart = useMutation({
         mutationFn: (id: string) => patchCommandeStart(id),
         onSuccess: (data) => {
