@@ -10,6 +10,7 @@ import CartContent from "../../../components/ui/cart/CartContent";
 const CartPage = () => {
   const [activeStep, setActiveStep] = useState<CartStepperSteps>(0);
   useMediaQuery("down", "sm");
+
   return (
     <Box
       sx={{

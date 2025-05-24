@@ -12,39 +12,78 @@ import {
 } from "@mui/joy";
 import { useNavigate, Link as RouterLink } from "react-router";
 import type { ProductType } from "../../types/protucts";
-import { useState } from "react";
+import { memo, useState } from "react";
 import Quantity from "./Quantity";
+import { getDisplayPrice } from "../../utils/products.utils";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { updateQuantityPanier } from "../../api/panier.api";
+import { snackbar } from "../../providers/snackbar/snackbar";
+import useClientData from "../../context/client.context";
+import useAuth from "../../context/auth.context";
+import type { CartType } from "../../types/cart";
 
 type ProductCardProps = {
   product: ProductType | undefined;
   orientation?: "horizontal" | "vertical";
-  quantityInCart?: boolean;
+  beforeAddCart: () => void;
+  defaultQuantity?: number;
 };
 
-const ProductCard = (props: ProductCardProps) => {
+const ProductCard = memo((props: ProductCardProps) => {
   const {
     product,
+    beforeAddCart,
+    defaultQuantity,
     orientation = "vertical",
-    quantityInCart: isInCart = false,
   } = props;
-  const [quantityMode, setQuantityMode] = useState<boolean>(isInCart);
-
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
+  const { idMagasin } = useClientData();
+  const { user } = useAuth();
+
+  const [quantityMode, setQuantityMode] = useState<boolean>(
+    defaultQuantity !== undefined
+  );
+
+  const quantityMutation = useMutation({
+    mutationFn: async (quantity: number) => {
+      if (!product || !idMagasin) return;
+      return updateQuantityPanier(product.idProduit, quantity, idMagasin);
+    },
+
+    onSuccess: (res: CartType | undefined) => {
+      if (res?.lignes.length === 0) {
+        queryClient.invalidateQueries({ queryKey: ["cart"] });
+      } else {
+        queryClient.setQueriesData(
+          {
+            queryKey: ["cart"],
+          },
+          () => res
+        );
+      }
+      snackbar.success({ text: "Quantité mise à jour" });
+    },
+  });
+
+  const isPromotion = product?.tauxPromo && product.prixAvecPromo;
+
   const handleNavigate = () => {
     if (!product) return;
     navigate(`/p/${product.idProduit}`);
   };
-
   return (
     <Card
-      sx={(theme) =>
-        product?.prixAvecPromo === undefined
-          ? {
-              borderColor: theme.vars.palette.danger[500],
-              borderWidth: 2,
-            }
-          : {}
-      }
+      sx={(theme) => ({
+        boxSizing: "border-box",
+        ...(orientation === "vertical" && {
+          height: "100%",
+        }),
+        ...(isPromotion && {
+          borderColor: theme.vars.palette.danger[500],
+          borderWidth: 2,
+        }),
+      })}
     >
       <CardContent
         sx={{
@@ -53,25 +92,31 @@ const ProductCard = (props: ProductCardProps) => {
         }}
       >
         <AspectRatio
-          maxHeight={"150px"}
+          maxHeight={"120px"}
           minHeight={"100px"}
-          sx={{ cursor: "pointer", flex: 1, position: "relative" }}
+          sx={{ cursor: "pointer", flex: 1 }}
         >
           <Skeleton loading={!product} variant="overlay">
-            <img src={product?.imageUrl} onClick={handleNavigate} />
+            <img
+              src={product?.imageUrl}
+              loading="lazy"
+              onClick={handleNavigate}
+            />
           </Skeleton>
-          <Chip
-            color="danger"
-            variant="solid"
-            sx={{
-              position: "absolute",
-              top: "0.5rem",
-              left: "0.5rem",
-              zIndex: 10,
-            }}
-          >
-            -40%
-          </Chip>
+          {isPromotion && (
+            <Chip
+              color="danger"
+              variant="solid"
+              sx={{
+                position: "absolute",
+                top: "0.5rem",
+                left: "0.5rem",
+                zIndex: 10,
+              }}
+            >
+              -{product.tauxPromo}%
+            </Chip>
+          )}
         </AspectRatio>
 
         <Stack flex={1} justifyContent={"space-between"}>
@@ -90,7 +135,14 @@ const ProductCard = (props: ProductCardProps) => {
             gap={1}
           >
             {quantityMode ? (
-              <Quantity value={1} onChange={() => null} />
+              <Quantity
+                value={defaultQuantity ?? 22}
+                onChange={(newQtt) => {
+                  console.log("newQtt", newQtt);
+                  if (newQtt === 0) setQuantityMode(false);
+                  quantityMutation.mutate(newQtt);
+                }}
+              />
             ) : (
               <IconButton
                 size="sm"
@@ -98,7 +150,11 @@ const ProductCard = (props: ProductCardProps) => {
                 variant="soft"
                 disabled={!product}
                 onClick={() => {
-                  setQuantityMode(true);
+                  if (!!idMagasin && !!user) {
+                    setQuantityMode(true);
+                  } else {
+                    beforeAddCart();
+                  }
                 }}
               >
                 <AddShoppingCart />
@@ -107,7 +163,7 @@ const ProductCard = (props: ProductCardProps) => {
 
             <Typography level="body-md" fontWeight={"bold"}>
               <Skeleton loading={!product}>
-                {product?.prixRecommande?.toFixed(2) ?? "0.00"}€
+                {product ? getDisplayPrice(product) : ""}
               </Skeleton>
             </Typography>
           </Stack>
@@ -115,6 +171,6 @@ const ProductCard = (props: ProductCardProps) => {
       </CardContent>
     </Card>
   );
-};
+});
 
 export default ProductCard;

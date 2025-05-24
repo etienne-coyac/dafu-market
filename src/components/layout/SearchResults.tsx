@@ -31,7 +31,7 @@ const SearchResults = (props: SearchResultsProps) => {
         position: "absolute",
         top: `${headerRef?.current?.offsetHeight}px`,
         left: 0,
-        zIndex: 1,
+        zIndex: 10,
       }}
     >
       <Box
@@ -75,7 +75,11 @@ const SearchResults = (props: SearchResultsProps) => {
           >
             {Array.from({ length: 7 }).map((_, index) => (
               <Grid key={index} xs={12} sm={12} md={6}>
-                <ProductCard orientation="horizontal" product={undefined} />
+                <ProductCard
+                  orientation="horizontal"
+                  product={undefined}
+                  canAddCart={() => null}
+                />
               </Grid>
             ))}
           </Grid>

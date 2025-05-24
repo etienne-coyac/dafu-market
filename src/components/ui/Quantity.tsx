@@ -13,6 +13,7 @@ const Quantity = (props: QuantityProps) => {
 
   useEffect(() => {
     const timeoutId = setTimeout(() => {
+      if (displayValue === value) return;
       onChange(displayValue);
     }, delay);
     return () => clearTimeout(timeoutId);
@@ -29,7 +30,15 @@ const Quantity = (props: QuantityProps) => {
       flexGrow={0}
       border={"1px solid var(--joy-palette-neutral-100)"}
     >
-      <IconButton size="sm" onClick={() => setDisplayValue((prev) => prev - 1)}>
+      <IconButton
+        size="sm"
+        onClick={() => {
+          if (displayValue - 1 === 0) {
+            onChange(0);
+          }
+          setDisplayValue((prev) => prev - 1);
+        }}
+      >
         <Remove />
       </IconButton>
       <Typography sx={{ width: "1.2rem", textAlign: "center" }}>

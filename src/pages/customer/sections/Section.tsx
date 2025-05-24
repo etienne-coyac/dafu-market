@@ -7,12 +7,12 @@ import {
   getProductByCategory,
   getProductsBySection,
 } from "../../../api/products.api";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import ProductFilters from "./ProductsFilters";
 import { nameToUrl } from "../../../utils/tmp/sectionToIcon";
-import type { ProductType } from "../../../types/protucts";
 import { getSections } from "../../../api/sections.api";
+import useClientData from "../../../context/client.context";
 
 export type ProductFiltersType = {
   brand?: string[];
@@ -26,7 +26,8 @@ const Products = () => {
     category?: string;
   }>();
   const isDesktop = useMediaQuery("up", "md");
-  const queryClient = useQueryClient();
+  const { idMagasin } = useClientData();
+
   const [filters, setFilters] = useState<ProductFiltersType>({});
 
   const { data: sections } = useQuery({
@@ -40,55 +41,41 @@ const Products = () => {
     (c) => nameToUrl(c.nomCategorie) === category
   );
 
-  const existingProducts = queryClient
-    .getQueryData<ProductType[]>([
-      "products",
-      { idRayon: currentSection?.idRayon },
-    ])
-    ?.filter(
-      (p) =>
-        p.categories.findIndex(
-          (c) => c.idCategorie === currentCategory?.idCategorie
-        ) !== -1
-    );
-
+  console.log("idMagasin", idMagasin);
   const getCurrentRequest = () =>
     currentCategory
-      ? getProductByCategory(currentCategory.idCategorie)
+      ? getProductByCategory(currentCategory.idCategorie, idMagasin)
       : currentSection
-      ? getProductsBySection(currentSection.idRayon)
+      ? getProductsBySection(currentSection.idRayon, idMagasin)
       : undefined;
 
-  const { data: fetchProducts, isFetching } = useQuery({
-    enabled: !!currentSection && !existingProducts?.length,
+  const { data: products, isFetching } = useQuery({
+    enabled: !!currentSection,
     queryKey: [
       "products",
       {
         idRayon: currentSection?.idRayon,
         idCategorie: currentCategory?.idCategorie,
+        idMagasin: idMagasin,
       },
     ],
     queryFn: getCurrentRequest,
   });
 
-  const products = existingProducts?.length ? existingProducts : fetchProducts;
-
   const filteredProducts = useMemo(
     () =>
-      (existingProducts?.length ? existingProducts : products)?.filter(
-        (product) => {
-          return (
-            (filters.brand === undefined ||
-              filters.brand.length === 0 ||
-              filters.brand.includes(product.marque)) &&
-            (filters.nutriscore === undefined ||
-              filters.nutriscore.length === 0 ||
-              (product.nutriscore &&
-                filters.nutriscore.includes(product.nutriscore)))
-          );
-        }
-      ),
-    [existingProducts, products, filters.brand, filters.nutriscore]
+      products?.filter((product) => {
+        return (
+          (filters.brand === undefined ||
+            filters.brand.length === 0 ||
+            filters.brand.includes(product.marque)) &&
+          (filters.nutriscore === undefined ||
+            filters.nutriscore.length === 0 ||
+            (product.nutriscore &&
+              filters.nutriscore.includes(product.nutriscore)))
+        );
+      }),
+    [products, filters.brand, filters.nutriscore]
   );
 
   return (
