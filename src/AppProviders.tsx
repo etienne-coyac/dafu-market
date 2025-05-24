@@ -4,6 +4,7 @@ import { Outlet } from "react-router";
 import customTheme from "./theme";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { AuthProvider } from "./context/auth.context";
+import { SnackbarProvider } from "./providers/snackbar/SnackbarProvider";
 
 // To enable caching data, uncomment the staleTime option & comment the gcTime
 const queryClient = new QueryClient({
@@ -17,17 +18,24 @@ const queryClient = new QueryClient({
   },
 });
 
+export const enableCache = (hours: number = 1) => ({
+  gcTime: 1000 * 60 * 60 * hours,
+  staleTime: 1000 * 60 * 60 * hours,
+});
+
 const AppProviders = () => {
   return (
-    <AuthProvider>
-      <CssVarsProvider theme={customTheme}>
-        <QueryClientProvider client={queryClient}>
-          <ReactQueryDevtools initialIsOpen={false} />
+    <QueryClientProvider client={queryClient}>
+      <AuthProvider>
+        <CssVarsProvider theme={customTheme}>
+          <SnackbarProvider>
+            <ReactQueryDevtools initialIsOpen={false} />
 
-          <Outlet />
-        </QueryClientProvider>
-      </CssVarsProvider>
-    </AuthProvider>
+            <Outlet />
+          </SnackbarProvider>
+        </CssVarsProvider>
+      </AuthProvider>
+    </QueryClientProvider>
   );
 };
 

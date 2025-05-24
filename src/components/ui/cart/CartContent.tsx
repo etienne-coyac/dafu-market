@@ -2,25 +2,34 @@ import { KeyboardArrowRight } from "@mui/icons-material";
 import { Typography, Stack, Button } from "@mui/joy";
 import { Fragment } from "react/jsx-runtime";
 import ProductCard from "../ProductCard";
+import useCart from "../../../hooks/data/useCart";
 
 type CartContentProps = {
   onNextStep: () => void;
 };
 const CartContent = (props: CartContentProps) => {
   const { onNextStep } = props;
+  const { data: cart } = useCart();
   return (
     <Fragment>
       <Typography level="h1">Mon panier</Typography>
       <Stack direction={{ xs: "column", sm: "row" }} width={"100%"} gap={2}>
         <Stack flexGrow={1} gap={1}>
-          {Array.from({ length: 6 }).map((_, index) => (
-            <ProductCard
-              key={index}
-              product={undefined}
-              orientation="horizontal"
-              quantityInCart
-            />
-          ))}
+          {cart ? (
+            <>
+              {cart.lignes.map((product) => (
+                <ProductCard
+                  key={product.idProduit}
+                  product={product}
+                  orientation="horizontal"
+                  defaultQuantity={product.quantite}
+                  canAddCart={() => null}
+                />
+              ))}
+            </>
+          ) : (
+            <Typography>Votre panier est vide</Typography>
+          )}
         </Stack>
         <div>
           <Stack
@@ -34,13 +43,19 @@ const CartContent = (props: CartContentProps) => {
           >
             <Typography level="h3">Résumé</Typography>
             <Typography level="body-lg">
-              Total hors promotions: 45.38€
+              Total: {cart?.totalCost ?? 0}€
             </Typography>
             <Typography level="body-lg">
-              Total des promotions: -13.11€
+              Total hors promotions: {cart?.totalSansPromo ?? 0}€
             </Typography>
-            <Typography level="body-lg">Total: 32.27€</Typography>
-            <Button endDecorator={<KeyboardArrowRight />} onClick={onNextStep}>
+            <Typography level="body-lg">
+              Total des promotions: -{cart?.totalPromos ?? 0}€
+            </Typography>
+            <Button
+              endDecorator={<KeyboardArrowRight />}
+              onClick={onNextStep}
+              disabled={!cart}
+            >
               Commander
             </Button>
           </Stack>

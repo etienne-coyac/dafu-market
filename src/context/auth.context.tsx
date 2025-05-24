@@ -1,8 +1,8 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import type { LoginType, UserType } from "../types/user";
 import { login as apiLogin } from "../api/services/auth";
-import { getCurrentClient } from "../api/client";
 import { useLocation, useNavigate } from "react-router";
+import { getCurrentClient } from "../api/clients.api";
 
 type AuthContextType = {
   user: UserType | null;
@@ -51,7 +51,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   useEffect(() => {
     const token = localStorage.getItem("authToken");
-    if (token) {
+    if (token && !user) {
       setLoading(true);
       getCurrentClient()
         .then((user) => setUser(user))
@@ -61,12 +61,13 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         })
         .finally(() => setLoading(false));
     } else if (
+      !user &&
       location.pathname !== "/" &&
       protectedRoutes.some((route) => route.includes(location.pathname))
     ) {
       navigate("/login", { state: { from: location.pathname } });
     }
-  }, [location.pathname]);
+  }, [location.pathname, navigate, user]);
 
   return (
     <AuthContext.Provider value={{ user, login, logout, canAccess, loading }}>
