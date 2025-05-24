@@ -21,25 +21,21 @@ import { snackbar } from "../../providers/snackbar/snackbar";
 import useClientData from "../../context/client.context";
 import useAuth from "../../context/auth.context";
 import type { CartType } from "../../types/cart";
+import useCartGuard from "../../context/cartGuard.context";
 
 type ProductCardProps = {
   product: ProductType | undefined;
   orientation?: "horizontal" | "vertical";
-  beforeAddCart: () => void;
   defaultQuantity?: number;
 };
 
 const ProductCard = memo((props: ProductCardProps) => {
-  const {
-    product,
-    beforeAddCart,
-    defaultQuantity,
-    orientation = "vertical",
-  } = props;
+  const { product, defaultQuantity, orientation = "vertical" } = props;
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const { idMagasin } = useClientData();
   const { user } = useAuth();
+  const { idMagasin } = useClientData();
+  const { beforeAddCart } = useCartGuard();
 
   const [quantityMode, setQuantityMode] = useState<boolean>(
     defaultQuantity !== undefined

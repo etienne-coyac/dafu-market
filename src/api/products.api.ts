@@ -25,3 +25,9 @@ export const getProductByCategory = async (
 export const getProductById = async (id: number) => {
   return api.get<ProductType>(`/produits/${id}`).then((res) => res.data);
 };
+
+export const getProductsSearch = async (search: string, limit: number = 6) => {
+  return api
+    .get<ProductType[]>(`/produits/search?search=${search}&limit=${limit}`)
+    .then((res) => res.data);
+};

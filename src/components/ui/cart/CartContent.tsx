@@ -23,7 +23,6 @@ const CartContent = (props: CartContentProps) => {
                   product={product}
                   orientation="horizontal"
                   defaultQuantity={product.quantite}
-                  canAddCart={() => null}
                 />
               ))}
             </>
