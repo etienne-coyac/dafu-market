@@ -85,20 +85,22 @@ function Row(props: Readonly<{ row: CommandeType, clientMap: Map<number, { nom: 
                         } else if (row.statut === 'PRET') {
                             backgroundColor = '#27ae60'; // Vert
                         }
+
                         return (
                             <span
+                                title={row.statut}
                                 style={{
-                                    padding: '4px 8px',
-                                    borderRadius: '6px',
-                                    fontWeight: 500,
-                                    color: 'white',
+                                    display: 'inline-block',
+                                    width: '28px',
+                                    height: '28px',
+                                    borderRadius: '50%',
                                     backgroundColor,
+                                    margin: '0 auto',
                                 }}
-                            >
-                                {row.statut}
-                            </span>
+                            />
                         );
                     })()}
+
                 </td>
                 <td><RowMenu idCommande={String(row.idCommande)} status={row.statut} /></td>
             </tr>

@@ -3,7 +3,6 @@ import type { ColorPaletteProp } from '@mui/joy/styles';
 import Box from '@mui/joy/Box';
 import Chip from '@mui/joy/Chip';
 import Link from '@mui/joy/Link';
-import Input from '@mui/joy/Input';
 import Table from '@mui/joy/Table';
 import Sheet from '@mui/joy/Sheet';
 import IconButton from '@mui/joy/IconButton';
