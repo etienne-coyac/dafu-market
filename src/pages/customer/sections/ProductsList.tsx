@@ -32,14 +32,7 @@ const ProductsList = (props: ProductsListProps) => {
     if (!user) setOpenLoginModal(true);
     else if (!idMagasin) setOpenChoseMagasin(true);
   }, [idMagasin, user]);
-  console.log(
-    "p5",
-    cart?.lignes.find((item) => item.idProduit === 5)?.quantite
-  );
-  console.log(
-    "p6",
-    cart?.lignes.find((item) => item.idProduit === 6)?.quantite
-  );
+
   return (
     <Stack rowGap={1} sx={{ flex: 1 }}>
       <Typography level="h2">{category ?? section}</Typography>

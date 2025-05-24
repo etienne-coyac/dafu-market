@@ -1,4 +1,5 @@
 import {
+  Alert,
   Modal,
   ModalClose,
   Option,
@@ -49,6 +50,10 @@ const ChoseMagasinModal = (props: ChoseMagasinProps) => {
             en temps réel, et de passer commande facilement selon la
             disponibilité locale.
           </Typography>
+          <Alert color="danger">
+            Attention : les prix pratiqués par les différents magasin peuvent
+            être différents
+          </Alert>
           <Select
             size="sm"
             value={idMagasin}

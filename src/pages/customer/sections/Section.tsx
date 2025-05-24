@@ -41,7 +41,6 @@ const Products = () => {
     (c) => nameToUrl(c.nomCategorie) === category
   );
 
-  console.log("idMagasin", idMagasin);
   const getCurrentRequest = () =>
     currentCategory
       ? getProductByCategory(currentCategory.idCategorie, idMagasin)

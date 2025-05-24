@@ -19,7 +19,6 @@ export const getProductByCategory = async (
   const path = idMagasin
     ? `/magasins/${idMagasin}/produits/categorie/${idCategorie}`
     : `/produits/categorie/${idCategorie}`;
-  console.log(path);
   return api.get<ProductType[]>(path).then((res) => res.data);
 };
 

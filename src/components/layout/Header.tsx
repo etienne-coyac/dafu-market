@@ -61,7 +61,7 @@ const Header = () => {
           top: 0,
           left: 0,
           background: "white",
-          zIndex: 2,
+          zIndex: 12,
           borderBottom: "1px solid lightGrey",
           justifyContent: "space-between",
           alignItems: "center",

@@ -52,14 +52,15 @@ const ProductCard = memo((props: ProductCardProps) => {
     },
 
     onSuccess: (res: CartType | undefined) => {
-      if (res?.lignes.length === 0) {
+      // backend limitation, the cart is empty on first row update so refetch the cart
+      if (res && res?.lignes.length === 0) {
         queryClient.invalidateQueries({ queryKey: ["cart"] });
       } else {
         queryClient.setQueriesData(
           {
             queryKey: ["cart"],
           },
-          () => res
+          () => (!res ? null : res)
         );
       }
       snackbar.success({ text: "Quantité mise à jour" });
@@ -136,9 +137,8 @@ const ProductCard = memo((props: ProductCardProps) => {
           >
             {quantityMode ? (
               <Quantity
-                value={defaultQuantity ?? 22}
+                value={defaultQuantity ?? 1}
                 onChange={(newQtt) => {
-                  console.log("newQtt", newQtt);
                   if (newQtt === 0) setQuantityMode(false);
                   quantityMutation.mutate(newQtt);
                 }}

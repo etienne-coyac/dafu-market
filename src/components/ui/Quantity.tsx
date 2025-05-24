@@ -13,7 +13,7 @@ const Quantity = (props: QuantityProps) => {
 
   useEffect(() => {
     const timeoutId = setTimeout(() => {
-      if (displayValue === value) return;
+      if (displayValue === value && value !== 1) return;
       onChange(displayValue);
     }, delay);
     return () => clearTimeout(timeoutId);
