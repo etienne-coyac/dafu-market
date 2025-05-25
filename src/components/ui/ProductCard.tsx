@@ -1,10 +1,8 @@
-import { AddShoppingCart } from "@mui/icons-material";
 import {
   AspectRatio,
   Card,
   CardContent,
   Chip,
-  IconButton,
   Link,
   Skeleton,
   Stack,
@@ -12,16 +10,9 @@ import {
 } from "@mui/joy";
 import { useNavigate, Link as RouterLink } from "react-router";
 import type { ProductType } from "../../types/protucts";
-import { memo, useState } from "react";
-import Quantity from "./Quantity";
+import { memo } from "react";
 import { getDisplayPrice } from "../../utils/products.utils";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { updateQuantityPanier } from "../../api/panier.api";
-import { snackbar } from "../../providers/snackbar/snackbar";
-import useClientData from "../../context/client.context";
-import useAuth from "../../context/auth.context";
-import type { CartType } from "../../types/cart";
-import useCartGuard from "../../context/cartGuard.context";
+import AddToCart from "./AddToCart";
 
 type ProductCardProps = {
   product: ProductType | undefined;
@@ -32,36 +23,6 @@ type ProductCardProps = {
 const ProductCard = memo((props: ProductCardProps) => {
   const { product, defaultQuantity, orientation = "vertical" } = props;
   const navigate = useNavigate();
-  const queryClient = useQueryClient();
-  const { user } = useAuth();
-  const { idMagasin } = useClientData();
-  const { beforeAddCart } = useCartGuard();
-
-  const [quantityMode, setQuantityMode] = useState<boolean>(
-    defaultQuantity !== undefined
-  );
-
-  const quantityMutation = useMutation({
-    mutationFn: async (quantity: number) => {
-      if (!product || !idMagasin) return;
-      return updateQuantityPanier(product.idProduit, quantity, idMagasin);
-    },
-
-    onSuccess: (res: CartType | undefined) => {
-      // backend limitation, the cart is empty on first row update so refetch the cart
-      if (res && res?.lignes.length === 0) {
-        queryClient.invalidateQueries({ queryKey: ["cart"] });
-      } else {
-        queryClient.setQueriesData(
-          {
-            queryKey: ["cart"],
-          },
-          () => (!res ? null : res)
-        );
-      }
-      snackbar.success({ text: "Quantité mise à jour" });
-    },
-  });
 
   const isPromotion = product?.tauxPromo && product.prixAvecPromo;
 
@@ -73,6 +34,7 @@ const ProductCard = memo((props: ProductCardProps) => {
     <Card
       sx={(theme) => ({
         boxSizing: "border-box",
+        minWidth: "150px",
         ...(orientation === "vertical" && {
           height: "100%",
         }),
@@ -117,7 +79,7 @@ const ProductCard = memo((props: ProductCardProps) => {
         </AspectRatio>
 
         <Stack flex={1} justifyContent={"space-between"}>
-          <Link component={RouterLink} to={`/products/${product?.idProduit}`}>
+          <Link component={RouterLink} to={`/p/${product?.idProduit}`}>
             <Typography level="body-sm">
               <Skeleton loading={!product}>
                 {product?.nom ?? "Nom du produit très long "}
@@ -131,35 +93,14 @@ const ProductCard = memo((props: ProductCardProps) => {
             alignItems={"flex-end"}
             gap={1}
           >
-            {quantityMode ? (
-              <Quantity
-                value={defaultQuantity ?? 1}
-                onChange={(newQtt) => {
-                  if (newQtt === 0) setQuantityMode(false);
-                  quantityMutation.mutate(newQtt);
-                }}
-              />
-            ) : (
-              <IconButton
-                size="sm"
-                color="success"
-                variant="soft"
-                disabled={!product}
-                onClick={() => {
-                  if (!!idMagasin && !!user) {
-                    setQuantityMode(true);
-                  } else {
-                    beforeAddCart();
-                  }
-                }}
-              >
-                <AddShoppingCart />
-              </IconButton>
-            )}
+            <AddToCart
+              idProduit={product?.idProduit}
+              defaultQuantity={defaultQuantity}
+            />
 
             <Typography level="body-md" fontWeight={"bold"}>
               <Skeleton loading={!product}>
-                {product ? getDisplayPrice(product) : ""}
+                {product ? `${getDisplayPrice(product)}€` : ""}
               </Skeleton>
             </Typography>
           </Stack>

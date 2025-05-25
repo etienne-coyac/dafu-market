@@ -45,6 +45,10 @@ const router = createBrowserRouter([
                 path: "p/:productId",
                 element: <ProductDetail />,
               },
+              {
+                path: "404",
+                element: <h1>404</h1>,
+              },
 
               // protected routes
               {
@@ -55,7 +59,7 @@ const router = createBrowserRouter([
                     element: <CartPage />,
                   },
                   {
-                    path: "commandes",
+                    path: "commandes/:idCommande?",
                     element: <OrdersPage />,
                   },
                 ],

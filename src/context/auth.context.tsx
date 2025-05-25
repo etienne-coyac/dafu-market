@@ -21,9 +21,7 @@ const authContextDefaultValues: AuthContextType = {
   canAccess: () => true,
 };
 
-export const AuthContext = createContext<AuthContextType>(
-  authContextDefaultValues
-);
+const AuthContext = createContext<AuthContextType>(authContextDefaultValues);
 
 const protectedRoutes = ["/panier"];
 

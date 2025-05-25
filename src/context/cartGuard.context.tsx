@@ -12,7 +12,7 @@ const cartGuardContextDefaultValue: CartGuardContextType = {
   beforeAddCart: () => {},
 };
 
-export const CartGuardContext = createContext<CartGuardContextType>(
+const CartGuardContext = createContext<CartGuardContextType>(
   cartGuardContextDefaultValue
 );
 

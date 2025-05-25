@@ -84,7 +84,7 @@ const SearchResults = (props: SearchResultsProps) => {
             ) : (
               <>
                 {products.map((p, index) => (
-                  <Grid key={index} xs={12} sm={12} md={6}>
+                  <Grid key={index} xs={12}>
                     <ProductCard orientation="horizontal" product={p} />
                   </Grid>
                 ))}
