@@ -24,18 +24,6 @@ const sortProducts = (
             return [...products].sort(
                 (a, b) => Number(getDisplayPrice(b)) - Number(getDisplayPrice(a))
             );
-        case "prixPoids-asc":
-            return [...products].sort((a, b) => {
-                const aValue = a.poids ? Number(getDisplayPrice(a)) / a.poids : Infinity;
-                const bValue = b.poids ? Number(getDisplayPrice(b)) / b.poids : Infinity;
-                return aValue - bValue;
-            });
-        case "prixPoids-desc":
-            return [...products].sort((a, b) => {
-                const aValue = a.poids ? Number(getDisplayPrice(a)) / a.poids : 0;
-                const bValue = b.poids ? Number(getDisplayPrice(b)) / b.poids : 0;
-                return bValue - aValue;
-            });
         case "disponibilite":
             return [...products].sort((a, b) => {
                 const dispoA = a.stockDispo && a.stockDispo > 0 ? 1 : 0;

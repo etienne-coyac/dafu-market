@@ -14,10 +14,7 @@ function ProductsTri({ value, onChange }: { readonly value: string; readonly onC
             <Option value="pertinence">Pertinence</Option>
             <Option value="prix-asc">Prix ↑</Option>
             <Option value="prix-desc">Prix ↓</Option>
-            <Option value="prixPoids-asc">Prix au kg/L ↑</Option>
-            <Option value="prixPoids-desc">Prix au kg/L ↓</Option>
             <Option value="disponibilite">Disponibilité</Option>
-            <Option value="popularite">Popularité</Option>
         </Select>
     );
 }
