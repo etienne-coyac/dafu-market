@@ -1,4 +1,5 @@
 import type { ProductType } from "../../types/protucts";
+import { getDisplayPrice } from "../../utils/products.utils";
 
 const sortProducts = (
     products: ProductType[],
@@ -6,50 +7,31 @@ const sortProducts = (
 ): ProductType[] => {
     switch (criterion) {
         case "pertinence":
-            // Provide a compare function; here, we keep the original order (no sorting)
-            return [...products].sort(() => 0);
+            return [...products];
         case "prix-asc":
             return [...products].sort(
-                (a: ProductType, b: ProductType) => {
-                    const diff = (a.prixRecommande ?? 0) - (b.prixRecommande ?? 0);
-                    console.log(diff);
-                    return diff;
-                }
+                (a, b) => Number(getDisplayPrice(a)) - Number(getDisplayPrice(b))
             );
         case "prix-desc":
             return [...products].sort(
-                (a: ProductType, b: ProductType) => (b.prixRecommande ?? 0) - (a.prixRecommande ?? 0)
+                (a, b) => Number(getDisplayPrice(b)) - Number(getDisplayPrice(a))
             );
         case "prixPoids-asc":
-            return [...products].sort(
-                (a: ProductType, b: ProductType) => {
-                    const aValue: number = (a.prixRecommande !== undefined && a.poids !== undefined && a.poids !== 0)
-                        ? a.prixRecommande / a.poids
-                        : 0;
-                    const bValue: number = (b.prixRecommande !== undefined && b.poids !== undefined && b.poids !== 0)
-                        ? b.prixRecommande / b.poids
-                        : 0;
-                    return aValue - bValue;
-                }
-            );
+            return [...products].sort((a, b) => {
+                const aValue = a.poids ? Number(getDisplayPrice(a)) / a.poids : Infinity;
+                const bValue = b.poids ? Number(getDisplayPrice(b)) / b.poids : Infinity;
+                return aValue - bValue;
+            });
         case "prixPoids-desc":
-            return [...products].sort(
-                (a: ProductType, b: ProductType) => {
-                    const aValue: number = (a.prixRecommande !== undefined && a.poids !== undefined && a.poids !== 0)
-                        ? a.prixRecommande / a.poids
-                        : 0;
-                    const bValue: number = (b.prixRecommande !== undefined && b.poids !== undefined && b.poids !== 0)
-                        ? b.prixRecommande / b.poids
-                        : 0;
-                    return bValue - aValue;
-                }
-            );
+            return [...products].sort((a, b) => {
+                const aValue = a.poids ? Number(getDisplayPrice(a)) / a.poids : 0;
+                const bValue = b.poids ? Number(getDisplayPrice(b)) / b.poids : 0;
+                return bValue - aValue;
+            });
         case "disponibilite":
-            return [...products].sort(() => 0);
         case "popularite":
-            return [...products].sort(() => 0);
         default:
-            return products;
+            return [...products];
     }
 };
 

@@ -30,6 +30,7 @@ const ProductsList = (props: ProductsListProps) => {
   const sortedProducts = React.useMemo(() => {
     return sortProducts(products || [], sortOption);
   }, [products, sortOption]);
+  //console.log(sortedProducts);
 
   // TODO: à optimiser, cause un rerender de tous les ProductCard pas nécessaire au moment de la connexion
   // rerender à la sélection du magasin normal car les produits changent
