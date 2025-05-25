@@ -25,7 +25,7 @@ const ProductsList = (props: ProductsListProps) => {
   const [openLoginModal, setOpenLoginModal] = useState<boolean>(false);
   const [openChoseMagasin, setOpenChoseMagasin] = useState<boolean>(false);
 
-  const [sortOption, setSortOption] = React.useState("prix-asc");
+  const [sortOption, setSortOption] = React.useState("pertinence");
 
   const sortedProducts = React.useMemo(() => {
     return sortProducts(products || [], sortOption);
