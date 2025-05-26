@@ -31,24 +31,28 @@ const ProductsList = (props: ProductsListProps) => {
         <ProductsTri value={sortOption} onChange={setSortOption} idMagasin={idMagasin} />
       </Stack>
       <Grid container spacing={1}>
-        {loading || cartLoading
-          ? Array.from({ length: 6 }).map((_, index) => (
-              <Grid xs={12} sm={6} md={4} lg={3} xl={2} key={index + "loader"}>
-                <ProductCard product={undefined} />
-              </Grid>
-            ))
-          : sortedProducts?.map((product) => (
-              <Grid xs={12} sm={6} md={4} lg={3} xl={2} key={product.idProduit}>
-                <ProductCard
-                  product={product}
-                  defaultQuantity={
-                    cart?.lignes.find(
-                      (item) => item.idProduit === product.idProduit
-                    )?.quantite
-                  }
-                />
-              </Grid>
-            ))}
+        {loading || cartLoading ? (
+          Array.from({ length: 6 }).map((_, index) => (
+            <Grid xs={12} sm={6} md={4} lg={3} xl={2} key={index + "loader"}>
+              <ProductCard product={undefined} />
+            </Grid>
+          ))
+        ) : sortedProducts && sortedProducts.length > 0 ? (
+          sortedProducts?.map((product) => (
+            <Grid xs={12} sm={6} md={4} lg={3} xl={2} key={product.idProduit}>
+              <ProductCard
+                product={product}
+                defaultQuantity={
+                  cart?.lignes.find(
+                    (item) => item.idProduit === product.idProduit
+                  )?.quantite
+                }
+              />
+            </Grid>
+          ))
+        ) : (
+          <Typography level="body-md">Aucun produit disponible</Typography>
+        )}
       </Grid>
     </Stack>
   );
