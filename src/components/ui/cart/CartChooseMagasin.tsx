@@ -10,7 +10,7 @@ import {
 } from "@mui/joy";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { checkCart, validateCart } from "../../../api/panier.api";
-import { useState } from "react";
+import { useLayoutEffect, useState } from "react";
 import useClientData from "../../../context/client.context";
 import DatePicker from "../DatePicker";
 import TimePicker from "../TimePicker";
@@ -19,9 +19,17 @@ import dayjs from "dayjs";
 import { KeyboardArrowRight } from "@mui/icons-material";
 import { useNavigate } from "react-router";
 import { snackbar } from "../../../providers/snackbar/snackbar";
+import useCart from "../../../hooks/data/useCart";
 
-const CartChooseMagasin = () => {
+type CartChooseMagasinProps = {
+  onNextStep?: () => void;
+  onError?: () => void;
+};
+
+const CartChooseMagasin = (props: CartChooseMagasinProps) => {
+  const { onError: onPreviousStep } = props;
   const { idMagasin } = useClientData();
+  const { data: cart } = useCart();
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const [userSelectedMagasin, setUserSelectedMagasin] = useState<
@@ -50,6 +58,12 @@ const CartChooseMagasin = () => {
       navigate(`/commandes/${res.idCommande}`);
     },
   });
+
+  useLayoutEffect(() => {
+    if (!checkCartData && !isLoading) {
+      onPreviousStep?.();
+    }
+  }, [checkCartData, isLoading]);
 
   return (
     <>
@@ -104,33 +118,34 @@ const CartChooseMagasin = () => {
               setUserSelectedMagasin(newValue ?? undefined)
             }
           >
-            {checkCartData?.stocksMagasins.map((magasinData) => (
-              <Option
-                value={magasinData.magasin.idMagasin}
-                key={magasinData.magasin.idMagasin}
-              >
-                <Stack
-                  gap={2}
-                  direction={"row"}
-                  alignItems={"center"}
-                  ml={1}
-                  width={"100%"}
+            {checkCartData &&
+              checkCartData?.stocksMagasins.map((magasinData) => (
+                <Option
+                  value={magasinData.magasin.idMagasin}
+                  key={magasinData.magasin.idMagasin}
                 >
-                  <Badge
-                    color={
-                      magasinData.panierComplet
-                        ? "success"
-                        : magasinData.nbLignesPanierConformes === 0
-                        ? "danger"
-                        : "warning"
-                    }
-                  />
-                  <Typography>
-                    {`${magasinData.magasin.nom} - ${magasinData.nbLignesPanierConformes}/${magasinData.nbLignesProduits} produits disponibles`}
-                  </Typography>
-                </Stack>
-              </Option>
-            ))}
+                  <Stack
+                    gap={2}
+                    direction={"row"}
+                    alignItems={"center"}
+                    ml={1}
+                    width={"100%"}
+                  >
+                    <Badge
+                      color={
+                        magasinData.panierComplet
+                          ? "success"
+                          : magasinData.nbLignesPanierConformes === 0
+                          ? "danger"
+                          : "warning"
+                      }
+                    />
+                    <Typography>
+                      {`${magasinData.magasin.nom} - ${magasinData.nbLignesPanierConformes}/${magasinData.nbLignesProduits} produits disponibles`}
+                    </Typography>
+                  </Stack>
+                </Option>
+              ))}
           </Select>
           <Stack direction={"row"} gap={1}>
             <span>

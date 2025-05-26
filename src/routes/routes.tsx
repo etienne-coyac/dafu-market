@@ -19,6 +19,7 @@ import HabitProfils from "../pages/admin/statistiques/HabitProfils";
 import ConsultProfils from "../pages/admin/statistiques/ConsultProfilsPage";
 import AppPreparateur from "../pages/preparateur/AppPreparateur";
 import DashboardPrepa from "../pages/preparateur/dashboard/DashboardPrepaPage";
+import ListsPage from "../pages/customer/lists/ListsPage";
 
 const router = createBrowserRouter([
   {
@@ -60,6 +61,10 @@ const router = createBrowserRouter([
                   {
                     path: "commandes/:idCommande?",
                     element: <OrdersPage />,
+                  },
+                  {
+                    path: "listes/:idListe?",
+                    element: <ListsPage />,
                   },
                 ],
               },

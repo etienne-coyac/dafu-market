@@ -4,7 +4,10 @@ import { Outlet } from "react-router";
 import customTheme from "./theme";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { AuthProvider } from "./context/auth.context";
-import { SnackbarProvider } from "./providers/snackbar/SnackbarProvider";
+import {
+  SnackbarProvider,
+  useSnackbar,
+} from "./providers/snackbar/SnackbarProvider";
 import {
   createTheme,
   ThemeProvider,
@@ -13,6 +16,8 @@ import {
 import { CssBaseline } from "@mui/material";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers";
+import { useEffect } from "react";
+import { registerSnackbar } from "./providers/snackbar/snackbar";
 // To enable caching data, uncomment the staleTime option & comment the gcTime
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -31,6 +36,16 @@ export const enableCache = (hours: number = 1) => ({
 });
 const materialTheme = createTheme();
 
+const SnackbarRegister = () => {
+  const { show } = useSnackbar();
+
+  useEffect(() => {
+    registerSnackbar(show);
+  }, [show]);
+
+  return null;
+};
+
 const AppProviders = () => {
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -42,7 +57,7 @@ const AppProviders = () => {
 
               <SnackbarProvider>
                 <ReactQueryDevtools initialIsOpen={false} />
-
+                <SnackbarRegister />
                 <Outlet />
               </SnackbarProvider>
             </JoyCssVarsProvider>

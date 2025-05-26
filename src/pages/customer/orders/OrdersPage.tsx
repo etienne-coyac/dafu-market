@@ -40,9 +40,12 @@ const OrdersPage = () => {
     ...enableCache(),
   });
 
-  const filteredOrders = orders?.filter(
-    (order) => order.statut === orderStatusFilter || orderStatusFilter === null
-  );
+  const filteredOrders = orders
+    ?.filter(
+      (order) =>
+        order.statut === orderStatusFilter || orderStatusFilter === null
+    )
+    ?.sort((a, b) => dayjs(b.dateHeureRetrait).diff(a.dateHeureRetrait));
 
   return (
     <CenterContent>
@@ -73,9 +76,8 @@ const OrdersPage = () => {
         </Select>
       </Stack>
       <AccordionGroup>
-        {filteredOrders
-          ?.sort((a, b) => dayjs(b.dateHeureRetrait).diff(a.dateHeureRetrait))
-          ?.map((order) => (
+        {filteredOrders?.length ? (
+          filteredOrders?.map((order) => (
             <Accordion
               key={order.idCommande}
               expanded={open === order.idCommande}
@@ -122,7 +124,10 @@ const OrdersPage = () => {
                 </Table>
               </AccordionDetails>
             </Accordion>
-          ))}
+          ))
+        ) : (
+          <Typography>Aucune commande</Typography>
+        )}
       </AccordionGroup>
     </CenterContent>
   );

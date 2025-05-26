@@ -15,7 +15,7 @@ const CartContent = (props: CartContentProps) => {
       <Typography level="h1">Mon panier</Typography>
       <Stack direction={{ xs: "column", sm: "row" }} width={"100%"} gap={2}>
         <Stack flexGrow={1} gap={1}>
-          {cart ? (
+          {cart && cart.lignes.length > 0 ? (
             <>
               {cart.lignes.map((product) => (
                 <ProductCard
@@ -48,12 +48,12 @@ const CartContent = (props: CartContentProps) => {
               Total hors promotions: {cart?.totalSansPromo ?? 0}€
             </Typography>
             <Typography level="body-lg">
-              Total des promotions: -{cart?.totalPromos ?? 0}€
+              Total des promotions: -{cart?.totalPromo ?? 0}€
             </Typography>
             <Button
               endDecorator={<KeyboardArrowRight />}
               onClick={onNextStep}
-              disabled={!cart}
+              disabled={!cart || !cart.lignes.length}
             >
               Commander
             </Button>
