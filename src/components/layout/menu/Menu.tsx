@@ -9,6 +9,7 @@ import Sheet from "@mui/joy/Sheet";
 
 import {
   Close,
+  Home,
   KeyboardArrowLeft,
   KeyboardArrowRight,
   Menu as MenuIcon,
@@ -27,6 +28,7 @@ import { useQuery } from "@tanstack/react-query";
 import { getSections } from "../../../api/sections.api";
 import type { SectionType } from "../../../types/sections";
 import getSectionIcon, { nameToUrl } from "../../../utils/tmp/sectionToIcon";
+import { enableCache } from "../../../AppProviders";
 
 export default function Menu() {
   const navigate = useNavigate();
@@ -38,8 +40,7 @@ export default function Menu() {
   const { data: sections } = useQuery({
     queryKey: ["sections"],
     queryFn: getSections,
-    gcTime: 1000 * 60 * 60,
-    staleTime: 1000 * 60 * 60,
+    ...enableCache(),
   });
 
   const handleLinkClick = (url: string) => {
@@ -111,6 +112,22 @@ export default function Menu() {
                   },
                 }}
               >
+                <ListItem>
+                  <ListItemButton
+                    onClick={() => {
+                      setSelectedSection(undefined);
+                      setOpen(false);
+                      navigate("/");
+                    }}
+                    color="neutral"
+                    variant="soft"
+                  >
+                    <Home />
+                    <ListItemContent>
+                      <i>Accueil</i>
+                    </ListItemContent>
+                  </ListItemButton>
+                </ListItem>
                 {sections?.map((section) => (
                   <ListItem key={section.nomRayon}>
                     <ListItemButton

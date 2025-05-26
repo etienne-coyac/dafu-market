@@ -1,10 +1,8 @@
-import { AddShoppingCart } from "@mui/icons-material";
 import {
   AspectRatio,
   Card,
   CardContent,
   Chip,
-  IconButton,
   Link,
   Skeleton,
   Stack,
@@ -12,39 +10,39 @@ import {
 } from "@mui/joy";
 import { useNavigate, Link as RouterLink } from "react-router";
 import type { ProductType } from "../../types/protucts";
-import { useState } from "react";
-import Quantity from "./Quantity";
+import { memo } from "react";
+import { getDisplayPrice } from "../../utils/products.utils";
+import AddToCart from "./AddToCart";
 
 type ProductCardProps = {
   product: ProductType | undefined;
   orientation?: "horizontal" | "vertical";
-  quantityInCart?: boolean;
+  defaultQuantity?: number;
 };
 
-const ProductCard = (props: ProductCardProps) => {
-  const {
-    product,
-    orientation = "vertical",
-    quantityInCart: isInCart = false,
-  } = props;
-  const [quantityMode, setQuantityMode] = useState<boolean>(isInCart);
-
+const ProductCard = memo((props: ProductCardProps) => {
+  const { product, defaultQuantity, orientation = "vertical" } = props;
   const navigate = useNavigate();
+
+  const isPromotion = product?.tauxPromo && product.prixAvecPromo;
+
   const handleNavigate = () => {
     if (!product) return;
     navigate(`/p/${product.idProduit}`);
   };
-
   return (
     <Card
-      sx={(theme) =>
-        product?.prixAvecPromo === undefined
-          ? {
-              borderColor: theme.vars.palette.danger[500],
-              borderWidth: 2,
-            }
-          : {}
-      }
+      sx={(theme) => ({
+        boxSizing: "border-box",
+        minWidth: "150px",
+        ...(orientation === "vertical" && {
+          height: "100%",
+        }),
+        ...(isPromotion && {
+          borderColor: theme.vars.palette.danger[500],
+          borderWidth: 2,
+        }),
+      })}
     >
       <CardContent
         sx={{
@@ -53,29 +51,35 @@ const ProductCard = (props: ProductCardProps) => {
         }}
       >
         <AspectRatio
-          maxHeight={"150px"}
+          maxHeight={"120px"}
           minHeight={"100px"}
-          sx={{ cursor: "pointer", flex: 1, position: "relative" }}
+          sx={{ cursor: "pointer", flex: 1 }}
         >
           <Skeleton loading={!product} variant="overlay">
-            <img src={product?.imageUrl} onClick={handleNavigate} />
+            <img
+              src={product?.imageUrl}
+              loading="lazy"
+              onClick={handleNavigate}
+            />
           </Skeleton>
-          <Chip
-            color="danger"
-            variant="solid"
-            sx={{
-              position: "absolute",
-              top: "0.5rem",
-              left: "0.5rem",
-              zIndex: 10,
-            }}
-          >
-            -40%
-          </Chip>
+          {isPromotion && (
+            <Chip
+              color="danger"
+              variant="solid"
+              sx={{
+                position: "absolute",
+                top: "0.5rem",
+                left: "0.5rem",
+                zIndex: 10,
+              }}
+            >
+              -{product.tauxPromo}%
+            </Chip>
+          )}
         </AspectRatio>
 
         <Stack flex={1} justifyContent={"space-between"}>
-          <Link component={RouterLink} to={`/products/${product?.idProduit}`}>
+          <Link component={RouterLink} to={`/p/${product?.idProduit}`}>
             <Typography level="body-sm">
               <Skeleton loading={!product}>
                 {product?.nom ?? "Nom du produit très long "}
@@ -89,25 +93,14 @@ const ProductCard = (props: ProductCardProps) => {
             alignItems={"flex-end"}
             gap={1}
           >
-            {quantityMode ? (
-              <Quantity value={1} onChange={() => null} />
-            ) : (
-              <IconButton
-                size="sm"
-                color="success"
-                variant="soft"
-                disabled={!product}
-                onClick={() => {
-                  setQuantityMode(true);
-                }}
-              >
-                <AddShoppingCart />
-              </IconButton>
-            )}
+            <AddToCart
+              idProduit={product?.idProduit}
+              defaultQuantity={defaultQuantity}
+            />
 
             <Typography level="body-md" fontWeight={"bold"}>
               <Skeleton loading={!product}>
-                {product?.prixRecommande?.toFixed(2) ?? "0.00"}€
+                {product ? `${getDisplayPrice(product)}€` : ""}
               </Skeleton>
             </Typography>
           </Stack>
@@ -115,6 +108,6 @@ const ProductCard = (props: ProductCardProps) => {
       </CardContent>
     </Card>
   );
-};
+});
 
 export default ProductCard;

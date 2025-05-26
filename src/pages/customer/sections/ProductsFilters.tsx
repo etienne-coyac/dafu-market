@@ -74,6 +74,10 @@ const ProductFilters = (props: ProductFiltersProps) => {
     }
   };
 
+  const displayNutriScoreFilter = () => {
+    return products?.some((p) => p.nutriscore !== undefined);
+  };
+
   return (
     <ConditionnalWrapper
       wrapper={(children) => (
@@ -185,27 +189,29 @@ const ProductFilters = (props: ProductFiltersProps) => {
               </FilterList>
             </AccordionDetails>
           </Accordion>
-          <Accordion defaultExpanded>
-            <AccordionSummary>Nutriscore</AccordionSummary>
-            <AccordionDetails>
-              <FilterList>
-                {!loading ? (
-                  nutriScore.map((score) => (
-                    <ListItem key={score}>
-                      <Checkbox
-                        value={score}
-                        checked={filters.nutriscore?.includes(score) ?? false}
-                        onChange={() => handleNutriScoreChange(score)}
-                        label={score}
-                      />
-                    </ListItem>
-                  ))
-                ) : (
-                  <Skeleton variant="text" width={"100%"} height={"1rem"} />
-                )}
-              </FilterList>
-            </AccordionDetails>
-          </Accordion>
+          {displayNutriScoreFilter() && (
+            <Accordion defaultExpanded>
+              <AccordionSummary>Nutriscore</AccordionSummary>
+              <AccordionDetails>
+                <FilterList>
+                  {!loading ? (
+                    nutriScore.map((score) => (
+                      <ListItem key={score}>
+                        <Checkbox
+                          value={score}
+                          checked={filters.nutriscore?.includes(score) ?? false}
+                          onChange={() => handleNutriScoreChange(score)}
+                          label={score}
+                        />
+                      </ListItem>
+                    ))
+                  ) : (
+                    <Skeleton variant="text" width={"100%"} height={"1rem"} />
+                  )}
+                </FilterList>
+              </AccordionDetails>
+            </Accordion>
+          )}
         </AccordionGroup>
       </Stack>
     </ConditionnalWrapper>

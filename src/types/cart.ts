@@ -3,8 +3,8 @@ export type CartType = {
   dateCreation: string;
   idClient: number;
   lignes: CartLineType[];
-  coutTotal: number;
-  coutTotalSansPromo: number;
+  totalCost: number;
+  totalSansPromo: number;
   totalPromos: number;
 };
 

@@ -7,4 +7,5 @@ export type SectionType = {
 export type CategoryType = {
   idCategorie: number;
   nomCategorie: string;
+  rayonDTO: Omit<SectionType, "categories">;
 };

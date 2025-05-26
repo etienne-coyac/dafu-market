@@ -3,22 +3,34 @@ import type { CategoryType } from "./sections";
 export type ProductType = {
   idProduit: number;
   nom: string;
-  stock: number;
   marque: string;
   categories: CategoryType[];
-  rayons: string[];
-  prixPropose: number;
+  prixRecommande: number;
 
   description?: string;
   unite?: string;
   poids?: number;
   nutriscore?: string;
   origine?: string;
-  prixRecommande?: number;
   imageUrl?: string;
   labels?: string[];
-  prixAvecPromo?: number;
-  tauxPromo?: number;
   dateDebutPromo?: Date;
   dateFinPromo?: Date;
-};
+
+  // proposition produit
+} & (
+  | {
+      idMagasin: number;
+      prixMagasin: number;
+      tauxPromo?: number;
+      prixAvecPromo?: number;
+      stockDispo: number;
+    }
+  | {
+      idMagasin?: never;
+      prixMagasin?: never;
+      tauxPromo?: never;
+      prixAvecPromo?: never;
+      stockDispo?: never;
+    }
+);

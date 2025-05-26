@@ -1,10 +1,18 @@
-import { CssVarsProvider } from "@mui/joy";
+import { CssVarsProvider as JoyCssVarsProvider } from "@mui/joy/styles";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Outlet } from "react-router";
 import customTheme from "./theme";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { AuthProvider } from "./context/auth.context";
-
+import { SnackbarProvider } from "./providers/snackbar/SnackbarProvider";
+import {
+  createTheme,
+  ThemeProvider,
+  THEME_ID as MATERIAL_THEME_ID,
+} from "@mui/material/styles";
+import { CssBaseline } from "@mui/material";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { LocalizationProvider } from "@mui/x-date-pickers";
 // To enable caching data, uncomment the staleTime option & comment the gcTime
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -17,17 +25,31 @@ const queryClient = new QueryClient({
   },
 });
 
+export const enableCache = (hours: number = 1) => ({
+  gcTime: 1000 * 60 * 60 * hours,
+  staleTime: 1000 * 60 * 60 * hours,
+});
+const materialTheme = createTheme();
+
 const AppProviders = () => {
   return (
-    <AuthProvider>
-      <CssVarsProvider theme={customTheme}>
-        <QueryClientProvider client={queryClient}>
-          <ReactQueryDevtools initialIsOpen={false} />
+    <LocalizationProvider dateAdapter={AdapterDayjs}>
+      <QueryClientProvider client={queryClient}>
+        <AuthProvider>
+          <ThemeProvider theme={{ [MATERIAL_THEME_ID]: materialTheme }}>
+            <JoyCssVarsProvider theme={customTheme}>
+              <CssBaseline enableColorScheme />
 
-          <Outlet />
-        </QueryClientProvider>
-      </CssVarsProvider>
-    </AuthProvider>
+              <SnackbarProvider>
+                <ReactQueryDevtools initialIsOpen={false} />
+
+                <Outlet />
+              </SnackbarProvider>
+            </JoyCssVarsProvider>
+          </ThemeProvider>
+        </AuthProvider>
+      </QueryClientProvider>
+    </LocalizationProvider>
   );
 };
 

@@ -35,6 +35,25 @@ const customTheme = extendTheme({
         },
       },
     },
+    JoyModal: {
+      styleOverrides: {
+        root: {
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          p: 1,
+        },
+      },
+    },
+    JoyAspectRatio: {
+      styleOverrides: {
+        root: {
+          "& .MuiAspectRatio-content": {
+            backgroundColor: "unset",
+          },
+        },
+      },
+    },
   },
 });
 customTheme.typography.h1 = {

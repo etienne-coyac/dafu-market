@@ -1,7 +1,11 @@
-import { Grid, Stack, Typography } from "@mui/joy";
+import { Grid, Stack, Typography, Box } from "@mui/joy";
 import ProductCard from "../../../components/ui/ProductCard";
 import { useParams } from "react-router";
 import type { ProductType } from "../../../types/protucts";
+import React from "react";
+import useCart from "../../../hooks/data/useCart";
+import sortProducts from "../../../components/triProducts/sortProducts";
+import ProductsTri from "./ProductsTri";
 
 type ProductsListProps = {
   products: ProductType[] | undefined;
@@ -11,20 +15,38 @@ type ProductsListProps = {
 const ProductsList = (props: ProductsListProps) => {
   const { products, loading } = props;
   const { section, category } = useParams();
+  const { data: cart, isLoading: cartLoading } = useCart();
+
+  const [sortOption, setSortOption] = React.useState("pertinence");
+
+  const sortedProducts = React.useMemo(() => {
+    return sortProducts(products || [], sortOption);
+  }, [products, sortOption]);
 
   return (
     <Stack rowGap={1} sx={{ flex: 1 }}>
-      <Typography level="h2">{category ?? section}</Typography>
+      <Stack direction="row" alignItems="center">
+        <Typography level="h2">{category ?? section}</Typography>
+        <Box sx={{ flexGrow: 1 }} />
+        <ProductsTri value={sortOption} onChange={setSortOption} />
+      </Stack>
       <Grid container spacing={1}>
-        {loading
+        {loading || cartLoading
           ? Array.from({ length: 6 }).map((_, index) => (
-              <Grid xs={12} sm={6} md={4} lg={3} xl={2} key={index}>
+              <Grid xs={12} sm={6} md={4} lg={3} xl={2} key={index + "loader"}>
                 <ProductCard product={undefined} />
               </Grid>
             ))
-          : products?.map((product) => (
+          : sortedProducts?.map((product) => (
               <Grid xs={12} sm={6} md={4} lg={3} xl={2} key={product.idProduit}>
-                <ProductCard product={product} />
+                <ProductCard
+                  product={product}
+                  defaultQuantity={
+                    cart?.lignes.find(
+                      (item) => item.idProduit === product.idProduit
+                    )?.quantite
+                  }
+                />
               </Grid>
             ))}
       </Grid>
