@@ -1,6 +1,6 @@
 import { Box } from "@mui/joy";
 import { Outlet } from "react-router";
-import Header from "../../components/layout/Header";
+import HeaderDashboard from "../../components/layout/HeaderDashboard";
 
 function AppPreparateur() {
     return (
@@ -11,7 +11,7 @@ function AppPreparateur() {
                 height: "100dvh",
             }}
         >
-            <Header />
+            <HeaderDashboard />
             <Box component={"main"} sx={{ p: 1 }}>
                 <Outlet />
             </Box>
