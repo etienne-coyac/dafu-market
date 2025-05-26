@@ -1,4 +1,5 @@
 import {
+  Alert,
   AspectRatio,
   Box,
   Button,
@@ -16,6 +17,7 @@ import { getLists } from "../../../api/lists.api";
 import { useState } from "react";
 import { enableCache } from "../../../AppProviders";
 import { KeyboardArrowLeft, KeyboardArrowRight } from "@mui/icons-material";
+import PostItList from "../../../components/layout/PostItList";
 
 const ListsPage = () => {
   const [selectedList, setSelectedList] = useState<number | null>(null);
@@ -82,25 +84,26 @@ const ListsPage = () => {
               </ListItem>
             ))}
           </List>
-          {currentList && (
-            <Stack gap={1} width={"100%"} sx={{ flexShrink: 0 }}>
+          {selectedList && currentList && (
+            <Stack
+              gap={1}
+              sx={{
+                flexShrink: 0,
+                width: { xs: "100%", md: "69%" },
+              }}
+            >
               <Typography
                 sx={{ display: { xs: "block", md: "none" } }}
                 level="h4"
               >
                 {currentList.nom}
               </Typography>
-              <Stack direction={"row"} gap={1}>
-                <Button color="warning" variant="soft">
-                  Nouveau post-it
-                </Button>
-              </Stack>
+              <PostItList postits={currentList.postIts} idList={selectedList} />
               <Box
                 sx={{
                   border: "1px solid lightgrey",
                   p: 1,
                   borderRadius: "0.5rem",
-                  width: { xs: "100%", md: "100%" },
                   flexGrow: 1,
                   boxSizing: "border-box",
                 }}

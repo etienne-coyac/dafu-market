@@ -37,6 +37,7 @@ export const SnackbarProvider: React.FC<{ children: React.ReactNode }> = ({
         onClose={() => setOpen(false)}
         autoHideDuration={3000}
         color={type}
+        variant="soft"
         size="sm"
       >
         <Typography>{message}</Typography>

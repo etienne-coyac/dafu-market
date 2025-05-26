@@ -1,9 +1,12 @@
+import * as z from "zod";
+import type { postitSchema } from "../schemas/postit.schema";
+
 export type ListType = {
   idListe: number;
   nom: string;
   idClient: number;
   items: ListItemType[];
-  postIts: PostItType[];
+  postIts: PostItReadType[];
 };
 
 export type ListItemType = {
@@ -13,8 +16,13 @@ export type ListItemType = {
   quantite: number;
 };
 
-export type PostItType = {
+export type PostItUpdateType = {
+  saisie: string;
+};
+
+export type PostItCreateType = z.infer<typeof postitSchema>;
+
+export type PostItReadType = PostItCreateType & {
   idPost: number;
-  titre: string;
-  contenu: string;
+  reponseLLM: string | null;
 };
