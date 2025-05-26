@@ -21,9 +21,9 @@ const NewListModal = (props: NewListProps) => {
   const queryClient = useQueryClient();
   const [nom, setNom] = useState<string>("");
 
-  const onSuccess = () => {
+  const onSuccess = (res: ListType) => {
     queryClient.setQueryData(["lists"], (old: ListType[] | undefined) =>
-      old ? [...old, { nom }] : undefined
+      old ? [...old, res] : undefined
     );
     setOpen(false);
   };

@@ -1,6 +1,7 @@
 import {
   Box,
   Button,
+  Link,
   List,
   ListItem,
   ListItemButton,
@@ -9,9 +10,9 @@ import {
   Typography,
 } from "@mui/joy";
 import CenterContent from "../../../components/layout/CenterContent";
-import { useQuery } from "@tanstack/react-query";
-import { getLists } from "../../../api/lists.api";
-import { useState } from "react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { addProductToList, deleteList, getLists } from "../../../api/lists.api";
+import { useMemo, useState } from "react";
 import { enableCache } from "../../../AppProviders";
 import {
   Add,
@@ -20,11 +21,15 @@ import {
 } from "@mui/icons-material";
 import PostItList from "../../../components/layout/PostItList";
 import NewListModal from "../../../components/ui/modals/NewListModal";
-
+import type { ListType } from "../../../types/lists";
+import Quantity from "../../../components/ui/Quantity";
+import { Link as RouterLink } from "react-router";
 const ListsPage = () => {
+  const queryClient = useQueryClient();
   const [selectedList, setSelectedList] = useState<number | null>(null);
   const [open, setOpen] = useState<boolean>(false);
   const [openNewList, setOpenNewList] = useState<boolean>(false);
+
   const handleOpen = (idListe: number) => {
     setSelectedList(idListe);
     setOpen(true);
@@ -34,7 +39,42 @@ const ListsPage = () => {
     queryFn: getLists,
     ...enableCache(),
   });
-  const currentList = lists?.find((list) => list.idListe === selectedList);
+
+  const deleteListMutation = useMutation({
+    mutationFn: deleteList,
+    onSuccess: () => {
+      queryClient.setQueryData(["lists"], (old: ListType[] | undefined) =>
+        old?.filter((list) => list.idListe !== selectedList)
+      );
+      setSelectedList(null);
+      setOpen(false);
+    },
+  });
+
+  const changeQuantityMutation = useMutation({
+    mutationFn: async (payload: { idProduit: number; quantity: number }) => {
+      if (!selectedList) return;
+      return addProductToList(
+        selectedList,
+        payload.idProduit,
+        payload.quantity
+      );
+    },
+
+    onSuccess: (res) => {
+      if (!res) return;
+      queryClient.setQueryData(["lists"], (old: ListType[] | undefined) =>
+        old?.map((list) => (list.idListe === selectedList ? res : list))
+      );
+    },
+  });
+
+  const currentList = useMemo(() => {
+    const list = lists?.find((list) => list.idListe === selectedList);
+    list?.items?.sort((a, b) => a.idProduit - b.idProduit);
+    return list;
+  }, [lists, selectedList]);
+
   return (
     <CenterContent>
       <Stack direction={"row"} justifyContent={"space-between"}>
@@ -116,7 +156,10 @@ const ListsPage = () => {
                 {currentList.nom}
               </Typography>
 
-              <PostItList postits={currentList.postIts} idList={selectedList} />
+              <PostItList
+                postits={currentList.postIts ?? []}
+                idList={selectedList}
+              />
 
               <Box
                 sx={{
@@ -128,41 +171,67 @@ const ListsPage = () => {
                 }}
               >
                 <Stack spacing={1}>
-                  {currentList?.items.map((product) => (
-                    <Stack
-                      key={product.idProduit}
-                      spacing={1}
-                      direction={"row"}
-                      alignItems={"center"}
-                    >
-                      <Box
-                        sx={{
-                          "& img": {
-                            width: "50px",
-                            height: "50px",
-                            objectFit: "contain",
-                          },
-                        }}
-                      >
-                        <img src={product.imageUrl} alt={product.nomProduit} />
-                      </Box>
+                  {currentList.items !== null &&
+                  currentList.items.length > 0 ? (
+                    currentList.items.map((product) => (
                       <Stack
+                        key={product.idProduit}
+                        spacing={1}
                         direction={"row"}
-                        justifyContent={"space-between"}
-                        width={"100%"}
+                        alignItems={"center"}
                       >
-                        <Typography level="body-sm">
-                          {product.nomProduit}
-                        </Typography>
-                        <Typography
-                          sx={{ minWidth: "50px" }}
-                          textAlign={"right"}
-                        >{`x ${product.quantite}`}</Typography>
+                        <Box
+                          sx={{
+                            "& img": {
+                              width: "50px",
+                              height: "50px",
+                              objectFit: "contain",
+                            },
+                          }}
+                        >
+                          <img
+                            src={product.imageUrl}
+                            alt={product.nomProduit}
+                          />
+                        </Box>
+                        <Stack
+                          direction={"row"}
+                          justifyContent={"space-between"}
+                          width={"100%"}
+                        >
+                          <Link
+                            component={RouterLink}
+                            to={`/p/${product.idProduit}`}
+                            level="body-sm"
+                          >
+                            {product.nomProduit}
+                          </Link>
+                          <Quantity
+                            value={product.quantite}
+                            onChange={(value: number) =>
+                              changeQuantityMutation.mutate({
+                                idProduit: product.idProduit,
+                                quantity: value,
+                              })
+                            }
+                          />
+                        </Stack>
                       </Stack>
-                    </Stack>
-                  ))}
+                    ))
+                  ) : (
+                    <Typography>Votre liste est vide.</Typography>
+                  )}
                 </Stack>
               </Box>
+              <Button
+                color="danger"
+                size="sm"
+                sx={{ alignSelf: "flex-end" }}
+                onClick={() => deleteListMutation.mutate(selectedList)}
+                loading={deleteListMutation.isPending}
+              >
+                Supprimer la liste
+              </Button>
             </Stack>
           )}
         </Stack>

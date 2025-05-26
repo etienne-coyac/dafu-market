@@ -24,59 +24,63 @@ const PostItList = (props: PostItListProps) => {
   };
   return (
     <>
-      <Box
-        gap={1}
-        sx={{ display: "grid", gridTemplateColumns: "auto 1fr auto" }}
-        alignItems={"center"}
-        overflow={"hidden"}
-      >
-        <IconButton onClick={handlePrev}>
-          <KeyboardArrowLeft />
-        </IconButton>
+      {(postits.length > 0 || addMode) && (
         <Box
-          sx={{
-            overflowX: "hidden",
-            display: "flex",
-            "& > .MuiStack-root > .MuiAlert-root": {
-              width: "100%",
-              flexShrink: 0,
-            },
-          }}
+          gap={1}
+          sx={{ display: "grid", gridTemplateColumns: "auto 1fr auto" }}
+          alignItems={"center"}
+          overflow={"hidden"}
         >
-          <Stack
-            direction={"row"}
+          <IconButton onClick={handlePrev}>
+            <KeyboardArrowLeft />
+          </IconButton>
+          <Box
             sx={{
-              width: "100%",
-              transition: "transform 0.4s",
-              transform: `translateX(-${currentPostitIndex * 100}%)`,
+              overflowX: "hidden",
+              display: "flex",
+              "& > .MuiStack-root > .MuiAlert-root": {
+                width: "100%",
+                flexShrink: 0,
+              },
             }}
           >
-            {addMode && (
-              <PostIt
-                idList={idList}
-                setAddMode={setAddMode}
-                onDelete={() => null}
-              />
-            )}
-            {postits.map((postit) => (
-              <PostIt
-                key={postit.idPost}
-                postit={postit}
-                idList={idList}
-                onDelete={handlePrev}
-              />
-            ))}
-          </Stack>
+            <Stack
+              direction={"row"}
+              sx={{
+                width: "100%",
+                transition: "transform 0.4s",
+                transform: `translateX(-${currentPostitIndex * 100}%)`,
+              }}
+            >
+              {addMode && (
+                <PostIt
+                  idList={idList}
+                  setAddMode={setAddMode}
+                  onDelete={() => null}
+                />
+              )}
+              {postits.map((postit) => (
+                <PostIt
+                  key={postit.idPost}
+                  postit={postit}
+                  idList={idList}
+                  onDelete={handlePrev}
+                />
+              ))}
+            </Stack>
+          </Box>
+          <IconButton onClick={handleNext}>
+            <KeyboardArrowRight />
+          </IconButton>
         </Box>
-        <IconButton onClick={handleNext}>
-          <KeyboardArrowRight />
-        </IconButton>
-      </Box>
+      )}
+
       <Stack direction={"row"} gap={1}>
         <Button
           fullWidth
           color="warning"
           variant="soft"
+          size="sm"
           onClick={() => {
             if (addMode) return;
             setAddMode(true);

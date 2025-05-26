@@ -47,6 +47,7 @@ const PostIt = (props: PostItProps) => {
   const handleCancel = () => {
     postitForm.reset(postit);
     setEditMode(false);
+    setAddMode?.(false);
   };
 
   const onError: SubmitErrorHandler<PostItCreateType> = (err) => {
@@ -68,14 +69,14 @@ const PostIt = (props: PostItProps) => {
                   ...list,
                   postIts:
                     deletePost === true
-                      ? list.postIts.filter((p) => p.idPost !== post.idPost) // delete
+                      ? list.postIts?.filter((p) => p.idPost !== post.idPost) // delete
                       : exists
-                      ? list.postIts.map(
+                      ? list.postIts?.map(
                           (
                             p // update
                           ) => (p.idPost === post.idPost ? post : p)
                         )
-                      : [post, ...list.postIts], // create
+                      : [post, ...(list.postIts ?? [])], // create
                 }
               : list
           )
@@ -112,7 +113,7 @@ const PostIt = (props: PostItProps) => {
                 list.idListe === idList
                   ? {
                       ...list,
-                      postIts: list.postIts.map((post) =>
+                      postIts: list.postIts?.map((post) =>
                         post.idPost === res.postit.idPost ? res.postit : post
                       ),
                       items: res.liste.items,
@@ -250,7 +251,14 @@ const PostIt = (props: PostItProps) => {
           <Box>
             <Typography>Réponse :</Typography>
             {llmMutation.isPending ? (
-              <CircularProgress size="sm" />
+              <Stack
+                justifyContent={"center"}
+                alignItems={"center"}
+                width={"100%"}
+                padding={2}
+              >
+                <CircularProgress size="sm" />
+              </Stack>
             ) : (
               <Typography
                 level="body-sm"

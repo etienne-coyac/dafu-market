@@ -36,8 +36,24 @@ export const deletePostIt = async (id: number) => {
   return api.delete(`/clients/postits/${id}`);
 };
 
-export const createList = async (titreListe: string) => {
+export const createList = async (titre: string) => {
   return api
-    .post<ListType>("/clients/listes", { titreListe })
+    .post<ListType>("/clients/listes", { titre })
+    .then((res) => res.data);
+};
+
+export const deleteList = async (id: number) => {
+  return api.delete(`/clients/listes/${id}`);
+};
+
+export const addProductToList = async (
+  idListe: number,
+  idProduit: number,
+  qtt: number = 1
+) => {
+  return api
+    .patch<ListType>(
+      `/clients/listes/${idListe}?idProduit=${idProduit}&quantite=${qtt}`
+    )
     .then((res) => res.data);
 };

@@ -13,12 +13,16 @@ const Quantity = (props: QuantityProps) => {
 
   useEffect(() => {
     const timeoutId = setTimeout(() => {
-      if (displayValue === value && value !== 1) return;
+      if (displayValue === value) return;
       onChange(displayValue);
     }, delay);
     return () => clearTimeout(timeoutId);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [displayValue, delay]);
+
+  useEffect(() => {
+    setDisplayValue(value);
+  }, [value]);
 
   return (
     <Stack
@@ -28,7 +32,7 @@ const Quantity = (props: QuantityProps) => {
       gap={1}
       borderRadius={"var(--IconButton-radius, var(--joy-radius-sm))"}
       flexGrow={0}
-      border={"1px solid var(--joy-palette-neutral-100)"}
+      border={"1px solid var(--joy-palette-neutral-200)"}
     >
       <IconButton
         size="sm"
@@ -36,6 +40,7 @@ const Quantity = (props: QuantityProps) => {
           if (displayValue - 1 === 0) {
             onChange(0);
           }
+          if (displayValue === 1) return;
           setDisplayValue((prev) => prev - 1);
         }}
       >

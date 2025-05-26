@@ -5,8 +5,8 @@ export type ListType = {
   idListe: number;
   nom: string;
   idClient: number;
-  items: ListItemType[];
-  postIts: PostItReadType[];
+  items: ListItemType[] | null;
+  postIts: PostItReadType[] | null;
 };
 
 export type ListItemType = {
