@@ -20,7 +20,7 @@ const ProductsList = (props: ProductsListProps) => {
   const [sortOption, setSortOption] = React.useState("prix-asc");
 
   const sortedProducts = React.useMemo(() => {
-    return sortProducts(products || [], sortOption, idMagasin);
+    return sortProducts(products || [], sortOption, idMagasin || undefined);
   }, [products, sortOption]);
 
   return (
