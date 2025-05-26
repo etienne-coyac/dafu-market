@@ -10,6 +10,9 @@ import SpaIcon from "@mui/icons-material/Spa";
 import CleaningServicesIcon from "@mui/icons-material/CleaningServices";
 import ChildFriendlyIcon from "@mui/icons-material/ChildFriendly";
 import PetsIcon from "@mui/icons-material/Pets";
+import KebabDiningIcon from '@mui/icons-material/KebabDining';
+import KitchenIcon from '@mui/icons-material/Kitchen';
+import BreakfastDiningIcon from '@mui/icons-material/BreakfastDining';
 
 export const nameToUrl = (name: string) =>
   name
@@ -37,14 +40,20 @@ export const getSectionIcon = (name: string) => {
       return <LocalBarIcon />;
     case "surgeles":
       return <AcUnitIcon />;
-    case "hygiene-et-beaute":
+    case "hygiene":
       return <SpaIcon />;
-    case "entretien-de-la-maison":
+    case "entretien-et-nettoyage":
       return <CleaningServicesIcon />;
     case "bebe":
       return <ChildFriendlyIcon />;
     case "animalerie":
       return <PetsIcon />;
+    case "charcuterie-et-traiteur":
+      return <KebabDiningIcon />;
+    case "cremerie-et-produits-laitiers":
+      return <KitchenIcon />;
+    case "pains-et-patisseries":
+      return <BreakfastDiningIcon />;
     default:
       return null;
   }
