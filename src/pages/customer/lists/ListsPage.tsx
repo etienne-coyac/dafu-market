@@ -1,9 +1,6 @@
 import {
-  Alert,
-  AspectRatio,
   Box,
   Button,
-  Grid,
   List,
   ListItem,
   ListItemButton,
@@ -16,7 +13,11 @@ import { useQuery } from "@tanstack/react-query";
 import { getLists } from "../../../api/lists.api";
 import { useState } from "react";
 import { enableCache } from "../../../AppProviders";
-import { KeyboardArrowLeft, KeyboardArrowRight } from "@mui/icons-material";
+import {
+  Add,
+  KeyboardArrowLeft,
+  KeyboardArrowRight,
+} from "@mui/icons-material";
 import PostItList from "../../../components/layout/PostItList";
 
 const ListsPage = () => {
@@ -37,16 +38,27 @@ const ListsPage = () => {
     <CenterContent>
       <Stack direction={"row"} justifyContent={"space-between"}>
         <Typography level="h1">Listes</Typography>
-        <Button
-          color={"primary"}
-          variant="soft"
-          size="sm"
-          startDecorator={<KeyboardArrowLeft />}
-          onClick={() => setOpen(false)}
-          sx={{ display: { xs: open ? "flex" : "none", md: "none" } }}
-        >
-          Retour
-        </Button>
+        {selectedList !== null && open ? (
+          <Button
+            color={"primary"}
+            variant="soft"
+            size="sm"
+            startDecorator={<KeyboardArrowLeft />}
+            onClick={() => setOpen(false)}
+            sx={{ display: { xs: open ? "flex" : "none", md: "none" } }}
+          >
+            Retour
+          </Button>
+        ) : (
+          <Button
+            color={"success"}
+            variant="soft"
+            size="sm"
+            startDecorator={<Add />}
+          >
+            Nouvelle liste
+          </Button>
+        )}
       </Stack>
       <Stack
         sx={{
@@ -98,13 +110,15 @@ const ListsPage = () => {
               >
                 {currentList.nom}
               </Typography>
+
               <PostItList postits={currentList.postIts} idList={selectedList} />
+
               <Box
                 sx={{
                   border: "1px solid lightgrey",
                   p: 1,
                   borderRadius: "0.5rem",
-                  flexGrow: 1,
+                  width: "100%",
                   boxSizing: "border-box",
                 }}
               >

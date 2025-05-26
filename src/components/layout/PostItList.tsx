@@ -14,7 +14,12 @@ const PostItList = (props: PostItListProps) => {
   const [currentPostitIndex, setCurrentPostitIndex] = useState<number>(0);
   return (
     <>
-      <Stack gap={1} direction={"row"} alignItems={"center"}>
+      <Stack
+        gap={1}
+        direction={"row"}
+        alignItems={"center"}
+        overflow={"hidden"}
+      >
         <IconButton
           onClick={() => setCurrentPostitIndex((prev) => Math.max(0, prev - 1))}
         >
@@ -22,9 +27,8 @@ const PostItList = (props: PostItListProps) => {
         </IconButton>
         <Box
           sx={{
-            flexGrow: 1,
             overflowX: "hidden",
-
+            display: "flex",
             "& > .MuiStack-root > .MuiAlert-root": {
               width: "100%",
               flexShrink: 0,
@@ -34,6 +38,7 @@ const PostItList = (props: PostItListProps) => {
           <Stack
             direction={"row"}
             sx={{
+              width: "100%",
               transition: "transform 0.4s",
               transform: `translateX(-${currentPostitIndex * 100}%)`,
             }}

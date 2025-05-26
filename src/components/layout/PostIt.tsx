@@ -6,6 +6,8 @@ import {
   Button,
   Divider,
   Typography,
+  Box,
+  CircularProgress,
 } from "@mui/joy";
 import type {
   ListType,
@@ -13,11 +15,11 @@ import type {
   PostItReadType,
 } from "../../types/lists";
 import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, type SubmitErrorHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { postitSchema } from "../../schemas/postit.schema";
-import { updatePostIt } from "../../api/lists.api";
-import { useQueryClient } from "@tanstack/react-query";
+import { requestLLM, updatePostIt } from "../../api/lists.api";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { snackbar } from "../../providers/snackbar/snackbar";
 
 type PostItProps = {
@@ -40,7 +42,7 @@ const PostIt = (props: PostItProps) => {
     setEditMode(false);
   };
 
-  const onError = (err: any) => {
+  const onError: SubmitErrorHandler<PostItCreateType> = (err) => {
     console.log(err);
     snackbar.error({ text: "Une erreur est survenue" });
   };
@@ -73,9 +75,40 @@ const PostIt = (props: PostItProps) => {
     }
   };
 
+  const handleLLM = async () => {
+    if (postit !== undefined && !!postit.contenu) {
+      await requestLLM(postit.idPost).then((res) => {
+        queryClient.setQueryData(["lists"], (old: ListType[] | undefined) =>
+          !old
+            ? undefined
+            : old.map((list) =>
+                list.idListe === idList
+                  ? {
+                      ...list,
+                      postIts: list.postIts.map((post) =>
+                        post.idPost === res.postit.idPost ? res.postit : post
+                      ),
+                      items: res.liste.items,
+                    }
+                  : list
+              )
+        );
+      });
+    }
+  };
+
+  const llmMutation = useMutation({
+    mutationFn: handleLLM,
+  });
+
   return (
     <Alert color="warning">
-      <Stack gap={1} width={"100%"} direction={{ xs: "column", sm: "row" }}>
+      <Stack
+        gap={1}
+        width={"100%"}
+        height={"100%"}
+        direction={{ xs: "column", sm: "row" }}
+      >
         {/* user input */}
         <Stack flex={1} gap={1} sx={{ position: "relative" }}>
           <Input
@@ -165,9 +198,32 @@ const PostIt = (props: PostItProps) => {
         />
 
         {/* LLM response */}
-        <Stack flex={1} justifyContent={"space-between"}>
-          <Typography>Réponse :</Typography>
-          <Button color="warning" disabled>
+        <Stack flex={1} height={"100%"} justifyContent={"space-between"}>
+          <Box>
+            <Typography>Réponse :</Typography>
+            {llmMutation.isPending ? (
+              <CircularProgress size="sm" />
+            ) : (
+              <Typography
+                level="body-sm"
+                sx={{
+                  maxHeight: "130px",
+                  overflowY: "auto",
+                  pr: 0.5,
+                  textAlign: "justify",
+                }}
+              >
+                {postit.reponseLLM}
+              </Typography>
+            )}
+          </Box>
+          <Button
+            color="warning"
+            variant="outlined"
+            sx={{ backgroundColor: "white" }}
+            disabled={postit === undefined || editMode}
+            onClick={() => llmMutation.mutate()}
+          >
             Proposer des produits
           </Button>
         </Stack>

@@ -26,3 +26,8 @@ export type PostItReadType = PostItCreateType & {
   idPost: number;
   reponseLLM: string | null;
 };
+
+export type LLMResponseType = {
+  postit: PostItReadType;
+  liste: Omit<ListType, "postIts">;
+};
