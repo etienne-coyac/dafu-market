@@ -5,7 +5,6 @@ export type ProductType = {
   nom: string;
   marque: string;
   categories: CategoryType[];
-  rayons: string[];
   prixRecommande: number;
 
   description?: string;

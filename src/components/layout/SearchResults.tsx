@@ -1,5 +1,6 @@
 import {
   Box,
+  CircularProgress,
   Divider,
   Grid,
   IconButton,
@@ -10,15 +11,19 @@ import {
 } from "@mui/joy";
 import ProductCard from "../ui/ProductCard";
 import { KeyboardArrowUp } from "@mui/icons-material";
+import type { ProductType } from "../../types/protucts";
 
 type SearchResultsProps = {
   open: boolean;
   onClose: () => void;
   headerRef: React.RefObject<HTMLDivElement | null>;
+  products: ProductType[];
+  loading: boolean;
 };
 
 const SearchResults = (props: SearchResultsProps) => {
-  const { open, onClose, headerRef } = props;
+  const { open, onClose, headerRef, products, loading } = props;
+
   return (
     <Box
       sx={{
@@ -71,17 +76,20 @@ const SearchResults = (props: SearchResultsProps) => {
               overflowY: "auto",
               p: 1,
               alignItems: "flex-start",
+              justifyContent: "center",
             }}
           >
-            {Array.from({ length: 7 }).map((_, index) => (
-              <Grid key={index} xs={12} sm={12} md={6}>
-                <ProductCard
-                  orientation="horizontal"
-                  product={undefined}
-                  canAddCart={() => null}
-                />
-              </Grid>
-            ))}
+            {loading ? (
+              <CircularProgress size="lg" />
+            ) : (
+              <>
+                {products.map((p, index) => (
+                  <Grid key={index} xs={12}>
+                    <ProductCard orientation="horizontal" product={p} />
+                  </Grid>
+                ))}
+              </>
+            )}
           </Grid>
         </Stack>
       </Box>

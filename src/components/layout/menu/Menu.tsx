@@ -9,6 +9,7 @@ import Sheet from "@mui/joy/Sheet";
 
 import {
   Close,
+  Home,
   KeyboardArrowLeft,
   KeyboardArrowRight,
   Menu as MenuIcon,
@@ -111,6 +112,22 @@ export default function Menu() {
                   },
                 }}
               >
+                <ListItem>
+                  <ListItemButton
+                    onClick={() => {
+                      setSelectedSection(undefined);
+                      setOpen(false);
+                      navigate("/");
+                    }}
+                    color="neutral"
+                    variant="soft"
+                  >
+                    <Home />
+                    <ListItemContent>
+                      <i>Accueil</i>
+                    </ListItemContent>
+                  </ListItemButton>
+                </ListItem>
                 {sections?.map((section) => (
                   <ListItem key={section.nomRayon}>
                     <ListItemButton

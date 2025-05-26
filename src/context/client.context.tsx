@@ -23,7 +23,7 @@ const clientContextDefaultValue: ClientContextType = {
   cart: undefined,
 };
 
-export const ClientContext = createContext<ClientContextType>(
+const ClientContext = createContext<ClientContextType>(
   clientContextDefaultValue
 );
 

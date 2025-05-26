@@ -45,6 +45,15 @@ const customTheme = extendTheme({
         },
       },
     },
+    JoyAspectRatio: {
+      styleOverrides: {
+        root: {
+          "& .MuiAspectRatio-content": {
+            backgroundColor: "unset",
+          },
+        },
+      },
+    },
   },
 });
 customTheme.typography.h1 = {
