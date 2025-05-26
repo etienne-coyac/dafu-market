@@ -1,14 +1,13 @@
 import { Box, Button, IconButton } from "@mui/joy";
 import Quantity from "./Quantity";
 import { useState } from "react";
-import { snackbar } from "../../providers/snackbar/snackbar";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import useClientData from "../../context/client.context";
-import type { CartType } from "../../types/cart";
 import { updateQuantityPanier } from "../../api/panier.api";
 import useCartGuard from "../../context/cartGuard.context";
 import useAuth from "../../context/auth.context";
 import { AddShoppingCart } from "@mui/icons-material";
+import type { PanierType } from "../../types/panier";
 
 type AddToCartProps = {
   idProduit?: number;
@@ -32,7 +31,7 @@ const AddToCart = (props: AddToCartProps) => {
       return updateQuantityPanier(idProduit, quantity, idMagasin);
     },
 
-    onSuccess: (res: CartType | undefined) => {
+    onSuccess: (res: PanierType | undefined) => {
       // backend limitation, the cart is empty on first row update so refetch the cart
       if (res && res?.lignes.length === 0) {
         queryClient.invalidateQueries({ queryKey: ["cart"] });
@@ -44,7 +43,6 @@ const AddToCart = (props: AddToCartProps) => {
           () => (!res ? null : res)
         );
       }
-      snackbar.success({ text: "Quantité mise à jour" });
     },
   });
 

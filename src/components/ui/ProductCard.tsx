@@ -24,7 +24,7 @@ const ProductCard = memo((props: ProductCardProps) => {
   const { product, defaultQuantity, orientation = "vertical" } = props;
   const navigate = useNavigate();
 
-  const isPromotion = product?.tauxPromo && product.prixAvecPromo;
+  const isPromotion = !!product?.tauxPromo && !!product.prixAvecPromo;
 
   const handleNavigate = () => {
     if (!product) return;

@@ -1,7 +1,10 @@
 import type { ProductType } from "../types/protucts";
 
 export const getDisplayPrice = (
-  product: ProductType,
+  product: Pick<
+    ProductType,
+    "prixAvecPromo" | "prixMagasin" | "tauxPromo" | "prixRecommande"
+  >,
   type?: "old",
   defaultPrice: boolean = false
 ): number => {

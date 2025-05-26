@@ -12,10 +12,7 @@ const CenterContent = ({ children }: { children: React.ReactNode }) => {
         position: "relative",
       }}
     >
-      <Stack
-        gap={2}
-        sx={{ width: { xs: "100%", md: "70%" }, maxWidth: "1000px" }}
-      >
+      <Stack gap={2} sx={{ width: "100%", maxWidth: "1000px" }}>
         {children}
       </Stack>
     </Box>
