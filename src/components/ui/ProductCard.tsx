@@ -27,8 +27,9 @@ type ProductCardProps = {
   orientation?: "horizontal" | "vertical";
   beforeAddCart: () => void;
   defaultQuantity?: number;
-};
+  layout?: "Landing";
 
+};
 const ProductCard = memo((props: ProductCardProps) => {
   const {
     product,
@@ -40,6 +41,7 @@ const ProductCard = memo((props: ProductCardProps) => {
   const queryClient = useQueryClient();
   const { idMagasin } = useClientData();
   const { user } = useAuth();
+
 
   const [quantityMode, setQuantityMode] = useState<boolean>(
     defaultQuantity !== undefined
@@ -84,6 +86,9 @@ const ProductCard = memo((props: ProductCardProps) => {
           borderColor: theme.vars.palette.danger[500],
           borderWidth: 2,
         }),
+        ...(props.layout === "Landing" && {
+          aspectRatio: "1 / 1", 
+        }),
       })}
     >
       <CardContent
@@ -96,6 +101,7 @@ const ProductCard = memo((props: ProductCardProps) => {
           maxHeight={"120px"}
           minHeight={"100px"}
           sx={{ cursor: "pointer", flex: 1 }}
+          
         >
           <Skeleton loading={!product} variant="overlay">
             <img

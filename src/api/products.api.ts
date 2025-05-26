@@ -25,3 +25,11 @@ export const getProductByCategory = async (
 export const getProductById = async (id: number) => {
   return api.get<ProductType>(`/produits/${id}`).then((res) => res.data);
 };
+
+export const getProductsByMarque = async (marque: string) => {
+  return api
+    .get<ProductType[]>(`/produits`, {
+      params: { marque },
+    })
+    .then((res) => res.data);
+};
