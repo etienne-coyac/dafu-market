@@ -4,7 +4,7 @@ import { getDisplayPrice } from "../../utils/products.utils";
 const sortProducts = (
     products: ProductType[],
     criterion: string,
-    idMagasin?: string
+    idMagasin?: number
 ): ProductType[] => {
     switch (criterion) {
         case "prix-asc":

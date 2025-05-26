@@ -6,6 +6,7 @@ import React from "react";
 import useCart from "../../../hooks/data/useCart";
 import sortProducts from "../../../components/triProducts/sortProducts";
 import ProductsTri from "./ProductsTri";
+import useClientData from "../../../context/client.context";
 
 type ProductsListProps = {
   products: ProductType[] | undefined;
@@ -14,21 +15,28 @@ type ProductsListProps = {
 
 const ProductsList = (props: ProductsListProps) => {
   const { products, loading } = props;
-  const { section, category } = useParams();
+  const { section, category } = useParams<{
+    section?: string;
+    category?: string;
+  }>();
+  const { idMagasin } = useClientData();
   const { data: cart, isLoading: cartLoading } = useCart();
-
   const [sortOption, setSortOption] = React.useState("prix-asc");
 
-  const sortedProducts = React.useMemo(() => {
-    return sortProducts(products || [], sortOption, idMagasin || undefined);
-  }, [products, sortOption]);
+  const sortedProducts = React.useMemo(
+    () => sortProducts(products ?? [], sortOption, idMagasin),
+    [products, sortOption]
+  );
 
   return (
     <Stack rowGap={1} sx={{ flex: 1 }}>
       <Stack direction="row" alignItems="center">
         <Typography level="h2">{category ?? section}</Typography>
         <Box sx={{ flexGrow: 1 }} />
-        <ProductsTri value={sortOption} onChange={setSortOption} idMagasin={idMagasin} />
+        <ProductsTri
+          value={sortOption}
+          onChange={setSortOption}
+        />
       </Stack>
       <Grid container spacing={1}>
         {loading || cartLoading
