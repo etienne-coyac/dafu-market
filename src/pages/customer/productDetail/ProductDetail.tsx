@@ -53,13 +53,11 @@ const ProductDetail = () => {
     ? [
         {
           name: product.categories[0].rayonDTO.nomRayon,
-          href: `/sections/${nameToUrl(
-            product.categories[0].rayonDTO.nomRayon
-          )}`,
+          href: `/r/${nameToUrl(product.categories[0].rayonDTO.nomRayon)}`,
         },
         {
           name: product.categories[0].nomCategorie,
-          href: `/sections/${nameToUrl(
+          href: `/r/${nameToUrl(
             product.categories[0].rayonDTO.nomRayon
           )}/${nameToUrl(product.categories[0].nomCategorie)}`,
         },
@@ -68,6 +66,8 @@ const ProductDetail = () => {
 
   const isPromo = product?.tauxPromo !== undefined && product.tauxPromo > 0;
   const displayProduct = product ?? oldProductRef.current;
+
+  console.log(product, oldProductRef.current);
   const isProductAvailable =
     displayProduct?.idMagasin !== undefined &&
     displayProduct?.stockDispo !== undefined &&
