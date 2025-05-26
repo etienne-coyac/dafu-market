@@ -45,8 +45,8 @@ const Products = () => {
     currentCategory
       ? getProductByCategory(currentCategory.idCategorie, idMagasin)
       : currentSection
-      ? getProductsBySection(currentSection.idRayon, idMagasin)
-      : undefined;
+        ? getProductsBySection(currentSection.idRayon, idMagasin)
+        : undefined;
 
   const { data: products, isFetching } = useQuery({
     enabled: !!currentSection,
