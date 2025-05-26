@@ -18,18 +18,25 @@ import { useState } from "react";
 import { useForm, type SubmitErrorHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { postitSchema } from "../../schemas/postit.schema";
-import { requestLLM, updatePostIt } from "../../api/lists.api";
+import {
+  createPostIt,
+  deletePostIt,
+  requestLLM,
+  updatePostIt,
+} from "../../api/lists.api";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { snackbar } from "../../providers/snackbar/snackbar";
 
 type PostItProps = {
-  postit: PostItReadType;
+  postit?: PostItReadType;
   idList: number;
+  setAddMode?: (mode: boolean) => void;
+  onDelete: () => void;
 };
 
 const PostIt = (props: PostItProps) => {
-  const { postit, idList } = props;
-  const [editMode, setEditMode] = useState(false);
+  const { postit, idList, setAddMode, onDelete } = props;
+  const [editMode, setEditMode] = useState(postit === undefined);
   const queryClient = useQueryClient();
 
   const postitForm = useForm<PostItCreateType>({
@@ -47,37 +54,57 @@ const PostIt = (props: PostItProps) => {
     snackbar.error({ text: "Une erreur est survenue" });
   };
 
+  const changeQueryDataPostIt = (
+    post: PostItReadType,
+    deletePost?: boolean
+  ) => {
+    const exists = postit?.idPost === post.idPost;
+    queryClient.setQueryData(["lists"], (old: ListType[] | undefined) =>
+      !old
+        ? undefined
+        : old.map((list) =>
+            list.idListe === idList
+              ? {
+                  ...list,
+                  postIts:
+                    deletePost === true
+                      ? list.postIts.filter((p) => p.idPost !== post.idPost) // delete
+                      : exists
+                      ? list.postIts.map(
+                          (
+                            p // update
+                          ) => (p.idPost === post.idPost ? post : p)
+                        )
+                      : [post, ...list.postIts], // create
+                }
+              : list
+          )
+    );
+  };
+
   const handleSave = async (data: PostItCreateType) => {
-    console.log("data", data);
     if (postit === undefined) {
       // create
+      await createPostIt(idList, { ...data, saisie: data.contenu })
+        .then(changeQueryDataPostIt)
+        .then(() => setAddMode?.(false));
     } else {
       // update
-      await updatePostIt(postit.idPost, { saisie: data.contenu }).then(
-        (res) => {
-          queryClient.setQueryData(["lists"], (old: ListType[] | undefined) =>
-            !old
-              ? undefined
-              : old.map((list) =>
-                  list.idListe === idList
-                    ? {
-                        ...list,
-                        postIts: list.postIts.map((post) =>
-                          post.idPost === res.idPost ? res : post
-                        ),
-                      }
-                    : list
-                )
-          );
-          setEditMode(false);
-        }
-      );
+      await updatePostIt(postit.idPost, { saisie: data.contenu })
+        .then(changeQueryDataPostIt)
+        .then(() => setEditMode(false));
     }
   };
 
   const handleLLM = async () => {
     if (postit !== undefined && !!postit.contenu) {
       await requestLLM(postit.idPost).then((res) => {
+        if (res.postit.reponseLLM === null) {
+          snackbar.error({
+            text: "Une erreur est survenue pendant la proposition. Réessayez",
+          });
+          return;
+        }
         queryClient.setQueryData(["lists"], (old: ListType[] | undefined) =>
           !old
             ? undefined
@@ -99,6 +126,16 @@ const PostIt = (props: PostItProps) => {
 
   const llmMutation = useMutation({
     mutationFn: handleLLM,
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: async () => {
+      if (postit === undefined) return;
+      await deletePostIt(postit.idPost).then(() => {
+        changeQueryDataPostIt(postit, true);
+        onDelete();
+      });
+    },
   });
 
   return (
@@ -144,13 +181,13 @@ const PostIt = (props: PostItProps) => {
               fontWeight={"bold"}
               sx={{ textDecoration: "underline" }}
             >
-              {postit.titre}
+              {postit?.titre}
             </Typography>
             <Typography
               level="body-sm"
               sx={{ maxHeight: "120px", overflowY: "auto" }}
             >
-              {postit.contenu}
+              {postit?.contenu}
             </Typography>
           </Stack>
 
@@ -179,14 +216,25 @@ const PostIt = (props: PostItProps) => {
                 </Button>
               </>
             ) : (
-              <Button
-                fullWidth
-                color="warning"
-                variant="solid"
-                onClick={() => setEditMode(true)}
-              >
-                Modifier
-              </Button>
+              <>
+                <Button
+                  fullWidth
+                  color="warning"
+                  variant="solid"
+                  onClick={() => setEditMode(true)}
+                >
+                  Modifier
+                </Button>{" "}
+                <Button
+                  fullWidth
+                  color="danger"
+                  variant="solid"
+                  onClick={() => deleteMutation.mutate()}
+                  loading={deleteMutation.isPending}
+                >
+                  Supprimer
+                </Button>
+              </>
             )}
           </Stack>
         </Stack>
@@ -213,7 +261,7 @@ const PostIt = (props: PostItProps) => {
                   textAlign: "justify",
                 }}
               >
-                {postit.reponseLLM}
+                {postit?.reponseLLM}
               </Typography>
             )}
           </Box>

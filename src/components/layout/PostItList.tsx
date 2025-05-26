@@ -12,17 +12,25 @@ type PostItListProps = {
 const PostItList = (props: PostItListProps) => {
   const { postits, idList } = props;
   const [currentPostitIndex, setCurrentPostitIndex] = useState<number>(0);
+  const [addMode, setAddMode] = useState<boolean>(false);
+
+  const handlePrev = () => {
+    if (addMode) return;
+    setCurrentPostitIndex((prev) => Math.max(0, prev - 1));
+  };
+
+  const handleNext = () => {
+    setCurrentPostitIndex((prev) => Math.min(postits.length - 1, prev + 1));
+  };
   return (
     <>
-      <Stack
+      <Box
         gap={1}
-        direction={"row"}
+        sx={{ display: "grid", gridTemplateColumns: "auto 1fr auto" }}
         alignItems={"center"}
         overflow={"hidden"}
       >
-        <IconButton
-          onClick={() => setCurrentPostitIndex((prev) => Math.max(0, prev - 1))}
-        >
+        <IconButton onClick={handlePrev}>
           <KeyboardArrowLeft />
         </IconButton>
         <Box
@@ -43,23 +51,38 @@ const PostItList = (props: PostItListProps) => {
               transform: `translateX(-${currentPostitIndex * 100}%)`,
             }}
           >
+            {addMode && (
+              <PostIt
+                idList={idList}
+                setAddMode={setAddMode}
+                onDelete={() => null}
+              />
+            )}
             {postits.map((postit) => (
-              <PostIt key={postit.idPost} postit={postit} idList={idList} />
+              <PostIt
+                key={postit.idPost}
+                postit={postit}
+                idList={idList}
+                onDelete={handlePrev}
+              />
             ))}
           </Stack>
         </Box>
-        <IconButton
-          onClick={() =>
-            setCurrentPostitIndex((prev) =>
-              Math.min(prev + 1, postits.length - 1)
-            )
-          }
-        >
+        <IconButton onClick={handleNext}>
           <KeyboardArrowRight />
         </IconButton>
-      </Stack>
+      </Box>
       <Stack direction={"row"} gap={1}>
-        <Button fullWidth color="warning" variant="soft">
+        <Button
+          fullWidth
+          color="warning"
+          variant="soft"
+          onClick={() => {
+            if (addMode) return;
+            setAddMode(true);
+            setCurrentPostitIndex(0);
+          }}
+        >
           Nouveau post-it
         </Button>
       </Stack>

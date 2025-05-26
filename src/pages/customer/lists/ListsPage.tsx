@@ -19,11 +19,12 @@ import {
   KeyboardArrowRight,
 } from "@mui/icons-material";
 import PostItList from "../../../components/layout/PostItList";
+import NewListModal from "../../../components/ui/modals/NewListModal";
 
 const ListsPage = () => {
   const [selectedList, setSelectedList] = useState<number | null>(null);
   const [open, setOpen] = useState<boolean>(false);
-
+  const [openNewList, setOpenNewList] = useState<boolean>(false);
   const handleOpen = (idListe: number) => {
     setSelectedList(idListe);
     setOpen(true);
@@ -38,7 +39,7 @@ const ListsPage = () => {
     <CenterContent>
       <Stack direction={"row"} justifyContent={"space-between"}>
         <Typography level="h1">Listes</Typography>
-        {selectedList !== null && open ? (
+        {selectedList !== null && open && (
           <Button
             color={"primary"}
             variant="soft"
@@ -48,15 +49,6 @@ const ListsPage = () => {
             sx={{ display: { xs: open ? "flex" : "none", md: "none" } }}
           >
             Retour
-          </Button>
-        ) : (
-          <Button
-            color={"success"}
-            variant="soft"
-            size="sm"
-            startDecorator={<Add />}
-          >
-            Nouvelle liste
           </Button>
         )}
       </Stack>
@@ -79,23 +71,36 @@ const ListsPage = () => {
             width: "100%",
           }}
         >
-          <List
-            sx={{
-              width: { xs: "100%", md: "30%" },
-              flexShrink: 0,
-              flexGrow: 0,
-              p: 0,
-            }}
-          >
-            {lists?.map((list) => (
-              <ListItem key={list.idListe}>
-                <ListItemButton onClick={() => handleOpen(list.idListe)}>
-                  <ListItemContent>{list.nom}</ListItemContent>
-                  <KeyboardArrowRight />
-                </ListItemButton>
-              </ListItem>
-            ))}
-          </List>
+          <Box sx={{ width: { xs: "100%", md: "30%" }, flexShrink: 0 }}>
+            <Button
+              color={"success"}
+              variant="soft"
+              size="sm"
+              startDecorator={<Add />}
+              fullWidth
+              onClick={() => setOpenNewList(true)}
+            >
+              Nouvelle liste
+            </Button>
+            <List
+              sx={{
+                p: 0,
+              }}
+            >
+              {lists?.map((list) => (
+                <ListItem key={list.idListe}>
+                  <ListItemButton
+                    selected={list.idListe === selectedList}
+                    onClick={() => handleOpen(list.idListe)}
+                  >
+                    <ListItemContent>{list.nom}</ListItemContent>
+                    <KeyboardArrowRight />
+                  </ListItemButton>
+                </ListItem>
+              ))}
+            </List>
+          </Box>
+
           {selectedList && currentList && (
             <Stack
               gap={1}
@@ -162,6 +167,7 @@ const ListsPage = () => {
           )}
         </Stack>
       </Stack>
+      <NewListModal open={openNewList} setOpen={setOpenNewList} />
     </CenterContent>
   );
 };
