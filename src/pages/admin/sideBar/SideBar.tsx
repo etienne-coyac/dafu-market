@@ -8,7 +8,7 @@ import ListItemDecorator from "@mui/joy/ListItemDecorator";
 import Typography from "@mui/joy/Typography";
 import Sheet from "@mui/joy/Sheet";
 import { Link } from "react-router";
-import getAdminIcon, { nameToUrl } from "../../../utils/tmp/adminToIcon";
+import getAdminIcon from "../../../utils/tmp/adminToIcon";
 
 export default function Sidebar() {
 

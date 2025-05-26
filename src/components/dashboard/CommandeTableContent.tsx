@@ -38,7 +38,7 @@ function CommandeTableContent({
             aria-label="Commandes">
             <thead>
                 <tr>
-                    <th style={{ width: 25 }}>
+                    <th style={{ width: 40 }}>
                         <IconButton
                             size="sm"
                             onClick={() => {
@@ -58,7 +58,6 @@ function CommandeTableContent({
                                 borderRadius: '6px',
                             }}
                         >
-                            {/* Ton SVG personnalisé ici */}
                             <svg
                                 width="20"
                                 height="20"
@@ -90,7 +89,7 @@ function CommandeTableContent({
                             </svg>
                         </IconButton>
                     </th>
-                    <th style={{ width: 18 }}>N°</th>
+                    <th style={{ width: 35 }}>N°</th>
                     <th>Client</th>
                     <th>
                         <Link

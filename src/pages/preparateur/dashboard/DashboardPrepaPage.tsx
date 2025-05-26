@@ -17,6 +17,8 @@ function DashboardPrepa() {
     queryKey: ["commandesNow"],
     queryFn: getCommandesNow,
   });
+  console.log("commandesNow", commandesNow);
+  console.log("commandes", commandes);
 
   const uniqueClientIds = Array.isArray(commandes)
     ? Array.from(new Set(commandes.map((row) => row.panier.idClient)))
