@@ -25,10 +25,10 @@ const ProductsList = (props: ProductsListProps) => {
   const [openLoginModal, setOpenLoginModal] = useState<boolean>(false);
   const [openChoseMagasin, setOpenChoseMagasin] = useState<boolean>(false);
 
-  const [sortOption, setSortOption] = React.useState("pertinence");
+  const [sortOption, setSortOption] = React.useState("prix-asc");
 
   const sortedProducts = React.useMemo(() => {
-    return sortProducts(products || [], sortOption);
+    return sortProducts(products || [], sortOption, idMagasin);
   }, [products, sortOption]);
   //console.log(sortedProducts);
 
@@ -47,7 +47,7 @@ const ProductsList = (props: ProductsListProps) => {
       <Stack direction="row" alignItems="center">
         <Typography level="h2">{category ?? section}</Typography>
         <Box sx={{ flexGrow: 1 }} />
-        <ProductsTri value={sortOption} onChange={setSortOption} />
+        <ProductsTri value={sortOption} onChange={setSortOption} idMagasin={idMagasin} />
       </Stack>
       <Grid container spacing={1}>
         {loading || cartLoading

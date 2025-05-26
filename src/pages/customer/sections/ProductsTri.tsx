@@ -1,6 +1,14 @@
 import { Select, Option } from "@mui/joy";
 
-function ProductsTri({ value, onChange }: { readonly value: string; readonly onChange: (v: string) => void }) {
+function ProductsTri({
+    value,
+    onChange,
+    idMagasin,
+}: {
+    readonly value: string;
+    readonly onChange: (v: string) => void;
+    readonly idMagasin?: string | number;
+}) {
     return (
         <Select
             value={value}
@@ -11,10 +19,9 @@ function ProductsTri({ value, onChange }: { readonly value: string; readonly onC
             }}
             sx={{ minWidth: 160 }}
         >
-            <Option value="pertinence">Pertinence</Option>
             <Option value="prix-asc">Prix ↑</Option>
             <Option value="prix-desc">Prix ↓</Option>
-            <Option value="disponibilite">Disponibilité</Option>
+            <Option value="disponibilite" disabled={!idMagasin}>Disponibilité</Option>
         </Select>
     );
 }
