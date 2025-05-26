@@ -1,10 +1,22 @@
 import type { ProductType } from "../types/protucts";
 
-export const getDisplayPrice = (product: ProductType, type?: "old"): number => {
-  if (type === "old" && product.prixMagasin !== undefined) {
+export const getDisplayPrice = (
+  product: ProductType,
+  type?: "old",
+  defaultPrice: boolean = false
+): number => {
+  if (
+    type === "old" &&
+    product.prixMagasin !== undefined &&
+    defaultPrice === false
+  ) {
     return +product.prixMagasin.toFixed(2);
   }
-  if (product.tauxPromo !== undefined && product.prixAvecPromo !== undefined)
+  if (
+    product.tauxPromo !== undefined &&
+    product.prixAvecPromo !== undefined &&
+    defaultPrice === false
+  )
     return +product.prixAvecPromo.toFixed(2);
   if (product.prixMagasin !== undefined) return +product.prixMagasin.toFixed(2);
   return +product.prixRecommande.toFixed(2);

@@ -44,32 +44,34 @@ const ProductDetail = () => {
 
   // save old non magasin related product in case of magasin change
   useLayoutEffect(() => {
-    if (product && product.idMagasin === undefined) {
+    if (product) {
       oldProductRef.current = product;
     }
   }, [product]);
 
-  const breadcrums = product
+  const isPromo = product?.tauxPromo !== undefined && product.tauxPromo > 0;
+
+  const displayProduct = product ?? oldProductRef.current;
+
+  const breadcrums = displayProduct
     ? [
         {
-          name: product.categories[0].rayonDTO.nomRayon,
-          href: `/r/${nameToUrl(product.categories[0].rayonDTO.nomRayon)}`,
+          name: displayProduct.categories[0].rayonDTO.nomRayon,
+          href: `/r/${nameToUrl(
+            displayProduct.categories[0].rayonDTO.nomRayon
+          )}`,
         },
         {
-          name: product.categories[0].nomCategorie,
+          name: displayProduct.categories[0].nomCategorie,
           href: `/r/${nameToUrl(
-            product.categories[0].rayonDTO.nomRayon
-          )}/${nameToUrl(product.categories[0].nomCategorie)}`,
+            displayProduct.categories[0].rayonDTO.nomRayon
+          )}/${nameToUrl(displayProduct.categories[0].nomCategorie)}`,
         },
       ]
     : [];
 
-  const isPromo = product?.tauxPromo !== undefined && product.tauxPromo > 0;
-  const displayProduct = product ?? oldProductRef.current;
-
-  console.log(product, oldProductRef.current);
   const isProductAvailable =
-    displayProduct?.idMagasin !== undefined &&
+    displayProduct?.idMagasin === idMagasin &&
     displayProduct?.stockDispo !== undefined &&
     displayProduct?.stockDispo !== 0;
 
@@ -91,6 +93,10 @@ const ProductDetail = () => {
     },
   });
 
+  const crossSelling = categoryProducts
+    ?.filter((product) => product.idProduit !== displayProduct?.idProduit)
+    .slice(0, 6);
+
   if (displayProduct === null && !isFetching) {
     return <Navigate to="/404" />;
   }
@@ -101,136 +107,134 @@ const ProductDetail = () => {
         {isFetching || !displayProduct ? (
           <LinearProgress />
         ) : (
-          <>
-            <Stack sx={{ flexDirection: { sm: "column", md: "row" } }}>
-              <AspectRatio
-                objectFit="contain"
-                sx={{ flex: 2, maxHeight: { sm: "200px", md: "400px" } }}
-              >
-                <img
-                  src={displayProduct?.imageUrl}
-                  alt={displayProduct?.nom}
-                  loading="lazy"
-                />
-              </AspectRatio>
-              <Stack gap={2} sx={{ flex: 3, mt: 2 }}>
-                <div>
-                  <Typography
-                    level="h2"
-                    textAlign={{ xs: "center", sm: "left" }}
-                  >{`${displayProduct?.nom} - ${displayProduct?.marque}`}</Typography>
-                  <Typography
-                    level="body-lg"
-                    textAlign={{ xs: "center", sm: "left" }}
-                  >
-                    {displayProduct?.description}
-                  </Typography>
-                </div>
-                <Stack columnGap={1} direction={"row"} flexWrap={"wrap"}>
-                  {isPromo && (
-                    <Chip
-                      size="lg"
-                      variant="solid"
-                      color="danger"
-                      sx={{ mt: 2 }}
-                    >{`Promotion : -${displayProduct.tauxPromo}%`}</Chip>
-                  )}
-                  {displayProduct.nutriscore && (
-                    <Chip
-                      size="lg"
-                      variant="soft"
-                      sx={{
-                        mt: 2,
-                        backgroundColor: getNutriscoreColor(
-                          displayProduct.nutriscore
-                        ),
-                        color: "white",
-                      }}
-                    >{`Nutriscore : ${displayProduct.nutriscore}`}</Chip>
-                  )}
-                  {displayProduct.labels?.map((label) => (
-                    <Chip size="lg" variant="soft" sx={{ mt: 2 }}>
-                      {label}
-                    </Chip>
-                  ))}
-                </Stack>
-                {!idMagasin && (
-                  <Alert color="warning">
-                    Les prix affichés sont les prix recommandés. Pour afficher
-                    les prix de votre magasin, sélectionnez un magasin
-                  </Alert>
+          <Stack sx={{ flexDirection: { sm: "column", md: "row" } }}>
+            <AspectRatio
+              objectFit="contain"
+              sx={{ flex: 2, maxHeight: { sm: "200px", md: "400px" } }}
+            >
+              <img
+                src={displayProduct?.imageUrl}
+                alt={displayProduct?.nom}
+                loading="lazy"
+              />
+            </AspectRatio>
+            <Stack gap={2} sx={{ flex: 3, mt: 2 }}>
+              <div>
+                <Typography
+                  level="h2"
+                  textAlign={{ xs: "center", sm: "left" }}
+                >{`${displayProduct?.nom} - ${displayProduct?.marque}`}</Typography>
+                <Typography
+                  level="body-lg"
+                  textAlign={{ xs: "center", sm: "left" }}
+                >
+                  {displayProduct?.description}
+                </Typography>
+              </div>
+              <Stack columnGap={1} direction={"row"} flexWrap={"wrap"}>
+                {isPromo && (
+                  <Chip
+                    size="lg"
+                    variant="solid"
+                    color="danger"
+                    sx={{ mt: 2 }}
+                  >{`Promotion : -${displayProduct.tauxPromo}%`}</Chip>
                 )}
-                {!isProductAvailable && idMagasin !== undefined && (
-                  <Alert color="danger">
-                    Ce produit n'est pas disponible dans ce magasin.
-                  </Alert>
+                {displayProduct.nutriscore && (
+                  <Chip
+                    size="lg"
+                    variant="soft"
+                    sx={{
+                      mt: 2,
+                      backgroundColor: getNutriscoreColor(
+                        displayProduct.nutriscore
+                      ),
+                      color: "white",
+                    }}
+                  >{`Nutriscore : ${displayProduct.nutriscore}`}</Chip>
                 )}
-                {displayProduct.idMagasin !== undefined && (
-                  <Alert color="primary">
-                    Stock disponible : {displayProduct.stockDispo}
-                  </Alert>
-                )}
-                <Alert color="neutral">
-                  <div>
-                    <Typography level="body-md">
-                      Prix {idMagasin === undefined ? "recommandé" : "de vente"}
-                      :
-                    </Typography>
-                    <Stack direction={"row"} alignItems={"center"} gap={1}>
-                      <Typography
-                        level="h3"
-                        color={isPromo ? "danger" : "neutral"}
-                      >
-                        {getDisplayPrice(displayProduct)}€
-                      </Typography>
-                      {isPromo && (
-                        <Typography
-                          level="body-md"
-                          sx={{ textDecoration: "line-through" }}
-                        >
-                          {getDisplayPrice(displayProduct, "old")}€
-                        </Typography>
-                      )}
-                    </Stack>
-                  </div>
-                </Alert>
-                {(isProductAvailable || idMagasin === undefined) && (
-                  <div>
-                    <AddToCart
-                      label
-                      idProduit={displayProduct?.idProduit}
-                      defaultQuantity={
-                        cart?.lignes.find(
-                          (item) => item.idProduit === displayProduct.idProduit
-                        )?.quantite
-                      }
-                    />
-                  </div>
-                )}
+                {displayProduct.labels?.map((label) => (
+                  <Chip size="lg" variant="soft" sx={{ mt: 2 }} key={label}>
+                    {label}
+                  </Chip>
+                ))}
               </Stack>
+              {!idMagasin && (
+                <Alert color="warning">
+                  Les prix affichés sont les prix recommandés. Pour afficher les
+                  prix de votre magasin, sélectionnez un magasin
+                </Alert>
+              )}
+              {!isProductAvailable && idMagasin !== undefined && (
+                <Alert color="danger">
+                  Ce produit n'est pas disponible dans ce magasin.
+                </Alert>
+              )}
+              {displayProduct.idMagasin === idMagasin && (
+                <Alert color="primary">
+                  Stock disponible : {displayProduct.stockDispo}
+                </Alert>
+              )}
+              <Alert color="neutral">
+                <div>
+                  <Typography level="body-md">
+                    Prix{" "}
+                    {displayProduct.idMagasin !== idMagasin
+                      ? "recommandé"
+                      : "de vente"}
+                    :
+                  </Typography>
+                  <Stack direction={"row"} alignItems={"center"} gap={1}>
+                    <Typography
+                      level="h3"
+                      color={isPromo ? "danger" : "neutral"}
+                    >
+                      {getDisplayPrice(displayProduct)}€
+                    </Typography>
+                    {isPromo && (
+                      <Typography
+                        level="body-md"
+                        sx={{ textDecoration: "line-through" }}
+                      >
+                        {getDisplayPrice(displayProduct, "old")}€
+                      </Typography>
+                    )}
+                  </Stack>
+                </div>
+              </Alert>
+              {(isProductAvailable || idMagasin === undefined) && (
+                <div>
+                  <AddToCart
+                    label
+                    idProduit={displayProduct?.idProduit}
+                    defaultQuantity={
+                      cart?.lignes.find(
+                        (item) => item.idProduit === displayProduct.idProduit
+                      )?.quantite
+                    }
+                  />
+                </div>
+              )}
             </Stack>
-          </>
+          </Stack>
         )}
-        <CenterContent>
-          <Divider />
-          <Typography level="h4">
-            Ces produits pourraient vous intéresser :
-          </Typography>
-          <Stack
-            direction={"row"}
-            gap={1}
-            sx={{ overflowX: "auto", width: "100%" }}
-          >
-            {categoryProducts
-              ?.filter(
-                (product) => product.idProduit !== displayProduct?.idProduit
-              )
-              .slice(0, 6)
-              .map((product) => (
+        {crossSelling && crossSelling.length > 0 && (
+          <CenterContent>
+            <Divider />
+            <Typography level="h4">
+              Ces produits pourraient vous intéresser :
+            </Typography>
+            <Stack
+              direction={"row"}
+              gap={1}
+              sx={{ overflowX: "auto", width: "100%" }}
+            >
+              {crossSelling.map((product) => (
                 <ProductCard key={product.idProduit} product={product} />
               ))}
-          </Stack>
-        </CenterContent>
+            </Stack>
+          </CenterContent>
+        )}
       </Stack>
     </Stack>
   );
