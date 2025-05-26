@@ -17,10 +17,10 @@ const ProductsList = (props: ProductsListProps) => {
   const { section, category } = useParams();
   const { data: cart, isLoading: cartLoading } = useCart();
 
-  const [sortOption, setSortOption] = React.useState("pertinence");
+  const [sortOption, setSortOption] = React.useState("prix-asc");
 
   const sortedProducts = React.useMemo(() => {
-    return sortProducts(products || [], sortOption);
+    return sortProducts(products || [], sortOption, idMagasin);
   }, [products, sortOption]);
 
   return (
@@ -28,7 +28,7 @@ const ProductsList = (props: ProductsListProps) => {
       <Stack direction="row" alignItems="center">
         <Typography level="h2">{category ?? section}</Typography>
         <Box sx={{ flexGrow: 1 }} />
-        <ProductsTri value={sortOption} onChange={setSortOption} />
+        <ProductsTri value={sortOption} onChange={setSortOption} idMagasin={idMagasin} />
       </Stack>
       <Grid container spacing={1}>
         {loading || cartLoading

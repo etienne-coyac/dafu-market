@@ -3,19 +3,10 @@ import { getDisplayPrice } from "../../utils/products.utils";
 
 const sortProducts = (
     products: ProductType[],
-    criterion: string
+    criterion: string,
+    idMagasin?: string
 ): ProductType[] => {
     switch (criterion) {
-        case "pertinence":
-            return [...products].sort((a, b) => {
-                const score = (p: ProductType) => {
-                    let s = 0;
-                    if (p.stockDispo && p.stockDispo > 0) s += 50;          // Disponibilité
-                    if (p.tauxPromo) s += 20;                     // Promotion
-                    return s;
-                };
-                return score(b) - score(a); // tri décroissant
-            });
         case "prix-asc":
             return [...products].sort(
                 (a, b) => Number(getDisplayPrice(a)) - Number(getDisplayPrice(b))
@@ -26,6 +17,7 @@ const sortProducts = (
             );
         case "disponibilite":
             return [...products].sort((a, b) => {
+                if (!idMagasin) return 0;
                 const dispoA = a.stockDispo && a.stockDispo > 0 ? 1 : 0;
                 const dispoB = b.stockDispo && b.stockDispo > 0 ? 1 : 0;
                 return dispoB - dispoA;
