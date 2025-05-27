@@ -151,7 +151,6 @@ export default function Sidebar() {
                   role="menuitem"
                   component={Link}
                   to="/admin/parametrerAlgorithme"
-                  disabled
                 >
                   {getAdminIcon("algorithme")}
                   <ListItemContent>

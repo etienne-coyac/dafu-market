@@ -1,6 +1,5 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import type { LoginType, UserType } from "../types/user";
-import { login as apiLogin } from "../api/services/auth";
 import { useLocation, useNavigate } from "react-router";
 import { useQueryClient } from "@tanstack/react-query";
 

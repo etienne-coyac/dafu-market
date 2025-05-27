@@ -37,10 +37,6 @@ const LoginForm = (props: LoginFormProps) => {
 
   const { register, handleSubmit } = useForm<LoginType>({
     resolver: zodResolver(loginSchema),
-    defaultValues: {
-      email: "a@email.com",
-      password: "a",
-    },
   });
 
   const onSubmit = async (data: LoginType) => {

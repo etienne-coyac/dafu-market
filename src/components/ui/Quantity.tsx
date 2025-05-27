@@ -1,14 +1,15 @@
 import { Add, Remove } from "@mui/icons-material";
 import { IconButton, Stack, Typography } from "@mui/joy";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 type QuantityProps = {
   value: number;
   onChange: (value: number) => void;
   delay?: number;
+  shouldUpdateOnFirstRender?: boolean;
 };
 const Quantity = (props: QuantityProps) => {
-  const { value, onChange, delay = 700 } = props;
+  const { value, onChange, delay = 700, shouldUpdateOnFirstRender } = props;
   const [displayValue, setDisplayValue] = useState<number>(value);
 
   useEffect(() => {
@@ -19,6 +20,16 @@ const Quantity = (props: QuantityProps) => {
     return () => clearTimeout(timeoutId);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [displayValue, delay]);
+  const firstRender = useRef(true);
+  useEffect(() => {
+    // on display add 1
+    console.log("render", shouldUpdateOnFirstRender);
+    if (firstRender.current) {
+      firstRender.current = false;
+      console.log("render quantity");
+      if (shouldUpdateOnFirstRender) onChange(value);
+    }
+  }, []);
 
   useEffect(() => {
     setDisplayValue(value);

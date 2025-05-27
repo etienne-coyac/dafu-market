@@ -2,7 +2,6 @@ import { CssVarsProvider as JoyCssVarsProvider } from "@mui/joy/styles";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Outlet } from "react-router";
 import customTheme from "./theme";
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import {
   SnackbarProvider,
   useSnackbar,
@@ -54,7 +53,7 @@ const AppProviders = () => {
             <CssBaseline enableColorScheme />
 
             <SnackbarProvider>
-              <ReactQueryDevtools initialIsOpen={false} />
+              {/* <ReactQueryDevtools initialIsOpen={false} /> */}
               <SnackbarRegister />
               <Outlet />
             </SnackbarProvider>

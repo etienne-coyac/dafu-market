@@ -20,7 +20,6 @@ import ConsultProfils from "../pages/admin/statistiques/ConsultProfilsPage";
 import AppPreparateur from "../pages/preparateur/AppPreparateur";
 import DashboardPrepa from "../pages/preparateur/dashboard/DashboardPrepaPage";
 import ListsPage from "../pages/customer/lists/ListsPage";
-import ProtectedRouteAdmin from "../middlewares/ProtectedRouteAdmin";
 
 const router = createBrowserRouter([
   {
