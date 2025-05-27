@@ -35,3 +35,11 @@ export const getProductsSearch = async (search: string, limit: number = 6) => {
     .get<ProductType[]>(`/produits/search?search=${search}&limit=${limit}`)
     .then((res) => res.data);
 };
+
+export const getProductsByMarque = async (marque: string) => {
+  return api
+    .get<ProductType[]>(`/produits`, {
+      params: { marque },
+    })
+    .then((res) => res.data);
+};
