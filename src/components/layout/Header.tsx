@@ -1,3 +1,6 @@
+import logoSrc from "../../assets/logo_dafu_text.png";   
+import caddie from "../../assets/logo_dafu_small.png";   
+
 import {
   LocationPin,
   Search,
@@ -91,12 +94,36 @@ const Header = () => {
       >
         <Stack direction={"row"} gap={1} alignItems={"center"}>
           <Menu />
-          <Typography
-            level={"h1"}
-            sx={{ display: { xs: "none", sm: "block" } }}
-          >
-            DAFU Market
-          </Typography>
+          <Box onClick={()=>{
+              navigate("/");
+          }}
+              sx={{
+                display: { xs: "none", sm: "block" },
+                cursor:"pointer"
+              }}
+              component="div" // on change en div pour éviter certains comportements de <h1> autour d'une img
+            >
+              <Box
+                component="img"
+                src={logoSrc}
+                alt="Mon logo"
+                sx={{
+                  height: 48,       
+                  width: "auto",     
+                  verticalAlign: "middle"
+                }}
+              />
+               <Box
+                component="img"
+                src={caddie}
+                alt="Mon logo"
+                sx={{
+                  height: 35,      
+                  width: "auto",    
+                  verticalAlign: "middle"
+                }}
+              />
+            </Box>
         </Stack>
         <Box
           sx={{
