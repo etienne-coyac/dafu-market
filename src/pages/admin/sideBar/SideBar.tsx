@@ -99,10 +99,11 @@ export default function Sidebar() {
               role="menuitem"
               component={Link}
               to="/admin/forecast"
+              disabled
             >
               {getAdminIcon("forecast")}
               <ListItemContent>
-                <Typography level="title-sm">Forecast</Typography>
+                <Typography level="title-sm">Prévisions de stock</Typography>
               </ListItemContent>
             </ListItemButton>
           </ListItem>
@@ -121,6 +122,7 @@ export default function Sidebar() {
                   role="menuitem"
                   component={Link}
                   to="/admin/efficaciteSysteme"
+                  disabled
                 >
                   {getAdminIcon("efficacite")}
                   <ListItemContent>
@@ -134,7 +136,7 @@ export default function Sidebar() {
                 <ListItemButton
                   role="menuitem"
                   component={Link}
-                  to="/admin/editerSysteme"
+                  to="/admin/statistiques"
                 >
                   {getAdminIcon("editer")}
                   <ListItemContent>
@@ -163,6 +165,7 @@ export default function Sidebar() {
                   role="menuitem"
                   component={Link}
                   to="/admin/consulterProfils"
+                  disabled
                 >
                   {getAdminIcon("consulter")}
                   <ListItemContent>
@@ -177,6 +180,7 @@ export default function Sidebar() {
                   role="menuitem"
                   component={Link}
                   to="/admin/habitudesProfils"
+                  disabled
                 >
                   {getAdminIcon("habitudes")}
                   <ListItemContent>

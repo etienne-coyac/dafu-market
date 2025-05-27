@@ -10,16 +10,11 @@ import {
 import ProductCard from "../../../components/ui/ProductCard";
 import { useQuery } from "@tanstack/react-query";
 import { getProductsByMarque } from "../../../api/products.api";
-import type { ProductType } from "../../../types/protucts";
 import { getAllCategoriesPreview } from "../../../api/rayons.api";
 import { useNavigate } from "react-router";
 import { nameToUrl } from "../../../utils/tmp/sectionToIcon";
 import useClientData from "../../../context/client.context";
-
-const getRandomProducts = (products: ProductType[], count: number) => {
-  const shuffled = [...products].sort(() => 0.5 - Math.random());
-  return shuffled.slice(0, count);
-};
+import { enableCache } from "../../../AppProviders";
 
 const LandingPage = () => {
   const navigate = useNavigate();
@@ -27,15 +22,20 @@ const LandingPage = () => {
   const marque = "DAFU";
   const { data: dafuProducts, isLoading } = useQuery({
     queryKey: ["produits", { marque, idMagasin }],
-    queryFn: () => getProductsByMarque(marque, idMagasin),
+    queryFn: async () =>
+      (await getProductsByMarque(marque, idMagasin))
+        .sort(() => 0.5 - Math.random())
+        .slice(0, 4),
+    ...enableCache(),
   });
 
   const { data: catPreview, isLoading: isCatLoading } = useQuery({
     queryKey: ["catPreview"],
     queryFn: getAllCategoriesPreview,
+    ...enableCache(),
   });
 
-  const randomFour = dafuProducts ? getRandomProducts(dafuProducts, 4) : [];
+  const randomFour = dafuProducts ?? [];
 
   return (
     <Stack

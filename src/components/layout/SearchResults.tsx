@@ -18,6 +18,7 @@ import { useLocation, useNavigate } from "react-router";
 import { getAllCategoriesPreview } from "../../api/rayons.api";
 import { useQuery } from "@tanstack/react-query";
 import { nameToUrl } from "../../utils/tmp/sectionToIcon";
+import useCart from "../../hooks/data/useCart";
 
 type SearchResultsProps = {
   open: boolean;
@@ -29,6 +30,7 @@ type SearchResultsProps = {
 
 const SearchResults = (props: SearchResultsProps) => {
   const { open, onClose, headerRef, products, loading } = props;
+  const cart = useCart();
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -113,7 +115,15 @@ const SearchResults = (props: SearchResultsProps) => {
               <>
                 {products.map((p, index) => (
                   <Grid key={index} xs={12}>
-                    <ProductCard orientation="horizontal" product={p} />
+                    <ProductCard
+                      orientation="horizontal"
+                      product={p}
+                      defaultQuantity={
+                        cart?.data?.lignes?.find(
+                          (l) => l.idProduit === p.idProduit
+                        )?.quantite
+                      }
+                    />
                   </Grid>
                 ))}
               </>

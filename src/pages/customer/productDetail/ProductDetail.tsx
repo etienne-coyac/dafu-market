@@ -219,6 +219,7 @@ const ProductDetail = () => {
                         (item) => item.idProduit === displayProduct.idProduit
                       )?.quantite
                     }
+                    shouldUpdateOnFirstRender
                   />
                 )}
                 {user && (
@@ -228,7 +229,7 @@ const ProductDetail = () => {
                     startDecorator={<Add />}
                     onClick={() => setOpenModal(true)}
                   >
-                    Ajouter à une liste
+                    Placer dans une liste
                   </Button>
                 )}
               </Stack>

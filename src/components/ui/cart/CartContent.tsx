@@ -34,6 +34,13 @@ const CartContent = (props: CartContentProps) => {
                   product={product}
                   orientation="horizontal"
                   defaultQuantity={product.quantite}
+                  layout="Panier"
+                  quantityWarning={
+                    !!(
+                      product.stockDispo &&
+                      product.quantite > product.stockDispo
+                    )
+                  }
                 />
               ))}
               <Button

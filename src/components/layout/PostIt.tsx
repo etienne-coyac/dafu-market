@@ -104,8 +104,8 @@ const PostIt = (props: PostItProps) => {
           snackbar.error({
             text: "Une erreur est survenue pendant la proposition. Réessayez",
           });
-          return;
         }
+        if (!res) return;
         queryClient.setQueryData(["lists"], (old: ListType[] | undefined) =>
           !old
             ? undefined

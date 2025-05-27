@@ -13,10 +13,12 @@ type AddToCartProps = {
   idProduit?: number;
   defaultQuantity?: number;
   label?: boolean;
+  shouldUpdateOnFirstRender?: boolean;
 };
 
 const AddToCart = (props: AddToCartProps) => {
-  const { defaultQuantity, idProduit, label } = props;
+  const { defaultQuantity, idProduit, label, shouldUpdateOnFirstRender } =
+    props;
   const queryClient = useQueryClient();
   const { idMagasin } = useClientData();
   const { beforeAddCart } = useCartGuard();
@@ -63,6 +65,7 @@ const AddToCart = (props: AddToCartProps) => {
             if (newQtt === 0) setQuantityMode(false);
             quantityMutation.mutate(newQtt);
           }}
+          shouldUpdateOnFirstRender={shouldUpdateOnFirstRender}
         />
       ) : (
         <>

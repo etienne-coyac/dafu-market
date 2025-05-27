@@ -74,6 +74,13 @@ const ProductFilters = (props: ProductFiltersProps) => {
     }
   };
 
+  const handlePromoChange = (promo: boolean) => {
+    setFilters((prev) => ({
+      ...prev,
+      promo,
+    }));
+  };
+
   const displayNutriScoreFilter = () => {
     return products?.some((p) => p.nutriscore !== undefined);
   };
@@ -152,9 +159,7 @@ const ProductFilters = (props: ProductFiltersProps) => {
                     <Checkbox
                       label={"Promotions"}
                       checked={filters.promo}
-                      onChange={() =>
-                        setFilters((prev) => ({ ...prev, promo: !prev.promo }))
-                      }
+                      onChange={(e) => handlePromoChange(e.target.checked)}
                     />
                   </ListItem>
                 ) : (

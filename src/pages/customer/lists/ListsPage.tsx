@@ -246,6 +246,9 @@ const ListsPage = () => {
                     size="sm"
                     onClick={() => convertMutation.mutate(selectedList)}
                     loading={convertMutation.isPending}
+                    disabled={
+                      convertMutation.isPending || !currentList.items?.length
+                    }
                   >
                     Tout ajouter au panier
                   </Button>

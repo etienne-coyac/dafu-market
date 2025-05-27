@@ -1,7 +1,6 @@
 import EqualizerIcon from "@mui/icons-material/Equalizer";
 import AutoGraphIcon from "@mui/icons-material/AutoGraph";
 import ImportExportIcon from "@mui/icons-material/ImportExport";
-import EditIcon from "@mui/icons-material/Edit";
 import PersonSearchIcon from "@mui/icons-material/PersonSearch";
 import LocationSearchingIcon from "@mui/icons-material/LocationSearching";
 import RecommendIcon from "@mui/icons-material/Recommend";

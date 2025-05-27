@@ -30,7 +30,7 @@ export const getProductById = async (id: number, idMagasin?: number) => {
   return api.get<ProductType>(path).then((res) => res.data);
 };
 
-export const getProductsSearch = async (search: string, limit: number = 6) => {
+export const getProductsSearch = async (search: string, limit: number = 8) => {
   return api
     .get<ProductType[]>(`/produits/search?search=${search}&limit=${limit}`)
     .then((res) => res.data);

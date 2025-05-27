@@ -64,10 +64,6 @@ const ChoseMagasinModal = (props: ChoseMagasinProps) => {
               if (cart && newValue) {
                 await changeCartMagasin(newValue).then((updatedCart) => {
                   queryClient.setQueriesData(
-                    { queryKey: ["cart-client"] },
-                    () => updatedCart
-                  );
-                  queryClient.setQueriesData(
                     { queryKey: ["cart"] },
                     () => updatedCart
                   );

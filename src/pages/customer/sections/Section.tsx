@@ -45,8 +45,8 @@ const Products = () => {
     currentCategory
       ? getProductByCategory(currentCategory.idCategorie, idMagasin)
       : currentSection
-        ? getProductsBySection(currentSection.idRayon, idMagasin)
-        : undefined;
+      ? getProductsBySection(currentSection.idRayon, idMagasin)
+      : undefined;
 
   const { data: products, isFetching } = useQuery({
     enabled: !!currentSection,
@@ -71,10 +71,14 @@ const Products = () => {
           (filters.nutriscore === undefined ||
             filters.nutriscore.length === 0 ||
             (product.nutriscore &&
-              filters.nutriscore.includes(product.nutriscore)))
+              filters.nutriscore.includes(product.nutriscore))) &&
+          (!filters.promo ||
+            (filters.promo === true &&
+              product.tauxPromo &&
+              product.tauxPromo > 0))
         );
       }),
-    [products, filters.brand, filters.nutriscore]
+    [products, filters.brand, filters.nutriscore, filters.promo]
   );
 
   return (

@@ -14,16 +14,6 @@ const RegisterForm = (props: RegisterFormProps) => {
   const { nextAction } = props;
   const { register, handleSubmit } = useForm<RegisterType>({
     resolver: zodResolver(registerSchema),
-    defaultValues: {
-      nom: "test",
-      prenom: "test",
-      ville: "test",
-      numero: "test",
-      adresse: "test",
-      cp: "31000",
-      email: "test@test.test",
-      password: "test",
-    },
   });
 
   const createUserMutation = useMutation({
@@ -50,7 +40,7 @@ const RegisterForm = (props: RegisterFormProps) => {
       <Input placeholder="Code postal" {...register("cp")} />
       <Input placeholder="Ville" {...register("ville")} />
       <Input placeholder="Numéro de rue" {...register("numero")} />
-      <Input placeholder="Nom de rue" {...register("numero")} />
+      <Input placeholder="Nom de rue" {...register("adresse")} />
       <Divider />
       <Input placeholder="Email" {...register("email")} />
       <Input
