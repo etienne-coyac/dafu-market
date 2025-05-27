@@ -1,10 +1,9 @@
-import * as React from "react";
 import Sheet from "@mui/joy/Sheet";
 
 import { getCommandes, getCommandesNow } from "../../../api/commandes.api";
 import { useQuery, useQueries } from "@tanstack/react-query";
 import { getClientById } from "../../../api/clients.api";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import CommandeTableContent from "../../../components/dashboard/CommandeTableContent";
 
 function DashboardPrepa() {
@@ -17,8 +16,6 @@ function DashboardPrepa() {
     queryKey: ["commandesNow"],
     queryFn: getCommandesNow,
   });
-  console.log("commandesNow", commandesNow);
-  console.log("commandes", commandes);
 
   const uniqueClientIds = Array.isArray(commandes)
     ? Array.from(new Set(commandes.map((row) => row.panier.idClient)))
@@ -50,14 +47,14 @@ function DashboardPrepa() {
   });
 
   const [order, setOrder] = useState<"asc" | "desc">("asc");
-  const [filteredRows, setFilteredRows] = React.useState<Array<any> | null>(
-    null
-  );
-  const [prioriteEtat, setPrioriteEtat] = React.useState(false);
-
-  React.useEffect(() => {
-    setFilteredRows(Array.isArray(commandes) ? commandes : []);
-  }, [commandes]);
+  const [prioriteEtat, setPrioriteEtat] = useState(false);
+  const filteredRows = useMemo(() => {
+    return prioriteEtat
+      ? commandesNow?.filter(
+          (row) => !["PRET", "RECEPTIONNE"].includes(row.statut)
+        )
+      : commandes;
+  }, [commandes, commandesNow, prioriteEtat]);
 
   return (
     <Sheet>
@@ -66,10 +63,7 @@ function DashboardPrepa() {
         setOrder={setOrder}
         prioriteEtat={prioriteEtat}
         setPrioriteEtat={setPrioriteEtat}
-        commandes={Array.isArray(commandes) ? commandes : []}
-        commandesNow={Array.isArray(commandesNow) ? commandesNow : []}
-        filteredRows={filteredRows ?? []}
-        setFilteredRows={setFilteredRows}
+        commandes={filteredRows ?? []}
         clientMap={clientMap}
       />
     </Sheet>

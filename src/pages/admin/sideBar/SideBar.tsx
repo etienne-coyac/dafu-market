@@ -11,7 +11,6 @@ import { Link } from "react-router";
 import getAdminIcon from "../../../utils/tmp/adminToIcon";
 
 export default function Sidebar() {
-
   return (
     <Sheet
       className="Sidebar"
@@ -88,9 +87,7 @@ export default function Sidebar() {
         >
           <ListItem>
             <ListItemButton role="menuitem" component={Link} to="/admin/import">
-              <ListItemDecorator>
-                {getAdminIcon("import")}
-              </ListItemDecorator>
+              <ListItemDecorator>{getAdminIcon("import")}</ListItemDecorator>
               <ListItemContent>
                 <Typography level="title-sm">Importation</Typography>
               </ListItemContent>
@@ -142,7 +139,7 @@ export default function Sidebar() {
                   {getAdminIcon("editer")}
                   <ListItemContent>
                     <Typography level="title-sm">
-                      Editer des statistiques
+                      Visualiser les statistiques
                     </Typography>
                   </ListItemContent>
                 </ListItemButton>

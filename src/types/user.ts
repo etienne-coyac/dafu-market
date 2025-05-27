@@ -15,3 +15,13 @@ export type UserType = {
   cp: string;
   telephone: string;
 };
+
+// personnel
+
+export type PersonnelType = {
+  idPersonnel: number;
+  nom: string;
+  prenom: string;
+  idRole: number;
+  idMagasin: number;
+};

@@ -13,22 +13,19 @@ import OrdersPage from "../pages/customer/orders/OrdersPage";
 import ImportPage from "../pages/admin/import/ImportPage";
 import Forecast from "../pages/admin/forecast/ForecastPage";
 import ParamAlgo from "../pages/admin/statistiques/ParamAlgoPage";
-import EditSysteme from "../pages/admin/statistiques/EditSystemePage";
+import Stats from "../pages/admin/statistiques/EditSystemePage";
 import EffSysteme from "../pages/admin/statistiques/EffSystemePage";
 import HabitProfils from "../pages/admin/statistiques/HabitProfils";
 import ConsultProfils from "../pages/admin/statistiques/ConsultProfilsPage";
 import AppPreparateur from "../pages/preparateur/AppPreparateur";
 import DashboardPrepa from "../pages/preparateur/dashboard/DashboardPrepaPage";
 import ListsPage from "../pages/customer/lists/ListsPage";
+import ProtectedRouteAdmin from "../middlewares/ProtectedRouteAdmin";
 
 const router = createBrowserRouter([
   {
     element: <AppProviders />,
     children: [
-      {
-        path: "/login",
-        element: <LoginPage />,
-      },
       {
         path: "/",
         element: <App />,
@@ -36,6 +33,10 @@ const router = createBrowserRouter([
           {
             errorElement: <ErrorBoundary />,
             children: [
+              {
+                path: "/login",
+                element: <LoginPage />,
+              },
               { path: "", element: <LandingPage /> },
               {
                 path: "r/:section/:category?",
@@ -92,8 +93,8 @@ const router = createBrowserRouter([
                 element: <EffSysteme />,
               },
               {
-                path: "editerSysteme",
-                element: <EditSysteme />,
+                path: "statistiques",
+                element: <Stats />,
               },
               {
                 path: "parametrerAlgorithme",

@@ -3,7 +3,6 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Outlet } from "react-router";
 import customTheme from "./theme";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
-import { AuthProvider } from "./context/auth.context";
 import {
   SnackbarProvider,
   useSnackbar,
@@ -50,19 +49,17 @@ const AppProviders = () => {
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <QueryClientProvider client={queryClient}>
-        <AuthProvider>
-          <ThemeProvider theme={{ [MATERIAL_THEME_ID]: materialTheme }}>
-            <JoyCssVarsProvider theme={customTheme}>
-              <CssBaseline enableColorScheme />
+        <ThemeProvider theme={{ [MATERIAL_THEME_ID]: materialTheme }}>
+          <JoyCssVarsProvider theme={customTheme}>
+            <CssBaseline enableColorScheme />
 
-              <SnackbarProvider>
-                <ReactQueryDevtools initialIsOpen={false} />
-                <SnackbarRegister />
-                <Outlet />
-              </SnackbarProvider>
-            </JoyCssVarsProvider>
-          </ThemeProvider>
-        </AuthProvider>
+            <SnackbarProvider>
+              <ReactQueryDevtools initialIsOpen={false} />
+              <SnackbarRegister />
+              <Outlet />
+            </SnackbarProvider>
+          </JoyCssVarsProvider>
+        </ThemeProvider>
       </QueryClientProvider>
     </LocalizationProvider>
   );
