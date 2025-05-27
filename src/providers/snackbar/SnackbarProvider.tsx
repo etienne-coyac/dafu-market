@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useCallback } from "react";
-import { Snackbar, Alert, Typography, type ColorPaletteProp } from "@mui/joy";
+import { Snackbar, Typography, type ColorPaletteProp } from "@mui/joy";
 
 export type SnackbarOptions = {
   text: string;

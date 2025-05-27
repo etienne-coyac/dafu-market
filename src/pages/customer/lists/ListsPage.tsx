@@ -23,9 +23,14 @@ import PostItList from "../../../components/layout/PostItList";
 import NewListModal from "../../../components/ui/modals/NewListModal";
 import type { ListType } from "../../../types/lists";
 import Quantity from "../../../components/ui/Quantity";
-import { Link as RouterLink } from "react-router";
+import { Link as RouterLink, useNavigate } from "react-router";
+import { conversionListPanier } from "../../../api/panier.api";
+import useClientData from "../../../context/client.context";
+
 const ListsPage = () => {
+  const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const { idMagasin } = useClientData();
   const [selectedList, setSelectedList] = useState<number | null>(null);
   const [open, setOpen] = useState<boolean>(false);
   const [openNewList, setOpenNewList] = useState<boolean>(false);
@@ -48,6 +53,17 @@ const ListsPage = () => {
       );
       setSelectedList(null);
       setOpen(false);
+    },
+  });
+
+  const convertMutation = useMutation({
+    mutationFn: async (idList: number) => {
+      if (!idMagasin) return;
+      return conversionListPanier(idList, idMagasin);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["cart"] });
+      navigate("/panier");
     },
   });
 
@@ -223,15 +239,26 @@ const ListsPage = () => {
                   )}
                 </Stack>
               </Box>
-              <Button
-                color="danger"
-                size="sm"
-                sx={{ alignSelf: "flex-end" }}
-                onClick={() => deleteListMutation.mutate(selectedList)}
-                loading={deleteListMutation.isPending}
-              >
-                Supprimer la liste
-              </Button>
+              <Stack alignSelf={"flex-end"} gap={1} direction={"row"}>
+                {idMagasin && (
+                  <Button
+                    color="success"
+                    size="sm"
+                    onClick={() => convertMutation.mutate(selectedList)}
+                    loading={convertMutation.isPending}
+                  >
+                    Tout ajouter au panier
+                  </Button>
+                )}
+                <Button
+                  color="danger"
+                  size="sm"
+                  onClick={() => deleteListMutation.mutate(selectedList)}
+                  loading={deleteListMutation.isPending}
+                >
+                  Supprimer la liste
+                </Button>
+              </Stack>
             </Stack>
           )}
         </Stack>

@@ -23,35 +23,6 @@ type ProductCardProps = {
 const ProductCard = memo((props: ProductCardProps) => {
   const { product, defaultQuantity, orientation = "vertical" } = props;
   const navigate = useNavigate();
-  const queryClient = useQueryClient();
-  const { idMagasin } = useClientData();
-  const { user } = useAuth();
-
-  const [quantityMode, setQuantityMode] = useState<boolean>(
-    defaultQuantity !== undefined
-  );
-
-  const quantityMutation = useMutation({
-    mutationFn: async (quantity: number) => {
-      if (!product || !idMagasin) return;
-      return updateQuantityPanier(product.idProduit, quantity, idMagasin);
-    },
-
-    onSuccess: (res: CartType | undefined) => {
-      // backend limitation, the cart is empty on first row update so refetch the cart
-      if (res && res?.lignes.length === 0) {
-        queryClient.invalidateQueries({ queryKey: ["cart"] });
-      } else {
-        queryClient.setQueriesData(
-          {
-            queryKey: ["cart"],
-          },
-          () => (!res ? null : res)
-        );
-      }
-      snackbar.success({ text: "Quantité mise à jour" });
-    },
-  });
 
   const isPromotion = product?.tauxPromo && product.prixAvecPromo;
 
@@ -71,9 +42,6 @@ const ProductCard = memo((props: ProductCardProps) => {
           borderColor: theme.vars.palette.danger[500],
           borderWidth: 2,
         }),
-        ...(props.layout === "Landing" && {
-          aspectRatio: "1 / 1",
-        }),
       })}
     >
       <CardContent
@@ -83,8 +51,8 @@ const ProductCard = memo((props: ProductCardProps) => {
         }}
       >
         <AspectRatio
-          maxHeight={"120px"}
-          minHeight={"100px"}
+          minHeight={props.layout === "Landing" ? "250px" : "100px"}
+          maxHeight={props.layout !== "Landing" ? "130px" : undefined}
           sx={{ cursor: "pointer", flex: 1 }}
         >
           <Skeleton loading={!product} variant="overlay">
@@ -94,7 +62,7 @@ const ProductCard = memo((props: ProductCardProps) => {
               onClick={handleNavigate}
             />
           </Skeleton>
-          {isPromotion && (
+          {!!isPromotion && (
             <Chip
               color="danger"
               variant="solid"
@@ -112,7 +80,7 @@ const ProductCard = memo((props: ProductCardProps) => {
 
         <Stack flex={1} justifyContent={"space-between"}>
           <Link component={RouterLink} to={`/p/${product?.idProduit}`}>
-            <Typography level="body-sm">
+            <Typography level="body-md">
               <Skeleton loading={!product}>
                 {product?.nom ?? "Nom du produit très long "}
               </Skeleton>
