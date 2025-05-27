@@ -13,7 +13,6 @@ import { changeCartMagasin, getMagasins } from "../../../api/magasins.api";
 import { enableCache } from "../../../AppProviders";
 import useClientData from "../../../context/client.context";
 import useCart from "../../../hooks/data/useCart";
-import { useNavigate } from "react-router";
 
 type ChoseMagasinProps = {
   open: boolean;

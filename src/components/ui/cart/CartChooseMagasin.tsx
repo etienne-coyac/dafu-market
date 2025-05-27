@@ -19,7 +19,6 @@ import dayjs from "dayjs";
 import { KeyboardArrowRight } from "@mui/icons-material";
 import { useNavigate } from "react-router";
 import { snackbar } from "../../../providers/snackbar/snackbar";
-import useCart from "../../../hooks/data/useCart";
 
 type CartChooseMagasinProps = {
   onNextStep?: () => void;
@@ -29,7 +28,6 @@ type CartChooseMagasinProps = {
 const CartChooseMagasin = (props: CartChooseMagasinProps) => {
   const { onError: onPreviousStep } = props;
   const { idMagasin } = useClientData();
-  const { data: cart } = useCart();
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const [userSelectedMagasin, setUserSelectedMagasin] = useState<
@@ -60,7 +58,10 @@ const CartChooseMagasin = (props: CartChooseMagasinProps) => {
   });
 
   useLayoutEffect(() => {
-    if (!checkCartData && !isLoading) {
+    if (
+      (!checkCartData || checkCartData.stocksMagasins.length === 0) &&
+      !isLoading
+    ) {
       onPreviousStep?.();
     }
   }, [checkCartData, isLoading]);

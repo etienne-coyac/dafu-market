@@ -1,6 +1,7 @@
 import {
   Alert,
   AspectRatio,
+  Button,
   Chip,
   Divider,
   LinearProgress,
@@ -24,14 +25,18 @@ import CenterContent from "../../../components/layout/CenterContent";
 import ProductCard from "../../../components/ui/ProductCard";
 import AddToCart from "../../../components/ui/AddToCart";
 import useCart from "../../../hooks/data/useCart";
-import { useLayoutEffect, useRef } from "react";
+import { useLayoutEffect, useRef, useState } from "react";
 import type { ProductType } from "../../../types/protucts";
+import useAuth from "../../../context/auth.context";
+import { Add } from "@mui/icons-material";
+import AddProductToListModal from "../../../components/ui/modals/AddProductToListModal";
 
 const ProductDetail = () => {
   const { productId } = useParams();
   const { idMagasin } = useClientData();
   const { data: cart } = useCart();
-
+  const { user } = useAuth();
+  const [openModal, setOpenModal] = useState<boolean>(false);
   const oldProductRef = useRef<ProductType | null>(null);
 
   const { data: product, isFetching } = useQuery({
@@ -110,7 +115,8 @@ const ProductDetail = () => {
           <Stack sx={{ flexDirection: { sm: "column", md: "row" } }}>
             <AspectRatio
               objectFit="contain"
-              sx={{ flex: 2, maxHeight: { sm: "200px", md: "400px" } }}
+              maxHeight={"400px"}
+              sx={{ flex: 2 }}
             >
               <img
                 src={displayProduct?.imageUrl}
@@ -170,11 +176,12 @@ const ProductDetail = () => {
                   Ce produit n'est pas disponible dans ce magasin.
                 </Alert>
               )}
-              {displayProduct.idMagasin === idMagasin && (
-                <Alert color="primary">
-                  Stock disponible : {displayProduct.stockDispo}
-                </Alert>
-              )}
+              {displayProduct.idMagasin === idMagasin &&
+                idMagasin !== undefined && (
+                  <Alert color="primary">
+                    Stock disponible : {displayProduct.stockDispo}
+                  </Alert>
+                )}
               <Alert color="neutral">
                 <div>
                   <Typography level="body-md">
@@ -202,8 +209,8 @@ const ProductDetail = () => {
                   </Stack>
                 </div>
               </Alert>
-              {(isProductAvailable || idMagasin === undefined) && (
-                <div>
+              <Stack direction={"row"} gap={1}>
+                {(isProductAvailable || idMagasin === undefined) && (
                   <AddToCart
                     label
                     idProduit={displayProduct?.idProduit}
@@ -213,8 +220,18 @@ const ProductDetail = () => {
                       )?.quantite
                     }
                   />
-                </div>
-              )}
+                )}
+                {user && (
+                  <Button
+                    color="success"
+                    variant="outlined"
+                    startDecorator={<Add />}
+                    onClick={() => setOpenModal(true)}
+                  >
+                    Ajouter à une liste
+                  </Button>
+                )}
+              </Stack>
             </Stack>
           </Stack>
         )}
@@ -236,6 +253,13 @@ const ProductDetail = () => {
           </CenterContent>
         )}
       </Stack>
+      {displayProduct && (
+        <AddProductToListModal
+          open={openModal}
+          setOpen={setOpenModal}
+          idProduit={displayProduct.idProduit}
+        />
+      )}
     </Stack>
   );
 };
