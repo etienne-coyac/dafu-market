@@ -10,9 +10,11 @@ import {
 } from "@mui/joy";
 import useAuth from "../../../context/auth.context";
 import { useNavigate } from "react-router";
+import useClientData from "../../../context/client.context";
 
 const Profile = () => {
   const auth = useAuth();
+  const { logout } = useClientData();
   const navigate = useNavigate();
   return (
     <Dropdown>
@@ -45,7 +47,7 @@ const Profile = () => {
               <Typography>Listes de courses</Typography>
             </MenuItem>
             <Divider />
-            <MenuItem onClick={() => auth.logout()}>
+            <MenuItem onClick={() => logout()}>
               <Typography>Déconnexion</Typography>
             </MenuItem>
           </>

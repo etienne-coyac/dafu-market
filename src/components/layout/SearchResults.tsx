@@ -6,6 +6,7 @@ import {
   IconButton,
   List,
   ListItem,
+  ListItemButton,
   Stack,
   Typography,
 } from "@mui/joy";
@@ -13,7 +14,10 @@ import ProductCard from "../ui/ProductCard";
 import { KeyboardArrowUp } from "@mui/icons-material";
 import type { ProductType } from "../../types/protucts";
 import { useEffect } from "react";
-import { useLocation } from "react-router";
+import { useLocation, useNavigate } from "react-router";
+import { getAllCategoriesPreview } from "../../api/rayons.api";
+import { useQuery } from "@tanstack/react-query";
+import { nameToUrl } from "../../utils/tmp/sectionToIcon";
 
 type SearchResultsProps = {
   open: boolean;
@@ -26,9 +30,16 @@ type SearchResultsProps = {
 const SearchResults = (props: SearchResultsProps) => {
   const { open, onClose, headerRef, products, loading } = props;
   const location = useLocation();
+  const navigate = useNavigate();
+
   useEffect(() => {
     if (open) onClose();
   }, [location.pathname]);
+
+  const { data: catPreview } = useQuery({
+    queryKey: ["catPreview"],
+    queryFn: getAllCategoriesPreview,
+  });
 
   return (
     <Box
@@ -67,11 +78,21 @@ const SearchResults = (props: SearchResultsProps) => {
             <ListItem>
               <Typography level="h4">Recherches populaires :</Typography>
             </ListItem>
-            <ListItem>Catégorie recommandée</ListItem>
-            <ListItem>Catégorie recommandée</ListItem>
-            <ListItem>Catégorie recommandée</ListItem>
-            <ListItem>Catégorie recommandée</ListItem>
-            <ListItem>Catégorie recommandée</ListItem>
+            {catPreview?.map((c) => (
+              <ListItem key={c.idCategorie}>
+                <ListItemButton
+                  onClick={() =>
+                    navigate(
+                      `/r/${nameToUrl(c.rayonDTO.nomRayon)}/${nameToUrl(
+                        c.nomCategorie
+                      )}`
+                    )
+                  }
+                >
+                  {c.nomCategorie}
+                </ListItemButton>
+              </ListItem>
+            ))}
           </List>
           <Divider orientation="vertical" sx={{ margin: "5rem 0" }} />
           <Grid

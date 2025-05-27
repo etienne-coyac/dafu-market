@@ -17,6 +17,6 @@ const AppAdmin = () => {
       </Box>
     </Box>
   );
-}
+};
 
 export default AppAdmin;

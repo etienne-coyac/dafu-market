@@ -13,6 +13,8 @@ type ClientContextType = {
   setIdMagasin: (idMagasin: number | undefined) => void;
 
   cart: PanierType | undefined;
+
+  logout: () => void;
 };
 
 const clientContextDefaultValue: ClientContextType = {
@@ -21,6 +23,8 @@ const clientContextDefaultValue: ClientContextType = {
   setIdMagasin: () => {},
 
   cart: undefined,
+
+  logout: () => {},
 };
 
 const ClientContext = createContext<ClientContextType>(
@@ -32,7 +36,7 @@ export const ClientContextProvider = ({
 }: {
   children: React.ReactNode;
 }) => {
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
   // only used to determine the default magasin
   const { data: cart } = useQuery({
     queryKey: ["cart", "cart-client"],
@@ -57,8 +61,15 @@ export const ClientContextProvider = ({
 
   const magasin = magasins?.find((magasin) => magasin.idMagasin === idMagasin);
 
+  const logoutClient = () => {
+    setIdMagasin(undefined);
+    logout();
+  };
+
   return (
-    <ClientContext.Provider value={{ magasin, idMagasin, setIdMagasin, cart }}>
+    <ClientContext.Provider
+      value={{ magasin, idMagasin, setIdMagasin, cart, logout: logoutClient }}
+    >
       {children}
     </ClientContext.Provider>
   );

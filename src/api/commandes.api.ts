@@ -3,11 +3,11 @@ import api from "./services/api";
 
 // #region Préparateur
 export const getCommandes = () =>
-  api.get<CommandeType>("preparateurs/commandes").then((res) => res.data);
+  api.get<CommandeType[]>("preparateurs/commandes").then((res) => res.data);
 
 export const getCommandesNow = () =>
   api
-    .get<CommandeType>("preparateurs/commandes?dueDate=true")
+    .get<CommandeType[]>("preparateurs/commandes?dueDate=true")
     .then((res) => res.data);
 
 export const patchCommandeStart = (id: string) =>
