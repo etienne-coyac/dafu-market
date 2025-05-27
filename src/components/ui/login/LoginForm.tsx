@@ -31,6 +31,7 @@ const LoginForm = (props: LoginFormProps) => {
   const navigate = useNavigate();
   const { state } = useLocation();
 
+  const [currentTab, setCurrentTab] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(false);
   const [open, setOpen] = useState<boolean>(false);
 
@@ -68,7 +69,12 @@ const LoginForm = (props: LoginFormProps) => {
           boxSizing: "border-box",
         }}
       >
-        <Tabs>
+        <Tabs
+          value={currentTab}
+          onChange={(_, newValue) =>
+            setCurrentTab(newValue === null ? 0 : +newValue)
+          }
+        >
           <TabList>
             <Tab>Se connecter</Tab>
             <Tab>Créer un compte</Tab>
@@ -114,7 +120,7 @@ const LoginForm = (props: LoginFormProps) => {
             </Stack>
           </TabPanel>
           <TabPanel value={1}>
-            <RegisterForm />
+            <RegisterForm nextAction={() => setCurrentTab(0)} />
           </TabPanel>
         </Tabs>
       </Sheet>

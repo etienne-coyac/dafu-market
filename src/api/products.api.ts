@@ -36,10 +36,12 @@ export const getProductsSearch = async (search: string, limit: number = 6) => {
     .then((res) => res.data);
 };
 
-export const getProductsByMarque = async (marque: string) => {
-  return api
-    .get<ProductType[]>(`/produits`, {
-      params: { marque },
-    })
-    .then((res) => res.data);
+export const getProductsByMarque = async (
+  marque: string,
+  idMagasin?: number
+) => {
+  const path = idMagasin
+    ? `/magasins/${idMagasin}/produits?marque=${marque}`
+    : `/produits?marque=${marque}`;
+  return api.get<ProductType[]>(path).then((res) => res.data);
 };

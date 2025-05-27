@@ -35,7 +35,7 @@ export const ClientContextProvider = ({
   const { user } = useAuth();
   // only used to determine the default magasin
   const { data: cart } = useQuery({
-    queryKey: ["cart-client"],
+    queryKey: ["cart", "cart-client"],
     queryFn: getPanier,
     enabled: !!user,
     ...enableCache(),

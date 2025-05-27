@@ -37,3 +37,14 @@ export const validateCart = async (
     })
     .then((res) => res.data);
 };
+
+export const deleteCart = async () => {
+  return api.delete("/clients/panier");
+};
+
+export const conversionListPanier = (idList: number, idMagasin: number) =>
+  api
+    .get<PanierType>(
+      `/clients/listes/${idList}/conversion?idMagasin=${idMagasin}`
+    )
+    .then((res) => res.data);

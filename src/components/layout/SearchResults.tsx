@@ -12,6 +12,8 @@ import {
 import ProductCard from "../ui/ProductCard";
 import { KeyboardArrowUp } from "@mui/icons-material";
 import type { ProductType } from "../../types/protucts";
+import { useEffect } from "react";
+import { useLocation } from "react-router";
 
 type SearchResultsProps = {
   open: boolean;
@@ -23,6 +25,10 @@ type SearchResultsProps = {
 
 const SearchResults = (props: SearchResultsProps) => {
   const { open, onClose, headerRef, products, loading } = props;
+  const location = useLocation();
+  useEffect(() => {
+    if (open) onClose();
+  }, [location.pathname]);
 
   return (
     <Box
@@ -31,7 +37,7 @@ const SearchResults = (props: SearchResultsProps) => {
         height: `calc(100dvh - ${headerRef?.current?.offsetHeight}px)`,
         transform: open ? "translateY(0)" : "translateY(-110%)",
         width: "100%",
-        background: "lightgrey",
+        background: "#eef3ff",
         overflow: "hidden",
         position: "absolute",
         top: `${headerRef?.current?.offsetHeight}px`,
@@ -70,11 +76,12 @@ const SearchResults = (props: SearchResultsProps) => {
           <Divider orientation="vertical" sx={{ margin: "5rem 0" }} />
           <Grid
             container
+            rowGap={1}
             sx={{
               width: { xs: "100%", md: "50%" },
               maxHeight: "100%",
               overflowY: "auto",
-              p: 1,
+              p: 2,
               alignItems: "flex-start",
               justifyContent: "center",
             }}

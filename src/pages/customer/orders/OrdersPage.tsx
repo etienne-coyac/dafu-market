@@ -102,6 +102,7 @@ const OrdersPage = () => {
                 </Stack>
               </AccordionSummary>
               <AccordionDetails>
+                <Typography level="h4">{`Total : ${order.panier.totalCost}€`}</Typography>
                 <Table sx={{ "& thead th:nth-child(1)": { width: "40%" } }}>
                   <thead>
                     <tr>

@@ -220,20 +220,20 @@ const PostIt = (props: PostItProps) => {
               <>
                 <Button
                   fullWidth
-                  color="warning"
-                  variant="solid"
-                  onClick={() => setEditMode(true)}
-                >
-                  Modifier
-                </Button>{" "}
-                <Button
-                  fullWidth
                   color="danger"
                   variant="solid"
                   onClick={() => deleteMutation.mutate()}
                   loading={deleteMutation.isPending}
                 >
                   Supprimer
+                </Button>
+                <Button
+                  fullWidth
+                  color="warning"
+                  variant="solid"
+                  onClick={() => setEditMode(true)}
+                >
+                  Modifier
                 </Button>
               </>
             )}
