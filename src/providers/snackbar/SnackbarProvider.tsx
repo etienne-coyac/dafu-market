@@ -36,10 +36,11 @@ export const SnackbarProvider: React.FC<{ children: React.ReactNode }> = ({
         open={open}
         onClose={() => setOpen(false)}
         autoHideDuration={3000}
+        color={type}
+        variant="soft"
+        size="sm"
       >
-        <Alert color={type} variant="soft">
-          <Typography>{message}</Typography>
-        </Alert>
+        <Typography>{message}</Typography>
       </Snackbar>
     </SnackbarContext.Provider>
   );

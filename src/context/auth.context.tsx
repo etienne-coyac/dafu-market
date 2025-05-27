@@ -3,6 +3,7 @@ import type { LoginType, UserType } from "../types/user";
 import { login as apiLogin } from "../api/services/auth";
 import { useLocation, useNavigate } from "react-router";
 import { getCurrentClient } from "../api/clients.api";
+import { useQueryClient } from "@tanstack/react-query";
 
 type AuthContextType = {
   user: UserType | null;
@@ -20,15 +21,14 @@ const authContextDefaultValues: AuthContextType = {
   canAccess: () => true,
 };
 
-export const AuthContext = createContext<AuthContextType>(
-  authContextDefaultValues
-);
+const AuthContext = createContext<AuthContextType>(authContextDefaultValues);
 
 const protectedRoutes = ["/panier"];
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const navigate = useNavigate();
   const location = useLocation();
+  const queryClient = useQueryClient();
   const [user, setUser] = useState<UserType | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
 
@@ -43,6 +43,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const logout = () => {
     localStorage.removeItem("authToken");
+    queryClient.clear();
     setUser(null);
   };
 

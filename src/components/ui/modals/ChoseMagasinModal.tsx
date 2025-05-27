@@ -9,9 +9,10 @@ import {
   Typography,
 } from "@mui/joy";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { getMagasins } from "../../../api/magasins.api";
+import { changeCartMagasin, getMagasins } from "../../../api/magasins.api";
 import { enableCache } from "../../../AppProviders";
 import useClientData from "../../../context/client.context";
+import useCart from "../../../hooks/data/useCart";
 
 type ChoseMagasinProps = {
   open: boolean;
@@ -22,6 +23,7 @@ const ChoseMagasinModal = (props: ChoseMagasinProps) => {
   const { open, setOpen } = props;
   const queryClient = useQueryClient();
   const { idMagasin, setIdMagasin } = useClientData();
+  const { data: cart } = useCart();
   const { data: magasins } = useQuery({
     queryKey: ["magasins"],
     queryFn: getMagasins,
@@ -57,9 +59,23 @@ const ChoseMagasinModal = (props: ChoseMagasinProps) => {
           <Select
             size="sm"
             value={idMagasin}
-            onChange={(_e, newValue) => {
+            onChange={async (_e, newValue) => {
               setIdMagasin(newValue ?? undefined);
-              queryClient.invalidateQueries({ queryKey: ["cart-client"] });
+              if (cart && newValue) {
+                await changeCartMagasin(newValue).then((updatedCart) => {
+                  queryClient.setQueriesData(
+                    { queryKey: ["cart-client"] },
+                    () => updatedCart
+                  );
+                  queryClient.setQueriesData(
+                    { queryKey: ["cart"] },
+                    () => updatedCart
+                  );
+                  queryClient.invalidateQueries({
+                    queryKey: ["checkCart"],
+                  });
+                });
+              }
               setOpen(false);
             }}
           >

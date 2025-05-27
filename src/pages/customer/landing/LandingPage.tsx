@@ -2,8 +2,9 @@ import { Typography, Grid, Box, CircularProgress } from "@mui/joy";
 import ProductCard from "../../../components/ui/ProductCard";
 import { useQuery } from "@tanstack/react-query";
 import { getProductsByMarque } from "../../../api/products.api";
+import type { ProductType } from "../../../types/protucts";
 
-const getRandomProducts = (products, count) => {
+const getRandomProducts = (products: ProductType[], count: number) => {
   const shuffled = [...products].sort(() => 0.5 - Math.random());
   return shuffled.slice(0, count);
 };
@@ -49,11 +50,7 @@ const LandingPage = () => {
             <Grid container spacing={3}>
               {randomFour.map((product) => (
                 <Grid xs={12} sm={6} md={3} key={product.idProduit}>
-                  <ProductCard
-                    product={product}
-                    beforeAddCart={() => console.log("Non connecté")}
-                    layout="Landing"
-                  />
+                  <ProductCard product={product} layout="Landing" />
                 </Grid>
               ))}
             </Grid>

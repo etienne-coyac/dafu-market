@@ -4,12 +4,14 @@ import List from "@mui/joy/List";
 import ListItem from "@mui/joy/ListItem";
 import ListItemButton, { listItemButtonClasses } from "@mui/joy/ListItemButton";
 import ListItemContent from "@mui/joy/ListItemContent";
+import ListItemDecorator from "@mui/joy/ListItemDecorator";
 import Typography from "@mui/joy/Typography";
 import Sheet from "@mui/joy/Sheet";
 import { Link } from "react-router";
-import { DashboardRounded, HomeRounded } from "@mui/icons-material";
+import getAdminIcon from "../../../utils/tmp/adminToIcon";
 
 export default function Sidebar() {
+
   return (
     <Sheet
       className="Sidebar"
@@ -86,7 +88,9 @@ export default function Sidebar() {
         >
           <ListItem>
             <ListItemButton role="menuitem" component={Link} to="/admin/import">
-              <HomeRounded />
+              <ListItemDecorator>
+                {getAdminIcon("import")}
+              </ListItemDecorator>
               <ListItemContent>
                 <Typography level="title-sm">Importation</Typography>
               </ListItemContent>
@@ -99,7 +103,7 @@ export default function Sidebar() {
               component={Link}
               to="/admin/forecast"
             >
-              <DashboardRounded />
+              {getAdminIcon("forecast")}
               <ListItemContent>
                 <Typography level="title-sm">Forecast</Typography>
               </ListItemContent>
@@ -107,7 +111,7 @@ export default function Sidebar() {
           </ListItem>
 
           <ListItem>
-            <DashboardRounded />
+            {getAdminIcon("statistiques")}
             <ListItemContent>
               <Typography level="title-sm">Statistiques</Typography>
             </ListItemContent>
@@ -121,7 +125,7 @@ export default function Sidebar() {
                   component={Link}
                   to="/admin/efficaciteSysteme"
                 >
-                  <DashboardRounded />
+                  {getAdminIcon("efficacite")}
                   <ListItemContent>
                     <Typography level="title-sm">
                       Efficacité des sytèmes
@@ -135,7 +139,7 @@ export default function Sidebar() {
                   component={Link}
                   to="/admin/editerSysteme"
                 >
-                  <DashboardRounded />
+                  {getAdminIcon("editer")}
                   <ListItemContent>
                     <Typography level="title-sm">
                       Editer des statistiques
@@ -149,7 +153,7 @@ export default function Sidebar() {
                   component={Link}
                   to="/admin/parametrerAlgorithme"
                 >
-                  <DashboardRounded />
+                  {getAdminIcon("algorithme")}
                   <ListItemContent>
                     <Typography level="title-sm">
                       Paramétrer l'algorithme de recommandation
@@ -163,7 +167,7 @@ export default function Sidebar() {
                   component={Link}
                   to="/admin/consulterProfils"
                 >
-                  <DashboardRounded />
+                  {getAdminIcon("consulter")}
                   <ListItemContent>
                     <Typography level="title-sm">
                       Consultation des profils
@@ -177,7 +181,7 @@ export default function Sidebar() {
                   component={Link}
                   to="/admin/habitudesProfils"
                 >
-                  <DashboardRounded />
+                  {getAdminIcon("habitudes")}
                   <ListItemContent>
                     <Typography level="title-sm">
                       Habitudes des profils

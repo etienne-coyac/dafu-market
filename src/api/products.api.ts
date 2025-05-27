@@ -22,8 +22,18 @@ export const getProductByCategory = async (
   return api.get<ProductType[]>(path).then((res) => res.data);
 };
 
-export const getProductById = async (id: number) => {
-  return api.get<ProductType>(`/produits/${id}`).then((res) => res.data);
+export const getProductById = async (id: number, idMagasin?: number) => {
+  const path = idMagasin
+    ? `/magasins/${idMagasin}/produits/${id}`
+    : `/produits/${id}`;
+
+  return api.get<ProductType>(path).then((res) => res.data);
+};
+
+export const getProductsSearch = async (search: string, limit: number = 6) => {
+  return api
+    .get<ProductType[]>(`/produits/search?search=${search}&limit=${limit}`)
+    .then((res) => res.data);
 };
 
 export const getProductsByMarque = async (marque: string) => {

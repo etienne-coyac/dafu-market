@@ -1,8 +1,11 @@
-import type { CartType } from "../types/cart";
+import type { Dayjs } from "dayjs";
+import type { CheckMagasinsType } from "../types/magasin";
 import api from "./services/api";
+import type { CommandeType } from "../types/commandes";
+import type { PanierType } from "../types/panier";
 
 export const getPanier = async () => {
-  return api.get<CartType>("/clients/panier").then((res) => res.data);
+  return api.get<PanierType>("/clients/panier").then((res) => res.data);
 };
 
 export const updateQuantityPanier = async (
@@ -11,8 +14,26 @@ export const updateQuantityPanier = async (
   idMagasin: number
 ) => {
   return api
-    .post<CartType>(
-      `/clients/panier/${idProduit}?quantite=${quantite}&idMagasin=${idMagasin}`
+    .post<PanierType>(
+      `/clients/panier?idProduit=${idProduit}&quantite=${quantite}&idMagasin=${idMagasin}`
     )
+    .then((res) => res.data);
+};
+
+export const checkCart = async () => {
+  return api
+    .get<CheckMagasinsType>("/clients/verifierPanier")
+    .then((res) => res.data);
+};
+
+export const validateCart = async (
+  creneauHoraire: Dayjs,
+  idMagasin: number
+) => {
+  return api
+    .post<CommandeType>("/clients/confirmerCommande", {
+      creneauHoraire: creneauHoraire.toISOString().split(".")[0] + "Z",
+      idMagasin,
+    })
     .then((res) => res.data);
 };

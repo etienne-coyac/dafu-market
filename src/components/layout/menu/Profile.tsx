@@ -41,6 +41,9 @@ const Profile = () => {
             <MenuItem onClick={() => navigate("/commandes")}>
               <Typography>Mes commandes</Typography>
             </MenuItem>
+            <MenuItem onClick={() => navigate("/listes")}>
+              <Typography>Listes de courses</Typography>
+            </MenuItem>
             <Divider />
             <MenuItem onClick={() => auth.logout()}>
               <Typography>Déconnexion</Typography>
@@ -48,7 +51,7 @@ const Profile = () => {
           </>
         ) : (
           <MenuItem onClick={() => navigate("/login")}>
-            <>Connexion</>
+            <Typography>Connexion</Typography>
           </MenuItem>
         )}
       </Menu>

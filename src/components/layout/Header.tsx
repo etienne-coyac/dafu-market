@@ -15,13 +15,16 @@ import {
 } from "@mui/joy";
 import Menu from "./menu/Menu";
 import { Fragment } from "react/jsx-runtime";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Profile from "./menu/Profile";
 import { useNavigate } from "react-router";
 import ChoseMagasinModal from "../ui/modals/ChoseMagasinModal";
 import useClientData from "../../context/client.context";
 import useCart from "../../hooks/data/useCart";
 import SearchResults from "./SearchResults";
+import { getProductsSearch } from "../../api/products.api";
+import { useQuery } from "@tanstack/react-query";
+import { debounce } from "@mui/material";
 
 const Header = () => {
   const navigate = useNavigate();
@@ -31,6 +34,22 @@ const Header = () => {
   const { data: cart } = useCart();
   const [open, setOpen] = useState<boolean>(false);
   const [openSelectMagasin, setOpenSelectMagasin] = useState<boolean>(false);
+  const [search, setSearch] = useState<string>("");
+
+  const { data: products, isLoading } = useQuery({
+    enabled: !!search,
+    queryKey: ["products", search],
+    queryFn: () => getProductsSearch(search),
+  });
+
+  const debouncedSearch = useMemo(
+    () =>
+      debounce((nextValue: string) => {
+        setSearch(nextValue);
+      }, 1000),
+    [] // only create it once
+  );
+
   useEffect(() => {
     const ref = searchbarRef.current;
     if (ref) {
@@ -89,6 +108,7 @@ const Header = () => {
             ref={searchbarRef}
             endDecorator={<Search />}
             placeholder="Rechercher un produit"
+            onChange={(e) => debouncedSearch(e.target.value)}
           />
         </Box>
         <Stack direction={"row"} spacing={1} alignItems={"center"}>
@@ -112,7 +132,10 @@ const Header = () => {
             sx={{
               borderRadius: "50%",
             }}
-            onClick={() => navigate("/panier")}
+            onClick={() => {
+              navigate("/panier");
+              setOpen(false);
+            }}
           >
             <Badge
               badgeContent={cart?.lignes.length ?? "0"}
@@ -129,6 +152,8 @@ const Header = () => {
         open={open}
         onClose={handleCloseSearchResults}
         headerRef={headerRef}
+        products={products ?? []}
+        loading={isLoading}
       />
       <ChoseMagasinModal
         open={openSelectMagasin}

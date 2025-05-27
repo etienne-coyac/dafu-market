@@ -5,14 +5,14 @@ import { getMagasins } from "../api/magasins.api";
 import { useQuery } from "@tanstack/react-query";
 import { getPanier } from "../api/panier.api";
 import useAuth from "./auth.context";
-import type { CartType } from "../types/cart";
+import type { PanierType } from "../types/panier";
 
 type ClientContextType = {
   magasin: MagasinType | undefined;
   idMagasin: number | undefined;
   setIdMagasin: (idMagasin: number | undefined) => void;
 
-  cart: CartType | undefined;
+  cart: PanierType | undefined;
 };
 
 const clientContextDefaultValue: ClientContextType = {
@@ -23,7 +23,7 @@ const clientContextDefaultValue: ClientContextType = {
   cart: undefined,
 };
 
-export const ClientContext = createContext<ClientContextType>(
+const ClientContext = createContext<ClientContextType>(
   clientContextDefaultValue
 );
 
@@ -33,7 +33,6 @@ export const ClientContextProvider = ({
   children: React.ReactNode;
 }) => {
   const { user } = useAuth();
-
   // only used to determine the default magasin
   const { data: cart } = useQuery({
     queryKey: ["cart-client"],

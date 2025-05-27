@@ -19,7 +19,7 @@ import HabitProfils from "../pages/admin/statistiques/HabitProfils";
 import ConsultProfils from "../pages/admin/statistiques/ConsultProfilsPage";
 import AppPreparateur from "../pages/preparateur/AppPreparateur";
 import DashboardPrepa from "../pages/preparateur/dashboard/DashboardPrepaPage";
-import DetailsPage from "../pages/preparateur/details/DetailsPage";
+import ListsPage from "../pages/customer/lists/ListsPage";
 
 const router = createBrowserRouter([
   {
@@ -45,6 +45,10 @@ const router = createBrowserRouter([
                 path: "p/:productId",
                 element: <ProductDetail />,
               },
+              {
+                path: "404",
+                element: <h1>404</h1>,
+              },
 
               // protected routes
               {
@@ -55,8 +59,12 @@ const router = createBrowserRouter([
                     element: <CartPage />,
                   },
                   {
-                    path: "commandes",
+                    path: "commandes/:idCommande?",
                     element: <OrdersPage />,
+                  },
+                  {
+                    path: "listes/:idListe?",
+                    element: <ListsPage />,
                   },
                 ],
               },
@@ -113,10 +121,6 @@ const router = createBrowserRouter([
               {
                 path: "dashboard",
                 element: <DashboardPrepa />,
-              },
-              {
-                path: "dashboard/:idCommande",
-                element: <DetailsPage />,
               },
             ],
           },

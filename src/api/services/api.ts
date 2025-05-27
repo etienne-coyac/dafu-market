@@ -14,4 +14,11 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
+api.interceptors.response.use((response) => {
+  if (response.data === "") {
+    return { ...response, data: null };
+  }
+  return response;
+});
+
 export default api;
